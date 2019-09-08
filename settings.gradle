@@ -1,0 +1,19 @@
+rootProject.name = 'spring-roll'
+
+file("${rootProject.projectDir}/modules").eachDir { dir ->
+    includeModule(dir)
+}
+
+def includeModule(File dir) {
+    def buildFileName = "${dir.name}.gradle"
+    File buildFile = new File(dir, buildFileName)
+    if (buildFile.isFile()) {
+        include dir.name
+        project(":${dir.name}").projectDir = dir
+        project(":${dir.name}").buildFileName = buildFileName
+        return
+    }
+    dir.eachDir { child ->
+        includeModule(child)
+    }
+}
