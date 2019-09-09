@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+task regModules
+// Auto register modules of spring-roll into dependencies.gradle before package build content to jar
+regModules.doLast {
+    def supplement = new StringBuilder('\r\n')
+    rootProject.allprojects.each { it
+        if (it != rootProject) {
+            supplement.append("libraries.${it.name.replaceAll('-', '_')} = '${it.group}:${it.name}:${it.version}'\r\n")
+        }
+    }
+    project.file('build/resources/main/META-INF/configs/dependencies.gradle').write(supplement.toString())
+}
+
+jar.dependsOn regModules

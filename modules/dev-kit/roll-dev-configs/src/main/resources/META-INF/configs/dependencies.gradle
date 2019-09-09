@@ -1,0 +1,200 @@
+ext {
+    versions = [:]
+    libraries = [:]
+}
+
+versions.groovy             = '2.5.0'
+versions.hibernate          = '5.2.17.Final'
+versions.jackson            = '2.9.6'
+versions.logback            = '1.2.3'
+versions.mongo              = '3.4.0'
+versions.quartz             = '2.3.0'
+versions.slf4j              = '1.7.25'
+versions.spring             = '5.1.2.RELEASE'
+versions.spring_boot        = '2.0.6.RELEASE'
+versions.spring_data        = 'Kay-SR11'
+versions.springfox          = '3.0.0-SNAPSHOT'
+
+configurations.all {
+    resolutionStrategy.force 'xml-apis:xml-apis:1.4.01'
+
+    // 强制所有依赖使用相同版本的 Spring Framework
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def req = details.requested
+        if (req.group == 'org.springframework' && req.name != 'springloaded') {
+            details.useVersion versions.spring
+        } else if (req.name == 'mongo-java-driver') {
+            details.useTarget "org.mongodb:mongodb-driver:${versions.mongo}"
+        }
+
+        def nameVers = [
+            'javassist': '3.19.0-GA',
+            'jcl-over-slf4j': versions.slf4j,
+            'logback': versions.logback ,
+            'springloaded': '1.2.8.RELEASE',
+            // xalan < 2.7.0 的版本会导致与 spring-ws 的冲突
+            // http://stackoverflow.com/questions/12467186/java-spring-ws-org-springframework-ws-soap-saaj-saajsoapenvelopeexception-could/13156775#13156775
+            'xalan': '2.7.2'
+        ]
+        nameVers.each { name, ver ->
+            if (req.name == name) {
+                details.useVersion ver
+            }
+        }
+
+        def groupVers = [
+            'com.fasterxml.jackson.core': versions.jackson,
+            'com.fasterxml.jackson.dataformat': versions.jackson,
+            'org.codehaus.groovy': versions.groovy
+        ]
+        groupVers.each { group, ver ->
+            if (req.group == group) {
+                details.useVersion ver
+            }
+        }
+    }
+
+    // Exclude other log frameworks
+    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    exclude group: 'org.apache.commons.logging'
+    exclude group: 'org.apache.log4j'
+    exclude group: 'log4j'
+
+    // Exclude HikariCP
+    exclude module: 'HikariCP'
+}
+
+configurations.testImplementation {
+    // Exclude duplicated org.json.JSONObject with org.json depend by jackson-datatype-json-org
+    exclude module: 'android-json'
+}
+
+libraries.aspectjweaver = "org.aspectj:aspectjweaver:1.8.6"
+
+libraries.checkstyle = 'com.puppycrawl.tools:checkstyle:8.14'
+libraries.checkstyle_proper = 'com.proper:proper-checkstyle:0.1.0-SNAPSHOT'
+
+libraries.commons_collections = 'commons-collections:commons-collections:3.2.2'
+
+libraries.commons_codec = 'commons-codec:commons-codec:1.11'
+
+libraries.commons_fileupload = 'commons-fileupload:commons-fileupload:1.3.3'
+
+libraries.commons_lang3 = 'org.apache.commons:commons-lang3:3.8.1'
+
+libraries.druid_spring_boot_starter = 'com.alibaba:druid-spring-boot-starter:1.1.10'
+
+libraries.el_api="javax.el:el-api:3.0"
+
+// groovy-all include all below modules, used by code quality
+libraries.groovy_all = "org.codehaus.groovy:groovy-all:${versions.groovy}"
+// sub modules
+libraries.groovy = "org.codehaus.groovy:groovy:${versions.groovy}"
+// libraries.groovy_ant = "org.codehaus.groovy:groovy-ant:${versions.groovy}"
+// libraries.groovy_bsf = "org.codehaus.groovy:groovy-bsf:${versions.groovy}"
+// libraries.groovy_console = "org.codehaus.groovy:groovy-console:${versions.groovy}"
+ libraries.groovy_dateutil = "org.codehaus.groovy:groovy-dateutil:${versions.groovy}"
+// libraries.groovy_docgenerator = "org.codehaus.groovy:groovy-docgenerator:${versions.groovy}"
+// libraries.groovy_groovydoc = "org.codehaus.groovy:groovy-groovydoc:${versions.groovy}"
+// libraries.groovy_groovysh = "org.codehaus.groovy:groovy-groovysh:${versions.groovy}"
+// libraries.groovy_jmx = "org.codehaus.groovy:groovy-jmx:${versions.groovy}"
+libraries.groovy_json = "org.codehaus.groovy:groovy-json:${versions.groovy}"
+// libraries.groovy_jsr223 = "org.codehaus.groovy:groovy-jsr223:${versions.groovy}"
+// libraries.groovy_servlet = "org.codehaus.groovy:groovy-servlet:${versions.groovy}"
+libraries.groovy_sql = "org.codehaus.groovy:groovy-sql:${versions.groovy}"
+// libraries.groovy_swing = "org.codehaus.groovy:groovy-swing:${versions.groovy}"
+// libraries.groovy_test = "org.codehaus.groovy:groovy-test:${versions.groovy}"
+// libraries.groovy_testng = "org.codehaus.groovy:groovy-testng:${versions.groovy}"
+// libraries.groovy_xml = "org.codehaus.groovy:groovy-xml:${versions.groovy}"
+
+libraries.h2 = 'com.h2database:h2:1.4.197'
+
+libraries.hibernate_ehcache = "org.hibernate:hibernate-ehcache:${versions.hibernate}"
+libraries.hibernate_entitymanager = "org.hibernate:hibernate-entitymanager:${versions.hibernate}"
+libraries.hibernate_redis = 'com.github.debop:hibernate-redis:2.3.2'
+libraries.hibernate_validator = "org.hibernate:hibernate-validator:5.1.3.Final"
+
+libraries.jackson_databind = "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}"
+
+libraries.java_melody_spring_boot_starter = 'net.bull.javamelody:javamelody-spring-boot-starter:1.77.0'
+
+libraries.javax_el="org.glassfish.web:javax.el:2.2.4"
+
+libraries.javax_inject = "javax.inject:javax.inject:1"
+
+//with jdk 9+
+libraries.jaxb_api = 'javax.xml:jaxb-api:2.1'
+libraries.jaxb_impl='javax.xml:jaxb-impl:2.1'
+
+libraries.jaxws_rt = 'com.sun.xml.ws:jaxws-rt:2.3.1'
+
+libraries.jpa_api = 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final'
+
+libraries.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
+
+libraries.liquibase = 'com.proper.enterprise.platform:liquibase-core:3.6.2-SNAPSHOT'
+libraries.logback_classic = dependencies.module("ch.qos.logback:logback-classic:${versions.logback}") {
+    dependency "ch.qos.logback:logback-core:${versions.logback}"
+}
+
+libraries.mail = 'com.sun.mail:javax.mail:1.6.2'
+
+libraries.mongodb_driver = "org.mongodb:mongodb-driver:${versions.mongo}"
+
+libraries.mysql_driver = 'org.mariadb.jdbc:mariadb-java-client:1.5.4'
+
+libraries.netty_all = 'io.netty:netty-all'
+
+libraries.okhttp = 'com.squareup.okhttp3:okhttp:3.14.2'
+
+libraries.p3c_pmd = 'com.alibaba.p3c:p3c-pmd:1.3.6'
+
+libraries.quartz = "org.quartz-scheduler:quartz:${versions.quartz}"
+
+libraries.reactor_netty = 'io.projectreactor.netty:reactor-netty:0.8.4.RELEASE'
+
+libraries.redisson = 'org.redisson:redisson:3.5.3'
+
+libraries.reflections = 'org.reflections:reflections:0.9.11'
+
+libraries.servlet_api = 'javax.servlet:javax.servlet-api:3.1.0'
+
+libraries.slf4j_api = "org.slf4j:slf4j-api:${versions.slf4j}"
+
+libraries.spock = 'org.spockframework:spock-core:1.2-groovy-2.5'
+
+libraries.spring_boot                         = 'org.springframework.boot:spring-boot'
+libraries.spring_boot_configuration_processor = 'org.springframework.boot:spring-boot-configuration-processor'
+libraries.spring_boot_devtools                = 'org.springframework.boot:spring-boot-devtools'
+libraries.spring_boot_starter_actuator        = 'org.springframework.boot:spring-boot-starter-actuator'
+libraries.spring_boot_starter_cache           = 'org.springframework.boot:spring-boot-starter-cache'
+libraries.spring_boot_starter_data_jpa        = 'org.springframework.boot:spring-boot-starter-data-jpa'
+libraries.spring_boot_starter_mail            = 'org.springframework.boot:spring-boot-starter-mail'
+libraries.spring_boot_starter_data_mongodb    = 'org.springframework.boot:spring-boot-starter-data-mongodb'
+libraries.spring_boot_starter_test            = 'org.springframework.boot:spring-boot-starter-test'
+libraries.spring_boot_starter_web             = 'org.springframework.boot:spring-boot-starter-web'
+
+libraries.spring_context_support = "org.springframework:spring-context-support:${versions.spring}"
+libraries.spring_messaging = "org.springframework:spring-messaging:${versions.spring}"
+libraries.spring_orm = [
+    "org.springframework:spring-orm:${versions.spring}",
+    libraries.aspectjweaver
+]
+libraries.spring_oxm = "org.springframework:spring-oxm:${versions.spring}"
+libraries.spring_test = "org.springframework:spring-test:${versions.spring}"
+libraries.spring_tx = "org.springframework:spring-tx:${versions.spring}"
+libraries.spring_websocket = "org.springframework:spring-websocket:${versions.spring}"
+libraries.spring_webmvc = "org.springframework:spring-webmvc:${versions.spring}"
+libraries.spring_jms = "org.springframework:spring-jms:${versions.spring}"
+
+libraries.spring_data_commons = 'org.springframework.data:spring-data-commons'
+libraries.spring_data_jpa = 'org.springframework.data:spring-data-jpa'
+libraries.spring_data_mongodb = 'org.springframework.data:spring-data-mongodb'
+
+libraries.springfox = [
+    "io.springfox:springfox-spring-webmvc:${versions.springfox}",
+    "io.springfox:springfox-swagger2:${versions.springfox}",
+    "io.springfox:springfox-swagger-ui:${versions.springfox}"
+]
+
+libraries.tomcat_websocket = 'org.apache.tomcat.embed:tomcat-embed-websocket'
