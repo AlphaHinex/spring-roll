@@ -1,0 +1,116 @@
+buildscript {
+    dependencies {
+        classpath 'com.h2database:h2:1.4.199'
+    }
+}
+
+plugins {
+    id 'com.gradle.build-scan' version '2.0.2'
+    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+    id 'org.springframework.boot' version '2.1.8.RELEASE'
+}
+
+buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
+    publishOnFailure()
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'utf-8'
+        options.compilerArgs = [
+            '-Xlint:-options',
+            '-Xlint:deprecation',
+            '-Xlint:unchecked',
+            '-Werror'
+        ]
+    }
+
+    tasks.withType(GroovyCompile) {
+        options.encoding = 'utf-8'
+        options.compilerArgs = ['-Xlint:-options']
+        groovyOptions.encoding = 'utf-8'
+    }
+}
+
+ext {
+    pepDevConfRoot = "$rootDir/modules/dev-kit/roll-dev-configs/src/main/resources/META-INF"
+}
+
+apply plugin: 'idea'
+
+subprojects {
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+    apply plugin: 'maven'
+
+    apply plugin: 'io.spring.dependency-management'
+
+    apply from: "$pepDevConfRoot/configs/dependencies.gradle"
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot:${versions.spring_boot}"
+        }
+    }
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    group = 'io.github.spring-roll'
+    // Use .RELEASE or -SNAPSHOT suffix after version code
+    version = '0.1.0-SNAPSHOT'
+
+    test {
+        reports.html.enabled = false
+        reports.junitXml.enabled = false
+        //project unit parallel
+        //maxParallelForks = 2
+        //GC
+        forkEvery = 100
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
+
+    dependencies {
+        annotationProcessor libraries.spring_boot_configuration_processor
+
+                compileOnly libraries.jsr305,
+                            libraries.p3c_pmd,
+                            libraries.spring_boot_starter_web,
+                            libraries.springfox
+
+            testCompileOnly libraries.groovy,
+                            libraries.groovy_dateutil,
+                            libraries.p3c_pmd,
+                            libraries.spock,
+                            libraries.spring_boot_starter_web
+
+            testRuntimeOnly libraries.groovy_all,
+                            libraries.spock,
+                            libraries.spring_boot_starter_web
+
+         testImplementation libraries.spring_boot_starter_test
+    }
+
+    // spring boot configuration processor only build meta json into build folder
+    // but auto complete needs it in src, so do copy after compile java task
+    task cpMetaToSrc(type: Copy) {
+        from 'build/classes/java/main/META-INF'
+        into 'src/main/resources/META-INF'
+    }
+    compileJava.finalizedBy cpMetaToSrc
+}

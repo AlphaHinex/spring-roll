@@ -1,5 +1,3 @@
-apply plugin: 'java'
-
 task regModules
 // Auto register modules of spring-roll into dependencies.gradle before package build content to jar
 regModules.doLast {
