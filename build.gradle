@@ -39,7 +39,7 @@ allprojects {
 }
 
 ext {
-    pepDevConfRoot = "$rootDir/modules/dev-kit/roll-dev-configs/src/main/resources/META-INF"
+    devConfRoot = "$rootDir/modules/dev-kits/roll-dev-configs/src/main/resources/META-INF"
 }
 
 apply plugin: 'idea'
@@ -52,7 +52,7 @@ subprojects {
 
     apply plugin: 'io.spring.dependency-management'
 
-    apply from: "$pepDevConfRoot/configs/dependencies.gradle"
+    apply from: "$devConfRoot/configs/dependencies.gradle"
 
     dependencyManagement {
         imports {
