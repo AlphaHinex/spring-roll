@@ -19,6 +19,9 @@ buildScan {
 allprojects {
     repositories {
         mavenCentral()
+        maven {
+            url 'https://repo.gradle.org/gradle/libs/'
+        }
     }
 
     tasks.withType(JavaCompile) {
@@ -88,10 +91,10 @@ subprojects {
     dependencies {
         annotationProcessor libraries.spring_boot_configuration_processor
 
-                compileOnly libraries.jsr305,
-                            libraries.p3c_pmd,
-                            libraries.spring_boot_starter_web,
-                            libraries.springfox
+//                compileOnly libraries.jsr305,
+//                            libraries.p3c_pmd,
+//                            libraries.spring_boot_starter_web,
+//                            libraries.springfox
 
             testCompileOnly libraries.groovy,
                             libraries.groovy_dateutil,

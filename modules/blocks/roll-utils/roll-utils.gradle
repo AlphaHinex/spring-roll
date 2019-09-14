@@ -1,0 +1,3 @@
+dependencies {
+    implementation libraries.commons_lang3
+}
