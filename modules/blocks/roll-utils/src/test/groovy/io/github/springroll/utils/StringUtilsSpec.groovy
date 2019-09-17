@@ -10,9 +10,9 @@ class StringUtilsSpec extends Specification {
         expect:
         result == StringUtils.camelToSnake(input)
         where:
-        input      | result
-        'fooBar' | 'foo_bar'
-        'BothUpper'   | 'both_upper'
+        input        | result
+        'fooBar'     | 'foo_bar'
+        'BothUpper'  | 'both_upper'
     }
 
 }
