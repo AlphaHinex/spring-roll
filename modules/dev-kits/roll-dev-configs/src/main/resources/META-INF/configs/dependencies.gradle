@@ -6,10 +6,8 @@ ext {
 versions.groovy             = '2.5.8'
 versions.hibernate          = '5.2.17.Final'
 versions.jackson            = '2.9.9'
-versions.logback            = '1.2.3'
 versions.mongo              = '3.11.0'
 versions.quartz             = '2.3.1'
-versions.slf4j              = '1.7.28'
 versions.spring             = '5.1.9.RELEASE'
 versions.spring_boot        = '2.1.8.RELEASE'
 versions.spring_data        = 'Lovelace-SR10'
@@ -29,8 +27,6 @@ configurations.all {
 
         def nameVers = [
             'javassist': '3.19.0-GA',
-            'jcl-over-slf4j': versions.slf4j,
-            'logback': versions.logback ,
             'springloaded': '1.2.8.RELEASE',
             // xalan < 2.7.0 的版本会导致与 spring-ws 的冲突
             // http://stackoverflow.com/questions/12467186/java-spring-ws-org-springframework-ws-soap-saaj-saajsoapenvelopeexception-could/13156775#13156775
@@ -55,7 +51,6 @@ configurations.all {
     }
 
     // Exclude other log frameworks
-    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     exclude group: 'org.apache.commons.logging'
     exclude group: 'org.apache.log4j'
     exclude group: 'log4j'
@@ -133,9 +128,6 @@ libraries.jpa_api = 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2
 libraries.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
 
 libraries.liquibase = 'com.proper.enterprise.platform:liquibase-core:3.6.2-SNAPSHOT'
-libraries.logback_classic = dependencies.module("ch.qos.logback:logback-classic:${versions.logback}") {
-    dependency "ch.qos.logback:logback-core:${versions.logback}"
-}
 
 libraries.mail = 'com.sun.mail:javax.mail:1.6.2'
 
@@ -158,8 +150,6 @@ libraries.redisson = 'org.redisson:redisson:3.5.3'
 libraries.reflections = 'org.reflections:reflections:0.9.11'
 
 libraries.servlet_api = 'javax.servlet:javax.servlet-api:3.1.0'
-
-libraries.slf4j_api = "org.slf4j:slf4j-api:${versions.slf4j}"
 
 libraries.spock = 'org.spockframework:spock-core:1.2-groovy-2.5'
 
