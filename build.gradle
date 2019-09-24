@@ -8,6 +8,7 @@ plugins {
     id 'com.gradle.build-scan' version '2.0.2'
     id 'io.spring.dependency-management' version '1.0.6.RELEASE'
     id 'org.springframework.boot' version '2.1.8.RELEASE'
+    id "com.github.spotbugs" version "2.0.0"
 }
 
 buildScan {
@@ -56,6 +57,7 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
 
     apply from: "$devConfRoot/configs/dependencies.gradle"
+    apply from: "$devConfRoot/configs/quality/codeQuality.gradle"
 
     dependencyManagement {
         imports {
@@ -91,8 +93,7 @@ subprojects {
     dependencies {
         annotationProcessor libraries.spring_boot_configuration_processor
 
-//                compileOnly libraries.jsr305,
-//                            libraries.p3c_pmd,
+                compileOnly libraries.p3c_pmd
 //                            libraries.spring_boot_starter_web,
 //                            libraries.springfox
 

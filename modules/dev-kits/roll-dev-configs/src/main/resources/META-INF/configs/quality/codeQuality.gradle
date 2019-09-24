@@ -1,0 +1,69 @@
+apply plugin: 'checkstyle'
+apply plugin: 'codenarc'
+apply plugin: "com.github.spotbugs"
+apply plugin: 'jacoco'
+apply plugin: 'pmd'
+
+def configDir = new File(devConfRoot, 'configs/quality')
+
+ext.checkstyleConfigDir = "$configDir/checkstyle"
+
+checkstyle {
+    configFile = new File(checkstyleConfigDir, "checkstyle.xml")
+    configProperties.checkstyleConfigDir = checkstyleConfigDir
+    toolVersion = '8.14'
+}
+
+codenarc {
+    configFile = new File(configDir, "codenarc.xml")
+    toolVersion = '1.2.1'
+}
+
+jacoco {
+    toolVersion = "0.8.2"
+}
+
+//pmd {
+//    toolVersion = '5.5.7'
+//}
+
+//jacocoTestReport {
+//    reports {
+//        xml.enabled true
+//    }
+//
+//    afterEvaluate {
+//        classDirectories = files(classDirectories.files.collect {
+//            fileTree(dir: it, exclude: [
+//                '**/RedisCacheManager**',
+//                '**/AbstractEhcacheRegionFactory**',
+//                '**/EhCacheRegionFactory**'
+//            ])
+//        })
+//    }
+//}
+
+configurations.codenarc.resolutionStrategy.force(libraries.groovy_all)
+
+tasks.withType(Pmd) {
+    ruleSetFiles = files(
+        "$configDir/pmd/ali-comment.xml",
+        "$configDir/pmd/ali-concurrent.xml",
+        "$configDir/pmd/ali-constant.xml",
+        "$configDir/pmd/ali-exception.xml",
+        "$configDir/pmd/ali-flowcontrol.xml",
+        "$configDir/pmd/ali-naming.xml",
+        "$configDir/pmd/ali-oop.xml",
+        "$configDir/pmd/ali-orm.xml",
+        "$configDir/pmd/ali-other.xml",
+        "$configDir/pmd/ali-set.xml"
+    )
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+check.dependsOn jacocoTestReport
+build.dependsOn jacocoTestReport

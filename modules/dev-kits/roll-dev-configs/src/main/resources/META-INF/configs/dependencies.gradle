@@ -67,7 +67,6 @@ configurations.testImplementation {
 libraries.aspectjweaver = "org.aspectj:aspectjweaver:1.8.6"
 
 libraries.checkstyle = 'com.puppycrawl.tools:checkstyle:8.14'
-libraries.checkstyle_proper = 'com.proper:proper-checkstyle:0.1.0-SNAPSHOT'
 
 libraries.commons_collections = 'commons-collections:commons-collections:3.2.2'
 
@@ -125,10 +124,6 @@ libraries.jaxws_rt = 'com.sun.xml.ws:jaxws-rt:2.3.1'
 
 libraries.jpa_api = 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final'
 
-libraries.jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
-
-libraries.liquibase = 'com.proper.enterprise.platform:liquibase-core:3.6.2-SNAPSHOT'
-
 libraries.mail = 'com.sun.mail:javax.mail:1.6.2'
 
 libraries.mongodb_driver = "org.mongodb:mongodb-driver:${versions.mongo}"
@@ -139,7 +134,7 @@ libraries.netty_all = 'io.netty:netty-all'
 
 libraries.okhttp = 'com.squareup.okhttp3:okhttp:3.14.2'
 
-libraries.p3c_pmd = 'com.alibaba.p3c:p3c-pmd:1.3.6'
+libraries.p3c_pmd = 'com.alibaba.p3c:p3c-pmd:2.0.0'
 
 libraries.quartz = "org.quartz-scheduler:quartz:${versions.quartz}"
 
