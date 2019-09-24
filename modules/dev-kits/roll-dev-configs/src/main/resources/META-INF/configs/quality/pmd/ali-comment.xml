@@ -3,7 +3,7 @@
 <ruleset name="AlibabaJavaComments" xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
-
+    <description>AlibabaJavaComments</description>
 
     <rule name="CommentsMustBeJavadocFormatRule" message="java.comment.CommentsMustBeJavadocFormatRule.rule.msg"
         class="com.alibaba.p3c.pmd.lang.java.rule.comment.CommentsMustBeJavadocFormatRule">
@@ -13,7 +13,7 @@
         <example>
 <![CDATA[
     /**
-     *
+     * 
      * XXX class function description.
      *
      */
@@ -27,10 +27,10 @@
          * title
          */
         private String title;
-
+    
         /**
          * find by id
-         *
+         * 
          * @param ruleId rule id
          * @param page start from 1
          * @return Result<Xxxx>
@@ -53,7 +53,7 @@
 <![CDATA[
     /**
      * fetch data by rule id
-     *
+     * 
      * @param ruleId rule id
      * @param page page number
      * @param jsonContext json format context
@@ -79,13 +79,13 @@
          * reject
          */
         reject("reject");
-
+        
         private String action;
-
+    
         TestEnum(String action) {
             this.action = action;
         }
-
+    
         public String getAction() {
             return action;
         }
@@ -104,7 +104,7 @@
     public void method() {
         // Put single line comment above code. (Note: align '//' comment with code)
         int a = 3;
-
+    
         /**
         * Some description about follow code. (Note: align '/**' comment with code)
         */
