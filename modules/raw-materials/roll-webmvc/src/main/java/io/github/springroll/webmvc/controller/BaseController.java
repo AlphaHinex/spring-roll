@@ -132,10 +132,12 @@ public abstract class BaseController {
 
     private <T> ResponseEntity<T> responseOkWithOrWithoutContent(T entity, MultiValueMap<String, String> headers) {
         boolean noContent = entity == null;
-        boolean isCollection = false;
+        boolean isCollection;
         if (!noContent && entity instanceof Collection) {
             isCollection = true;
             noContent = ((Collection) entity).isEmpty();
+        } else {
+            isCollection = false;
         }
         return noContent && !isCollection
                 ? new ResponseEntity<>(headers, HttpStatus.OK)

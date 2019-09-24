@@ -1,5 +1,6 @@
 package io.github.springroll.webmvc.model;
 
+import io.github.springroll.Version;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -15,6 +16,8 @@ import java.util.Collections;
  * @param <T> 存放的数据类型
  */
 public class DataTrunk<T> implements Serializable {
+
+    public static final long serialVersionUID = Version.HASH;
 
     /**
      * 结果集数据
