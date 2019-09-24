@@ -55,7 +55,7 @@ public abstract class BaseController {
      * @return GET 请求的响应
      */
     protected <T> ResponseEntity<T> responseOfGet(T entity) {
-        return responseOKWithOrWithoutContent(entity, null);
+        return responseOkWithOrWithoutContent(entity, null);
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class BaseController {
      * @return GET 请求的响应
      */
     protected <T> ResponseEntity<T> responseOfGet(T entity, MultiValueMap<String, String> headers) {
-        return responseOKWithOrWithoutContent(entity, headers);
+        return responseOkWithOrWithoutContent(entity, headers);
     }
 
     /**
@@ -84,7 +84,7 @@ public abstract class BaseController {
      * @return GET 请求的响应
      */
     protected <T> ResponseEntity<DataTrunk<T>> responseOfGet(List<T> list, long count) {
-        return responseOKWithOrWithoutContent(new DataTrunk<>(list, count), null);
+        return responseOkWithOrWithoutContent(new DataTrunk<>(list, count), null);
     }
 
     /**
@@ -100,7 +100,7 @@ public abstract class BaseController {
      * @return GET 请求的响应
      */
     protected <T> ResponseEntity<DataTrunk<T>> responseOfGet(List<T> list, long count, MultiValueMap<String, String> headers) {
-        return responseOKWithOrWithoutContent(new DataTrunk<>(list, count), headers);
+        return responseOkWithOrWithoutContent(new DataTrunk<>(list, count), headers);
     }
 
     /**
@@ -113,7 +113,7 @@ public abstract class BaseController {
      * @return PUT 请求的响应
      */
     protected <T> ResponseEntity<T> responseOfPut(T entity) {
-        return responseOKWithOrWithoutContent(entity, null);
+        return responseOkWithOrWithoutContent(entity, null);
     }
 
     /**
@@ -127,10 +127,10 @@ public abstract class BaseController {
      * @return PUT 请求的响应
      */
     protected <T> ResponseEntity<T> responseOfPut(T entity, MultiValueMap<String, String> headers) {
-        return responseOKWithOrWithoutContent(entity, headers);
+        return responseOkWithOrWithoutContent(entity, headers);
     }
 
-    private <T> ResponseEntity<T> responseOKWithOrWithoutContent(T entity, MultiValueMap<String, String> headers) {
+    private <T> ResponseEntity<T> responseOkWithOrWithoutContent(T entity, MultiValueMap<String, String> headers) {
         boolean noContent = entity == null;
         boolean isCollection = false;
         if (!noContent && entity instanceof Collection) {
