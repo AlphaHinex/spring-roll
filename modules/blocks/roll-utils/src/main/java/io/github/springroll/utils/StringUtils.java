@@ -1,5 +1,7 @@
 package io.github.springroll.utils;
 
+import java.util.Locale;
+
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     /**
@@ -17,7 +19,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     public static String camelToSnake(String camel) {
         String[] strings = StringUtils.splitByCharacterTypeCamelCase(camel);
-        return StringUtils.join(strings, "_").toLowerCase();
+        return StringUtils.join(strings, "_").toLowerCase(Locale.ENGLISH);
     }
 
 }

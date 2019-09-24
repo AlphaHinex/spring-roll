@@ -8,6 +8,10 @@ def configDir = new File(devConfRoot, 'configs/quality')
 
 ext.checkstyleConfigDir = "$configDir/checkstyle"
 
+dependencies {
+    pmd libraries.p3c_pmd
+}
+
 checkstyle {
     configFile = new File(checkstyleConfigDir, "checkstyle.xml")
     configProperties.checkstyleConfigDir = checkstyleConfigDir
@@ -22,10 +26,6 @@ codenarc {
 jacoco {
     toolVersion = "0.8.2"
 }
-
-//pmd {
-//    toolVersion = '5.5.7'
-//}
 
 //jacocoTestReport {
 //    reports {
