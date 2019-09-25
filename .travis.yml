@@ -15,5 +15,5 @@ before_script:
 script: ./gradlew check
 
 after_script:
-  - JACOCO_SOURCE_PATH=modules/blocks/roll-utils ./cc-test-reporter format-coverage build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
+  - JACOCO_SOURCE_PATH=modules/blocks/roll-utils/src/main/java ./cc-test-reporter format-coverage modules/blocks/roll-utils/build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
   - ./cc-test-reporter upload-coverage
