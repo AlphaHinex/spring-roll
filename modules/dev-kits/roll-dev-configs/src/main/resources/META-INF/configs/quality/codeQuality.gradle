@@ -27,11 +27,11 @@ jacoco {
     toolVersion = "0.8.2"
 }
 
-//jacocoTestReport {
-//    reports {
-//        xml.enabled true
-//    }
-//
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+
 //    afterEvaluate {
 //        classDirectories = files(classDirectories.files.collect {
 //            fileTree(dir: it, exclude: [
@@ -41,7 +41,7 @@ jacoco {
 //            ])
 //        })
 //    }
-//}
+}
 
 configurations.codenarc.resolutionStrategy.force(libraries.groovy_all)
 
