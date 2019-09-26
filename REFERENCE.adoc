@@ -1,0 +1,18 @@
+= Reference
+
+|===
+|Catalog
+|Official Site
+|Source Version
+|Specific Version Docs
+
+|Build System
+|http://gradle.org/[Gradle]
+|https://github.com/gradle/gradle/tree/v5.6.2[5.6.2]
+|https://docs.gradle.org/5.6.2/userguide/userguide.html[User Guide]
+
+|Quality Tools
+|https://www.eclemma.org/jacoco/[JaCoCo]
+|https://github.com/jacoco/jacoco/tree/v0.8.4[0.8.4]
+|http://eclemma.org/jacoco/trunk/doc/[Online Documentation]
+
