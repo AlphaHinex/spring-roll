@@ -2,3 +2,4 @@
 
 image:https://travis-ci.org/AlphaHinex/spring-roll.svg?branch=master["Build Status", link="https://travis-ci.org/AlphaHinex/spring-roll"]
 image:https://api.codeclimate.com/v1/badges/3570659419d670cb3572/maintainability["Maintainability", link="https://codeclimate.com/github/AlphaHinex/spring-roll/maintainability"]
+image:https://api.codeclimate.com/v1/badges/3570659419d670cb3572/test_coverage["Test Coverage", link="https://codeclimate.com/github/AlphaHinex/spring-roll/test_coverage"]
