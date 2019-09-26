@@ -1,5 +1,6 @@
 = Reference
 
+[cols=4]
 |===
 |Catalog
 |Official Site
