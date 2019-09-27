@@ -23,6 +23,10 @@ codenarc {
     toolVersion = '1.2.1'
 }
 
+spotbugs {
+    excludeFilter = file("$configDir/spotbugs/excludeFilter.xml")
+}
+
 jacoco {
     toolVersion = "0.8.4"
 }
