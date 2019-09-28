@@ -1,7 +1,7 @@
-package io.github.springroll.webmvc.controller;
+package io.github.springroll.web.controller;
 
-import io.github.springroll.webmvc.exception.ErrMsgException;
-import io.github.springroll.webmvc.model.DataTrunk;
+import io.github.springroll.web.exception.ErrMsgException;
+import io.github.springroll.web.model.DataTrunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;

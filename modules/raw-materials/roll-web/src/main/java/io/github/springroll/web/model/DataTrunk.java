@@ -1,4 +1,4 @@
-package io.github.springroll.webmvc.model;
+package io.github.springroll.web.model;
 
 import io.github.springroll.Version;
 import org.springframework.util.Assert;
@@ -12,6 +12,8 @@ import java.util.Collections;
 /**
  * 数据仓库实体
  * 用来存放结果集数据及集合相关基本信息
+ * 与 Spring Data 提供的 Page 接口定位类似，单独定义以不直接依赖 Spring Data
+ * 可在返回集合的方法上，定义 JsonView 以控制数据展示视角
  *
  * @param <T> 存放的数据类型
  */

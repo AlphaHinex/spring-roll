@@ -1,4 +1,4 @@
-package io.github.springroll.webmvc.exception;
+package io.github.springroll.web.exception;
 
 import io.github.springroll.Version;
 
