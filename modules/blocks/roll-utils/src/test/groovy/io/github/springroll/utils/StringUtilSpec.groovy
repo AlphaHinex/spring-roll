@@ -9,6 +9,7 @@ class StringUtilSpec extends Specification {
     def "Camel case '#input' to snake is #result"() {
         expect:
         result == StringUtil.camelToSnake(input)
+
         where:
         input        | result
         'fooBar'     | 'foo_bar'
