@@ -23,9 +23,7 @@ public class CollectionUtil extends CollectionUtils {
     @SuppressWarnings("unchecked")
     public static <F, T> Collection<T> convert(Collection<F> collection) {
         Collection<T> result = new ArrayList<>(collection.size());
-        for (F obj : collection) {
-            result.add((T) obj);
-        }
+        collection.forEach(c -> result.add((T)c));
         return result;
     }
 
