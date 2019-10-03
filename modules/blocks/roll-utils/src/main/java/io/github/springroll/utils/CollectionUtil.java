@@ -27,4 +27,11 @@ public class CollectionUtil extends CollectionUtils {
         return result;
     }
 
+    public static boolean equalCollections(Object obj1, Object obj2) {
+        if (!(obj1 instanceof Collection) || !(obj2 instanceof Collection)) {
+            return false;
+        }
+        return isEqualCollection((Collection) obj1, (Collection) obj2);
+    }
+
 }

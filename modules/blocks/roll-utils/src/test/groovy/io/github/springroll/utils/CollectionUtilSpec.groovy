@@ -13,4 +13,17 @@ class CollectionUtilSpec extends Specification {
         c == collection
     }
 
+    def "Check collection equals"() {
+        expect:
+        CollectionUtil.equalCollections(a, b) == result
+
+        where:
+        result  | a             | b
+        false   | null          | null
+        false   | []            | null
+        true    | []            | []
+        true    | ['a']         | ['a']
+        false   | ['a']         | ['b']
+    }
+
 }
