@@ -73,7 +73,7 @@ public class DataTrunk<T> implements Serializable {
             return false;
         }
         DataTrunk dt = (DataTrunk) obj;
-        return CollectionUtil.isEqualCollection(dt.getData(), data) && dt.getTotal() == total;
+        return CollectionUtil.equalCollections(dt.getData(), data) && dt.getTotal() == total;
     }
 
     @Override
