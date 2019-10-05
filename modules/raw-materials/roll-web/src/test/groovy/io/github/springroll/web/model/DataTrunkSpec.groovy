@@ -51,8 +51,18 @@ class DataTrunkSpec extends Specification {
         dt1 != dt2
     }
 
-//    def "Check equal"() {
-//
-//    }
+    def "Check assert"() {
+        when:
+        new DataTrunk<>(col, pn, ps)
+
+        then:
+        thrown(IllegalArgumentException)
+
+        where:
+        col     | pn    | ps
+        ['a']   | -1    | 2
+        ['a']   | 1     | -2
+        ['a']   | -1    | -2
+    }
 
 }
