@@ -165,6 +165,7 @@ libraries.spring_orm = [
     "org.springframework:spring-orm:${versions.spring}",
     libraries.aspectjweaver
 ]
+libraries.spring_context = "org.springframework:spring-context:${versions.spring}"
 libraries.spring_oxm = "org.springframework:spring-oxm:${versions.spring}"
 libraries.spring_test = "org.springframework:spring-test:${versions.spring}"
 libraries.spring_tx = "org.springframework:spring-tx:${versions.spring}"
