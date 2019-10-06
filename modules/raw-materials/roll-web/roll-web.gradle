@@ -3,4 +3,6 @@ dependencies {
 
     implementation project(':roll-base'),
                    project(':roll-utils')
+
+    testImplementation project(':roll-test')
 }
