@@ -1,5 +1,6 @@
 package io.github.springroll.web
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import io.github.springroll.web.controller.BaseController
 import io.github.springroll.web.exception.ErrMsgException
 import io.github.springroll.web.model.DataTrunk
@@ -49,21 +50,20 @@ class TestController extends BaseController {
         throw new ErrMsgException('empty stack')
     }
 
-//    @GetMapping("/json/entity")
-//    ResponseEntity<MockEntity> entity() {
-//        def e = new MockEntity('E1', 'E2')
-//        e.setId('E')
-//        e.setCreateUserId('EU')
-//        e.setCreateTime(DateUtil.timestamp)
-//        e.setLastModifyUserId('ELU')
-//        e.setLastModifyTime(DateUtil.timestamp)
-//        e.setEnable(true)
-//        responseOfGet(e)
-//    }
-//
-//    class TestEntity {
-//
-//    }
+    @GetMapping("/json/entity")
+    ResponseEntity<TestEntity> entity() {
+        responseOfGet(new TestEntity('E1', 'E2'))
+    }
+
+    class TestEntity {
+        TestEntity(String notIgnored, String ignored) {
+            this.notIgnored = notIgnored
+            this.ignored = ignored
+        }
+        String notIgnored
+        @JsonIgnore
+        String ignored
+    }
 
     @GetMapping("/datatrunk")
     ResponseEntity<DataTrunk<String>> datatrunk() {

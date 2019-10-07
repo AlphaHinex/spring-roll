@@ -92,14 +92,11 @@ class BaseControllerTest extends AbstractSpringTest {
 
     @Test
     void ignorePropertyInEntity() {
-        def r = get('/core/test/json/entity', HttpStatus.OK).getResponse().getContentAsString()
-//        def m = JSONUtil.parse(r, Map.class)
+        def r = get('/web/test-ctrl/json/entity', HttpStatus.OK).getResponse().getContentAsString()
         def m = new JsonSlurper().parseText(r)
-        assert m.size() == 7
-        assert m.get("enable")
-        assert m.containsKey('id')
-        assert m.containsKey('lastModifyTime')
-        assert m.containsKey('entityC2')
+        assert m.size() == 1
+        assert m.containsKey('notIgnored')
+        assert !m.containsKey('ignored')
     }
 
     @Test
