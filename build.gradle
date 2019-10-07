@@ -96,16 +96,11 @@ subprojects {
 //                compileOnly libraries.spring_boot_starter_web,
 //                            libraries.springfox
 
-            testCompileOnly libraries.groovy,
+         testImplementation libraries.groovy_all,
                             libraries.groovy_dateutil,
                             libraries.spock,
-                            libraries.spring_boot_starter_web
-
-            testRuntimeOnly libraries.groovy_all,
-                            libraries.spock,
-                            libraries.spring_boot_starter_web
-
-         testImplementation libraries.spring_boot_starter_test
+                            libraries.spring_boot_starter_web,
+                            libraries.spring_boot_starter_test
     }
 
     // spring boot configuration processor only build meta json into build folder
