@@ -12,46 +12,41 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Component
 public class SpElParser {
 
-    @Autowired
-    WebApplicationContext wac;
+    private transient ExpressionParser parser;
+    private transient StandardEvaluationContext context;
+    private transient ParserContext parserContext;
 
-    private ExpressionParser parser;
-    private StandardEvaluationContext context;
-    private ParserContext parserContext;
-
-    @PostConstruct
-    public void init() {
+    public SpElParser(@Autowired WebApplicationContext wac) {
         parser = new SpelExpressionParser();
         context = new StandardEvaluationContext();
         context.setBeanResolver(new BeanFactoryResolver(wac));
         parserContext = new TemplateParserContext();
     }
 
-    public String parse(String spEL) throws ExpressionException {
-        return parse(spEL, null, true);
+    public String parse(String spEl) throws ExpressionException {
+        return parse(spEl, null, true);
     }
 
-    public String parse(String spEL, Map<String, Object> vars, boolean isExpTpl) throws ExpressionException {
-        return parse(spEL, vars, isExpTpl, String.class);
+    public String parse(String spEl, Map<String, Object> vars, boolean isExpTpl) throws ExpressionException {
+        return parse(spEl, vars, isExpTpl, String.class);
     }
 
-    public <T> T parse(String spEL, Map<String, Object> vars, Class<T> clz) throws ExpressionException {
-        return parse(spEL, vars, false, clz);
+    public <T> T parse(String spEl, Map<String, Object> vars, Class<T> clz) throws ExpressionException {
+        return parse(spEl, vars, false, clz);
     }
 
-    public <T> T parse(String spEL, Map<String, Object> vars, boolean isExpTpl, Class<T> clz) throws ExpressionException {
+    public <T> T parse(String spEl, Map<String, Object> vars, boolean isExpTpl, Class<T> clz) throws ExpressionException {
         // 不使用 Expression template 时，过滤掉表达式中的单行注释内容
-        spEL = isExpTpl ? spEL : spEL.replaceAll("//.*", "");
+        spEl = isExpTpl ? spEl : spEl.replaceAll("//.*", "");
         if (vars != null) {
             context.setVariables(vars);
         }
-        Expression expression = isExpTpl ? parser.parseExpression(spEL, parserContext) : parser.parseExpression(spEL);
+        Expression expression = isExpTpl ? parser.parseExpression(spEl, parserContext) : parser.parseExpression(spEl);
         return expression.getValue(context, clz);
     }
 
