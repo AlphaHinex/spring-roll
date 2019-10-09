@@ -14,14 +14,14 @@ class BaseControllerTest extends AbstractSpringTest {
     def entity = new TestEntity('abc')
 
     @Test
-    void testPOSTResponse() {
+    void testPostResponse() {
         def result = c.responseOfPost(entity)
         assert result.getStatusCode() == HttpStatus.CREATED
         assert result.getBody() == entity
     }
 
     @Test
-    void testGETResponse() {
+    void testGetResponse() {
         // Get one entity
         def result = c.responseOfGet(entity)
         assert result.getStatusCode() == HttpStatus.OK
@@ -48,7 +48,7 @@ class BaseControllerTest extends AbstractSpringTest {
     }
 
     @Test
-    void testPUTResponse() {
+    void testPutResponse() {
         // Same internal method as responseOfGet
         def result = c.responseOfPut(entity)
         assert result.getStatusCode() == HttpStatus.OK
@@ -56,7 +56,7 @@ class BaseControllerTest extends AbstractSpringTest {
     }
 
     @Test
-    void testDELETEResponse() {
+    void testDeleteResponse() {
         def result = c.responseOfDelete(true)
         assert result.getStatusCode() == HttpStatus.NO_CONTENT
         assert result.getBody() == null
@@ -64,6 +64,21 @@ class BaseControllerTest extends AbstractSpringTest {
         result = c.responseOfDelete(false)
         assert result.getStatusCode() == HttpStatus.NOT_FOUND
         assert result.getBody() == null
+    }
+
+    @Test
+    void testWithHeaders() {
+        def headers = new HttpHeaders()
+        def headerName1 = "Content-Type"
+        def headerValue1 = MediaType.APPLICATION_ATOM_XML_VALUE
+        def headerName2 = "Content-Length"
+        def headerValue2 = "100"
+        headers.add(headerName1, headerValue1)
+        headers.add(headerName2, headerValue2)
+        
+        def resWithHeaders = c.responseOfPost(entity, headers)
+        assert resWithHeaders.getHeaders().getFirst(headerName1) == headerValue1
+        assert resWithHeaders.getHeaders().getFirst(headerName2) == headerValue2
     }
 
     @Test

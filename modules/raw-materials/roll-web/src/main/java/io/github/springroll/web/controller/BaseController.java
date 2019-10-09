@@ -169,8 +169,7 @@ public abstract class BaseController {
     }
 
     protected HttpStatus handleStatus(Exception ex, WebRequest request) {
-        ResponseEntityExceptionHandler handler = new ResponseEntityExceptionHandler() {
-        };
+        ResponseEntityExceptionHandler handler = new ResponseEntityExceptionHandler() { };
         try {
             ResponseEntity res = handler.handleException(ex, request);
             if (res != null) {
