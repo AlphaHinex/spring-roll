@@ -1,6 +1,10 @@
 buildscript {
+    repositories {
+        jcenter()
+    }
     dependencies {
         classpath 'com.h2database:h2:1.4.199'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.9.2'
     }
 }
 
@@ -47,6 +51,7 @@ ext {
 }
 
 apply plugin: 'idea'
+apply plugin: 'org.asciidoctor.convert'
 
 subprojects {
     apply plugin: 'idea'
@@ -56,7 +61,10 @@ subprojects {
 
     apply plugin: 'io.spring.dependency-management'
 
+    apply plugin: 'org.asciidoctor.convert'
+
     apply from: "$devConfRoot/configs/dependencies.gradle"
+    apply from: "$devConfRoot/configs/docs.gradle"
     apply from: "$devConfRoot/configs/quality/codeQuality.gradle"
 
     dependencyManagement {
