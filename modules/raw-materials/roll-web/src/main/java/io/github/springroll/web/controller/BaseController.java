@@ -79,12 +79,12 @@ public abstract class BaseController {
      * 没有查到结果时返回 200 OK 状态
      *
      * @param list  结果集数据集合
-     * @param count 数据总数
+     * @param total 数据总数
      * @param <T>   DataTrunk 保存的对象类型
      * @return GET 请求的响应
      */
-    protected <T> ResponseEntity<DataTrunk<T>> responseOfGet(List<T> list, long count) {
-        return responseOkWithOrWithoutContent(new DataTrunk<>(list, count), null);
+    protected <T> ResponseEntity<DataTrunk<T>> responseOfGet(List<T> list, long total) {
+        return responseOkWithOrWithoutContent(new DataTrunk<>(list, total), null);
     }
 
     /**
@@ -94,13 +94,13 @@ public abstract class BaseController {
      * 没有查到结果时返回 200 OK 状态
      *
      * @param list    结果集数据集合
-     * @param count   数据总数
+     * @param total   数据总数
      * @param headers 响应头信息
      * @param <T>     DataTrunk 保存的对象类型
      * @return GET 请求的响应
      */
-    protected <T> ResponseEntity<DataTrunk<T>> responseOfGet(List<T> list, long count, MultiValueMap<String, String> headers) {
-        return responseOkWithOrWithoutContent(new DataTrunk<>(list, count), headers);
+    protected <T> ResponseEntity<DataTrunk<T>> responseOfGet(List<T> list, long total, MultiValueMap<String, String> headers) {
+        return responseOkWithOrWithoutContent(new DataTrunk<>(list, total), headers);
     }
 
     /**

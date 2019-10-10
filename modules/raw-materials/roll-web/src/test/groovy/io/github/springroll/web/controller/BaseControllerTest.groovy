@@ -37,10 +37,13 @@ class BaseControllerTest extends AbstractSpringTest {
         assert result.getStatusCode() == HttpStatus.OK
         assert result.getBody() == null
 
-        result = c.responseOfGet([], new HttpHeaders(['Content-Type': MediaType.TEXT_PLAIN_VALUE]))
+        def headers = new HttpHeaders(['Content-Type': MediaType.TEXT_PLAIN_VALUE])
+        result = c.responseOfGet([], headers)
         assert result.getStatusCode() == HttpStatus.OK
         assert result.getBody() == []
         assert result.getHeaders().getContentType() == MediaType.TEXT_PLAIN
+        result = c.responseOfGet([], 10, headers)
+        assert result.getBody().getTotal() == 10
 
         def r = get('/web/test-ctrl/emptylist', HttpStatus.OK)
         assert r.getResponse().getContentType() == MediaType.APPLICATION_JSON_UTF8_VALUE
@@ -75,10 +78,11 @@ class BaseControllerTest extends AbstractSpringTest {
         def headerValue2 = "100"
         headers.add(headerName1, headerValue1)
         headers.add(headerName2, headerValue2)
-        
+
         def resWithHeaders = c.responseOfPost(entity, headers)
         assert resWithHeaders.getHeaders().getFirst(headerName1) == headerValue1
         assert resWithHeaders.getHeaders().getFirst(headerName2) == headerValue2
+        c.responseOfPut(entity, headers).getHeaders().getFirst(headerName2) == headerValue2
     }
 
     @Test
