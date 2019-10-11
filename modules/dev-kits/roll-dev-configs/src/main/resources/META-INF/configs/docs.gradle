@@ -13,26 +13,21 @@ AlphaHinex <https://github.com/AlphaHinex[@AlphaHinex]>
 [.badge]
 image::{github_fork_badge}[link="{github_url}"]
 
-include::${rootDir}/README.adoc[leveloffset=+1]
-include::${rootDir}/REFERENCE.adoc[leveloffset=+2]
+include::{gradle-rootdir}/README.adoc[leveloffset=+1]
+include::{gradle-rootdir}/REFERENCE.adoc[leveloffset=+2]
 
 """
     index.text = header
     new File("$rootDir/build/docinfo.html").text = '<style>.badge { position: fixed; top: 0; right: 0; }</style>'
 
     File root = new File("$rootDir/modules")
-    root.eachFileRecurse { subFile ->
-        if (subFile.name.endsWith(".adoc")) {
-            def projectPath = subFile.getParent().replace(rootDir.toString(), "")
-            def content = """include::$subFile[leveloffset=+1]
-
-=== Source
-
-* {github_project_path}$projectPath[View source]
-
-"""
-            index << content << "\n"
-        }
+    root.traverse (
+            type         : groovy.io.FileType.FILES,
+            nameFilter   : ~/.*\.adoc/,
+            sort         : { a, b -> a.name <=> b.name }
+    ) { adoc ->
+        def offset = adoc.parent.replace(root.absolutePath, '').split('/').length - 1
+        index << "include::$adoc[leveloffset=+$offset]\n"
     }
 }
 
