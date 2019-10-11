@@ -1,0 +1,47 @@
+task publish(type: Copy) {
+    File index = new File("$rootDir/build/index.adoc")
+    index.parentFile.mkdirs()
+    def header = """= Spring Roll
+AlphaHinex <https://github.com/AlphaHinex[@AlphaHinex]>
+:icons: font
+:toc: left
+:numbered:
+:github_url: https://github.com/AlphaHinex/spring-roll
+:github_project_path: {github_url}/tree/master
+:github_fork_badge: https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png
+
+[.badge]
+image::{github_fork_badge}[link="{github_url}"]
+
+include::{gradle-rootdir}/README.adoc[leveloffset=+1]
+include::{gradle-rootdir}/REFERENCE.adoc[leveloffset=+2]
+
+"""
+    index.text = header
+    new File("$rootDir/build/docinfo.html").text = '<style>.badge { position: fixed; top: 0; right: 0; }</style>'
+
+    File root = new File("$rootDir/modules")
+    root.traverse (
+            type         : groovy.io.FileType.FILES,
+            nameFilter   : ~/.*\.adoc/,
+            sort         : { a, b -> a.name <=> b.name }
+    ) { adoc ->
+        def offset = adoc.parent.replace(root.absolutePath, '').split('/').length - 1
+        index << "include::$adoc[leveloffset=+$offset]\n"
+    }
+}
+
+asciidoctor {
+    dependsOn publish
+    sourceDir rootProject.buildDir
+    sources {
+        include 'index.adoc'
+    }
+    backends = ["html5"]
+    options doctype: 'book'
+    attributes \
+        'icons': 'font',
+        'setanchors':'',
+        'rootDir': file(rootDir),
+        'docinfo1': ''
+}
