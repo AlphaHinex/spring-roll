@@ -55,6 +55,10 @@ apply plugin: 'org.asciidoctor.convert'
 
 apply from: "$devConfRoot/configs/docs.gradle"
 
+group = 'io.github.spring-roll'
+// Use .RELEASE or -SNAPSHOT suffix after version code
+version = '0.1.0-SNAPSHOT'
+
 subprojects {
     apply plugin: 'idea'
     apply plugin: 'java'
@@ -75,9 +79,8 @@ subprojects {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    group = 'io.github.spring-roll'
-    // Use .RELEASE or -SNAPSHOT suffix after version code
-    version = '0.1.0-SNAPSHOT'
+    group = rootProject.group
+    version = rootProject.version
 
     test {
         reports.html.enabled = false

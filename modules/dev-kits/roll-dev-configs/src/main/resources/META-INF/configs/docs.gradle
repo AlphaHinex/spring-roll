@@ -43,7 +43,5 @@ asciidoctor {
         'icons': 'font',
         'setanchors':'',
         'rootDir': file(rootDir),
-        'docinfo1': '',
-        revnumber: rootProject.subprojects.getAt(0).version,
-        'pep-version': rootProject.subprojects.getAt(0).version
+        'docinfo1': ''
 }
