@@ -53,6 +53,8 @@ ext {
 apply plugin: 'idea'
 apply plugin: 'org.asciidoctor.convert'
 
+apply from: "$devConfRoot/configs/docs.gradle"
+
 subprojects {
     apply plugin: 'idea'
     apply plugin: 'java'
@@ -61,10 +63,7 @@ subprojects {
 
     apply plugin: 'io.spring.dependency-management'
 
-    apply plugin: 'org.asciidoctor.convert'
-
     apply from: "$devConfRoot/configs/dependencies.gradle"
-    apply from: "$devConfRoot/configs/docs.gradle"
     apply from: "$devConfRoot/configs/quality/codeQuality.gradle"
 
     dependencyManagement {

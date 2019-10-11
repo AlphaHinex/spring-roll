@@ -1,0 +1,54 @@
+task publish(type: Copy) {
+    File index = new File("$rootDir/build/index.adoc")
+    index.parentFile.mkdirs()
+    def header = """= Spring Roll
+AlphaHinex <https://github.com/AlphaHinex[@AlphaHinex]>
+:icons: font
+:toc: left
+:numbered:
+:github_url: https://github.com/AlphaHinex/spring-roll
+:github_project_path: {github_url}/tree/master
+:github_fork_badge: https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png
+
+[.badge]
+image::{github_fork_badge}[link="{github_url}"]
+
+include::${rootDir}/README.adoc[leveloffset=+1]
+include::${rootDir}/REFERENCE.adoc[leveloffset=+2]
+
+"""
+    index.text = header
+    new File("$rootDir/build/docinfo.html").text = '<style>.badge { position: fixed; top: 0; right: 0; }</style>'
+
+    File root = new File("$rootDir/modules")
+    root.eachFileRecurse { subFile ->
+        if (subFile.name.endsWith(".adoc")) {
+            def projectPath = subFile.getParent().replace(rootDir.toString(), "")
+            def content = """include::$subFile[leveloffset=+1]
+
+=== Source
+
+* {github_project_path}$projectPath[View source]
+
+"""
+            index << content << "\n"
+        }
+    }
+}
+
+asciidoctor {
+    dependsOn publish
+    sourceDir rootProject.buildDir
+    sources {
+        include 'index.adoc'
+    }
+    backends = ["html5"]
+    options doctype: 'book'
+    attributes \
+        'icons': 'font',
+        'setanchors':'',
+        'rootDir': file(rootDir),
+        'docinfo1': '',
+        revnumber: rootProject.subprojects.getAt(0).version,
+        'pep-version': rootProject.subprojects.getAt(0).version
+}

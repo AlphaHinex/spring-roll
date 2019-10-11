@@ -38,3 +38,4 @@
 |http://spockframework.org/spock/docs/1.0/index.html[Documentation]
 
 http://spockframework.org/spock/javadoc/1.0/index.html[javadoc]
+|===
