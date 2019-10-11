@@ -14,7 +14,7 @@
 
 |Common Utilities
 |http://commons.apache.org/proper/commons-lang/[Commons Lang]
-|https://github.com/apache/commons-lang/tree/commons-lang-3.9[cu-cl-s]
+|https://github.com/apache/commons-lang/tree/commons-lang-3.9[3.9]
 |http://commons.apache.org/proper/commons-lang/javadocs/api-3.9/index.html[Online Documentation]
 
 |Quality Tools
