@@ -49,7 +49,7 @@ IDEA 开启远程调试方式可参见 http://www.jetbrains.com/idea/webhelp/run
 +
 第一步：通过上下文获取目标接口的实现类，如：
 
-    DepartmentExtService departmentExtService = PEPApplicationContext.getBean("departmentExtService");
+    DepartmentExtService departmentExtService = ApplicationContextHolder.getBean("departmentExtService");
 +
 第二步：通过 `overrideSingleton` 方法中 使用 `@Override` 方法重写该接口的方法返回所需测试数据，如：
 
@@ -78,23 +78,17 @@ IDEA 开启远程调试方式可参见 http://www.jetbrains.com/idea/webhelp/run
 
 * 异常不允许直接 `printStackTrace`，应记录到日志中, 日志打印需要将堆栈进行输入, 避免只打印 `e.getMessage()`
 
-    ```
     LOGGER.error("execute failed", e);
-    ```
 
 * 记录日志时，应采用 `Slf4j` 推荐的方式，避免日志信息通过 `+` 拼接
 
-    ```
     LOGGER.debug("{} concat {} is {}", "a", "b", "ab");
-    ```
 
 * 当在日志消息中有非常消耗资源的操作时，可考虑先判断日志级别，如：
 
-    ```
     if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("hello {} world {}", cheap, veryExpensive());
     }
-    ```
 
 **TO BE CONTINUED**
 
@@ -114,12 +108,12 @@ IDEA 开启远程调试方式可参见 http://www.jetbrains.com/idea/webhelp/run
 == 版本发布流程
 
 1. 后端修改 build.gradle 中的 `version` 值，并同步修改 Version.java 中的 版本号
-1. 提交代码打 tag，并将 tag 推送远程仓库，如：
-    ```
+2. 提交代码打 tag，并将 tag 推送远程仓库，如：
+
     $ git tag v0.4.0
     $ git push upstream v0.4.0
-    ```
-1. 编写 https://github.com/AlphaHinex/spring-roll/releases[Release Note]
+
+3. 编写 https://github.com/AlphaHinex/spring-roll/releases[Release Note]
 
 > 注意区分发布分支（master）和开发分支（develop），发布分支的内容自动合并至开发分支，在开发分支发布新版本后，将开发分支中的内容合并至发布分支
 
@@ -144,7 +138,7 @@ IDEA 开启远程调试方式可参见 http://www.jetbrains.com/idea/webhelp/run
 
 Pull Request 的构建结果会直接在列表页和详细信息页面展现
 
-![](https://hhariri.files.wordpress.com/2013/02/image.png)
+image:https://hhariri.files.wordpress.com/2013/02/image.png["Build Result"]
 
 master 分支的构建结果会在项目首页展现
 
