@@ -15,6 +15,7 @@ image::{github_fork_badge}[link="{github_url}"]
 
 include::{gradle-rootdir}/README.adoc[leveloffset=+1]
 include::{gradle-rootdir}/REFERENCE.adoc[leveloffset=+2]
+include::{gradle-rootdir}/CONTRIBUTING.adoc[leveloffset=+2]
 
 """
     index.text = header

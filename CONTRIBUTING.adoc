@@ -1,0 +1,157 @@
+= Developer Guidelines
+
+== 开发环境
+
+=== IntelliJ IDEA
+
+可使用 IDEA 直接打开项目路径，自动导入 gradle 项目。
+
+或者手动生成 idea 配置文件后，直接打开，如：
+
+    $ ./gradlew cleanIdea idea
+
+> 在 IDEA 中需要配置为 gradle 项目才可部署至 tomcat 中开发
+
+
+== Spring Boot 开发运行及调试
+
+Spring Boot 内置 tomcat 使用默认端口 `8080`。
+
+=== 直接运行
+
+    $ ./gradlew bootRun
+    
+> `bootRun` 任务会将源码编译后启动运行。
+
+=== 远程调试
+
+    $ ./gradlew bootRun --debug-jvm
+
+IDEA 开启远程调试方式可参见 http://www.jetbrains.com/idea/webhelp/run-debug-configuration-remote.html[IntelliJ Remote Run/Debug Configuration]
+
+
+== 测试
+
+* 单元测试 `$ ./gradlew test`
+* 测试及代码质量检查 `$ ./gradlew check`
+* 单元测试覆盖 bean 的方法：因为单体测试类可能会因为具体的测试功能需要不同的测试数据，之前的做法是在测试文件中添加一个 Mock 接口的实现类并通过 `@Primary` 将 Mock 的实现类设置为主要实现类，例如：
+
+    @Primary
+    public class MockDepartmentServiceImpl extends DepartmentServiceImpl implements DepartmentService {
+        @Override
+        List<Department> getAllDepartments() {
+            ... ...
+        }
+    }
++
+但是这样处理后当出现有多个不同的测试数据需求时很难进行分别处理，如何解决这个问题呢？
+单体测试可以使用从 Spring 上下文中获取具体实现类，通过新的实现类重写接口方法进行测试验证并在测试验证后将原有的实现类放回上下文中，具体操作如下：
++
+第一步：通过上下文获取目标接口的实现类，如：
+
+    DepartmentExtService departmentExtService = PEPApplicationContext.getBean("departmentExtService");
++
+第二步：通过 `overrideSingleton` 方法中 使用 `@Override` 方法重写该接口的方法返回所需测试数据，如：
+
+    overrideSingleton("departmentExtService", new DepartmentExtService() {
+        @Override
+        List<Department> getAllDepartments() {
+            ... ...
+        }
+    })
++
+第三步：在验证测试数据后，需要将原接口的实现类放回至 Spring 上下文中，这样就不会对其他的测试类造成影响，如：
+
+    overrideSingleton("departmentExtService", departmentExtService);
++
+最后，还有一点需要说明，如果要覆盖的 bean 已被其他 bean 所引用，则需要在测试类结束前恢复 **所有** 相关类的实例，否则可能会对其他需要用到未覆盖前 bean 的行为的单元测试造成意外影响！
+
+**推送代码至远程仓库或创建 `Pull Request` 之前需确保所有测试及检查能够在本地通过**
+
+
+== 开发规范
+
+* 统一使用 `Version.HASH` 作为 `serialVersionUID`
+
+* 单元测试：与被测试的类相同包名，被测试类名称为测试类名前缀，
+基于 `Junit` 的测试以 `Test` 为后缀，基于 `Spock` 的测试以 `Spec` 为后缀。
+
+* 异常不允许直接 `printStackTrace`，应记录到日志中, 日志打印需要将堆栈进行输入, 避免只打印 `e.getMessage()`
+
+    ```
+    LOGGER.error("execute failed", e);
+    ```
+
+* 记录日志时，应采用 `Slf4j` 推荐的方式，避免日志信息通过 `+` 拼接
+
+    ```
+    LOGGER.debug("{} concat {} is {}", "a", "b", "ab");
+    ```
+
+* 当在日志消息中有非常消耗资源的操作时，可考虑先判断日志级别，如：
+
+    ```
+    if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("hello {} world {}", cheap, veryExpensive());
+    }
+    ```
+
+**TO BE CONTINUED**
+
+
+== 版本号规范
+
+版本号参照 https://github.com/semver/semver/blob/master/semver.md[语义化版本] 规范，采用四位数字，如：`1.1522.49.327`
+
+- 第一位表示`主版本`
+- 第二位表示`次版本`
+- 第三位表示`修订版`
+- 第四位表示`bug 修正` 等
+
+第四位为可选位，没有第四位时，第三位也可以表示 `bug 修正` 等含义。
+
+
+== 版本发布流程
+
+1. 后端修改 build.gradle 中的 `version` 值，并同步修改 Version.java 中的 版本号
+1. 提交代码打 tag，并将 tag 推送远程仓库，如：
+    ```
+    $ git tag v0.4.0
+    $ git push upstream v0.4.0
+    ```
+1. 编写 https://github.com/AlphaHinex/spring-roll/releases[Release Note]
+
+> 注意区分发布分支（master）和开发分支（develop），发布分支的内容自动合并至开发分支，在开发分支发布新版本后，将开发分支中的内容合并至发布分支
+
+
+== 开放问题
+
+* HTTP 500 状态码问题：通常系统异常时应该返回 `500` 状态码。
+但在与 `nginx` 共同部署时，`nginx` 连接上游服务器超时时也会返回 500 状态。
+当需要故障转移时，就会出现矛盾：因为连接某一台上游服务器超时，其他服务器仍然可能可以处理这个请求；但若请求会导致系统抛异常，其他服务器再处理这个请求应该也会得到同样的结果。
+当前对这个问题的处理方式是：
++
+**平台返回的系统异常和业务异常仍然使用 `500` 作为响应的状态码，但会增加一个特殊的响应头 `X-SR-ERR-TYPE`，并使用这个响应头的内容区分系统异常和业务异常。
+系统异常值为 `SR_SYS_ERR`，业务异常值为 `SR_BIZ_ERR`。**
+
+**TO BE CONTINUED**
+
+
+== 持续集成环境
+
+平台使用 https://travis-ci.org[Travis CI] 作为持续集成环境。
+为保证代码质量，任何提交到 `master` 分支的代码和任何 `Pull Request` 都会触发持续集成环境对代码质量的检查。
+
+Pull Request 的构建结果会直接在列表页和详细信息页面展现
+
+![](https://hhariri.files.wordpress.com/2013/02/image.png)
+
+master 分支的构建结果会在项目首页展现
+
+image:https://travis-ci.org/AlphaHinex/spring-roll.svg?branch=master["Build Status", link="https://travis-ci.org/AlphaHinex/spring-roll"]
+
+测试覆盖率结果也会在项目首页展现
+
+image:https://api.codeclimate.com/v1/badges/3570659419d670cb3572/test_coverage["Test Coverage", link="https://codeclimate.com/github/AlphaHinex/spring-roll/test_coverage"]
+
+**每位工程师都要为项目构建失败或覆盖率下降负责！**
