@@ -3,3 +3,54 @@
 image:https://travis-ci.org/AlphaHinex/spring-roll.svg?branch=master["Build Status", link="https://travis-ci.org/AlphaHinex/spring-roll"]
 image:https://api.codeclimate.com/v1/badges/3570659419d670cb3572/maintainability["Maintainability", link="https://codeclimate.com/github/AlphaHinex/spring-roll/maintainability"]
 image:https://api.codeclimate.com/v1/badges/3570659419d670cb3572/test_coverage["Test Coverage", link="https://codeclimate.com/github/AlphaHinex/spring-roll/test_coverage"]
+
+
+== 主要设计目标
+
+* 以 http://projects.spring.io/spring-boot/[Spring Boot] 为基础，采用当前主流且活跃的开源技术和框架，以简化开发步骤、提升开发效率和质量为目标，拥抱并响应变化为宗旨，稳定坚固可持续发展为愿景，对平台进行架构
+* 平台功能按模块进行划分及构建，除核心功能模块和公共模块外，各模块尽量保持独立，且可按需组合
+* 部署方式可集中可分布。集中式部署时为一个 web 应用（单体应用），分布式部署时为多个 web 应用（微服务）。分布式部署时通过网关保持部署方式对用户的透明，系统内部无需单点登录
+* 模块间需要依赖时，面向接口和服务编程，以便模块按不同需求提供不同实现
+* 屏蔽对具体数据库的依赖，表结构及初始化数据以 http://www.liquibase.org/documentation/databasechangelog.html[Database Change Log File] 形式组织
+* 平台功能及特性须有对应的单元测试，及必要的集成测试及性能测试
+
+
+== 项目构建
+
+项目构建依托 http://www.gradle.org[gradle] 构建工具，`gradlew` 是 `gradle wrapper`，作用是使不同的开发环境能够使用统一版本的构建工具进行构建，
+避免版本不同带来的兼容性等问题。`wrapper` 中使用的 `gradle` 版本参见 `gradle-wrapper.properties`。
+
+
+=== 整体构建
+
+    $ ./gradlew build
+
+=== 子项目独立构建
+
+`<module_name>:build`，以 `roll-utils` 子项目为例
+
+    $ ./gradlew roll-utils:build
+
+项目构建会对源码进行编译、进行代码质量检查、执行测试、构建 `jar` 包。构建的内容输出到各子项目的 `build` 路径内。
+
+> 在 `Windows` 环境下使用时，需使用 `gradlew.bat` 批处理指令，构建命令也需相应变化，如整体构建命令为 `gradlew build`
+
+
+== 构建源码包
+
+    $ ./gradlew sourcesJar
+
+或
+
+    $ ./gradlew roll-utils:sourcesJar
+
+
+== 部署及运行
+
+Spring boot 默认配置 tomcat 使用的字符集为 `UTF-8`（org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory#DEFAULT_CHARSET），
+使用的 connector 为 `Http11NioProtocol`（org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory#DEFAULT_PROTOCOL）。
+
+**推荐使用** docker 容器 + Jar 包的形式部署及运行，避免因运行环境差异导致的各种问题。
+通过 `Docker Compose` 编排和运行服务（单节点），可以在 `docker-compose.yml` 中调整所需服务，并运行
+
+    $ docker-compose up -d

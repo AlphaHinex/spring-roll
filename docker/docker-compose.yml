@@ -1,0 +1,9 @@
+sr-server:
+  image: propersoft/docker-jre:11.0.3-jdk
+  volumes:
+    - ./sr/app:/usr/local/sr/app
+    - ./sr/logs:/usr/local/sr/logs
+  working_dir: /usr/local/sr
+  environment:
+    - JAVA_OPTS=-server -Xms512m -Xmx4096m
+  command: java -jar /usr/local/sr/app/sr.jar
