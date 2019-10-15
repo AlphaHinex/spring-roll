@@ -27,6 +27,11 @@
 |https://github.com/spring-projects/spring-boot/tree/v2.1.8.RELEASE[2.1.8]
 |https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/htmlsingle/[Reference]
 
+|Swagger
+|http://springfox.github.io/springfox/[Spring Fox]
+|https://github.com/springfox/springfox[3.0.0-SNAPSHOT]
+|http://springfox.github.io/springfox/docs/snapshot/[Reference]
+
 |Test Frameworks
 |http://junit.org/junit4/[JUnit]
 |https://github.com/junit-team/junit/tree/r4.12[4.12]
