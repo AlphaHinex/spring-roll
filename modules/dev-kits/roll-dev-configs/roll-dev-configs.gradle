@@ -1,3 +1,7 @@
+dependencies {
+    implementation 'com.puppycrawl.tools:checkstyle:8.14'
+}
+
 task regModules
 // Auto register modules of spring-roll into dependencies.gradle before package build content to jar
 regModules.doLast {

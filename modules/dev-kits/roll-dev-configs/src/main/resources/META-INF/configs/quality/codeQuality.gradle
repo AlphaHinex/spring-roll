@@ -18,6 +18,10 @@ checkstyle {
     toolVersion = '8.14'
 }
 
+dependencies {
+    checkstyle project(':roll-dev-configs')
+}
+
 codenarc {
     configFile = new File(configDir, "codenarc.xml")
     toolVersion = '1.2.1'
