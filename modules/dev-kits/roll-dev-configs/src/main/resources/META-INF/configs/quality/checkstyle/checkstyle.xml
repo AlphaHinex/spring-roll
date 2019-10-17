@@ -23,6 +23,7 @@
     </module>
 
     <module name="TreeWalker">
+        <module name="SwaggerAnnotation"/>
         <module name="MethodLimit">
             <property name="max" value="65"/>
         </module>
@@ -267,4 +268,5 @@
     <module name="RegexpSingleline">
         <property name="format" value="assert"/>
     </module>
+    
 </module>

@@ -1,5 +1,5 @@
 dependencies {
-    implementation 'com.puppycrawl.tools:checkstyle:8.14'
+    implementation libraries.checkstyle
 }
 
 task regModules
