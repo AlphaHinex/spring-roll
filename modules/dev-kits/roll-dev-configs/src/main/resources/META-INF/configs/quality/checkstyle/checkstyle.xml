@@ -266,7 +266,7 @@
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="assert"/>
+        <property name="format" value="assert "/>
     </module>
     
 </module>
