@@ -38,7 +38,7 @@ public class MethodLimitCheck extends AbstractCheck {
 
     @Override
     public int[] getAcceptableTokens() {
-        return new int[0];
+        return getDefaultTokens();
     }
 
     @Override

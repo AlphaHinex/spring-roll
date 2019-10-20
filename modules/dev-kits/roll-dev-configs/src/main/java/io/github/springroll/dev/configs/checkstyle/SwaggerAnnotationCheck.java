@@ -82,7 +82,6 @@ public class SwaggerAnnotationCheck extends AbstractCheck {
             return;
         }
         BitSet bitSet = new BitSet(2);
-
         DetailAST firstAnnotation = AnnotationUtil.getAnnotationHolder(method).getFirstChild();
         for (DetailAST anno = firstAnnotation; anno != null && anno.getType() == TokenTypes.ANNOTATION; anno = anno.getNextSibling()) {
             String annotationName = FullIdent.createFullIdent(anno.getFirstChild().getNextSibling()).getText();
@@ -102,7 +101,7 @@ public class SwaggerAnnotationCheck extends AbstractCheck {
 
     @Override
     public int[] getAcceptableTokens() {
-        return new int[0];
+        return getDefaultTokens();
     }
 
     @Override
