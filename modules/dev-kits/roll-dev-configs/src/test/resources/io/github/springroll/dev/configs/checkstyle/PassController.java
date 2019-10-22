@@ -1,13 +1,16 @@
-package com.proper.checkstyle;
+package io.github.springroll.dev.configs.checkstyle;
 
-import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
+import io.swagger.annotations.*;
+import org.springframework.web.bind.annotation.*;
 
+/**
+ * Pass check
+ */
 @Api(tags = "/restController")
 @RestController
 public class PassController {
 
-    @ApiOperation("blah blah")
+    @ApiOperation("blah blah blah")
     @PutMapping
     public String update(String id) {
         return "";
