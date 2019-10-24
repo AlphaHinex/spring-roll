@@ -1,9 +1,10 @@
-package com.proper.checkstyle;
+package io.github.springroll.dev.configs.checkstyle;
 
-import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 
+/**
+ * Not pass check
+ */
 @Controller
 public class NoSwaggerAnnotation {
 }
