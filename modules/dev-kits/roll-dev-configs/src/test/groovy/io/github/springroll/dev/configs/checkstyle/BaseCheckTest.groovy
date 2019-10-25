@@ -30,7 +30,8 @@ class BaseCheckTest {
                 getFile("PassController.java"),
                 getFile("NotPassController.java"),
                 getFile("BeFiltered.java"),
-                getFile("NoSwaggerAnnotation.java")
+                getFile("NoSwaggerAnnotation.java"),
+                getFile("WithNoMethod.java")
         ]
     }
 
