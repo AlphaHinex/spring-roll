@@ -146,6 +146,6 @@ image:https://travis-ci.org/AlphaHinex/spring-roll.svg?branch=master["Build Stat
 
 测试覆盖率结果也会在项目首页展现
 
-image:https://api.codeclimate.com/v1/badges/3570659419d670cb3572/test_coverage["Test Coverage", link="https://codeclimate.com/github/AlphaHinex/spring-roll/test_coverage"]
+image:https://codecov.io/gh/AlphaHinex/spring-roll/branch/master/graph/badge.svg["codecov", link="https://codecov.io/gh/AlphaHinex/spring-roll"]
 
 **每位工程师都要为项目构建失败或覆盖率下降负责！**
