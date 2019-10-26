@@ -29,7 +29,8 @@ after_success:
   - git push https://${GH_OAUTH_TOKEN}@github.com/${GH_OWNER}/${GH_PROJECT_NAME} HEAD:gh-pages > /dev/null 2>&1
 
 after_script:
-  - JACOCO_SOURCE_PATH=modules/blocks/roll-utils/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.utils.json modules/blocks/roll-utils/build/reports/jacoco/test/jacocoTestReport.xml
-  - JACOCO_SOURCE_PATH=modules/raw-materials/roll-web/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.web.json modules/raw-materials/roll-web/build/reports/jacoco/test/jacocoTestReport.xml
-  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 2
-  - ./cc-test-reporter upload-coverage
+#  - JACOCO_SOURCE_PATH=modules/blocks/roll-utils/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.utils.json modules/blocks/roll-utils/build/reports/jacoco/test/jacocoTestReport.xml
+#  - JACOCO_SOURCE_PATH=modules/raw-materials/roll-web/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.web.json modules/raw-materials/roll-web/build/reports/jacoco/test/jacocoTestReport.xml
+#  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 2
+#  - ./cc-test-reporter upload-coverage
+  - curl -s https://codecov.io/bash | bash
