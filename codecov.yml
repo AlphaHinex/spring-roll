@@ -1,2 +1,2 @@
 ignore:
-  - "/modules/dev-kits/roll-test/**/*" # Ignore test module
+  - "modules/dev-kits/roll-test" # Ignore test module
