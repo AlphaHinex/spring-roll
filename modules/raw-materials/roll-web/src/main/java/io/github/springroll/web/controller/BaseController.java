@@ -197,6 +197,9 @@ public abstract class BaseController {
     }
 
     public static class ResponseHeader {
+
+        private ResponseHeader() { }
+
         /**
          * 响应头中封装的异常编码key
          */

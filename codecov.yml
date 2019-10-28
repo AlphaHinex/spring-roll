@@ -1,2 +1,6 @@
+# Validate yaml
+# curl --data-binary @codecov.yml https://codecov.io/validate
+
+# Path regexp patterns: https://docs.codecov.io/docs/path-regexp
 ignore:
   - "modules/dev-kits/roll-test" # Ignore test module
