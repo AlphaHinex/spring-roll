@@ -6,7 +6,11 @@ import org.junit.Test
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.test.web.servlet.MvcResult
+import org.springframework.web.context.request.WebRequest
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
 class BaseControllerTest extends AbstractSpringTest {
 
@@ -132,6 +136,18 @@ class BaseControllerTest extends AbstractSpringTest {
         }
         String id
         String name
+    }
+
+    @Test
+    void couldNotGetResponseEntity() {
+        c.setHandler(new ResponseEntityExceptionHandler() {
+            @Override
+            protected ResponseEntity<Object> handleAsyncRequestTimeoutException(AsyncRequestTimeoutException ex,
+                                                    HttpHeaders headers, HttpStatus status, WebRequest webRequest) {
+                null
+            }
+        })
+        assert c.handleStatus(new AsyncRequestTimeoutException(), null) == HttpStatus.INTERNAL_SERVER_ERROR
     }
 
 }

@@ -19,6 +19,11 @@ import java.util.List;
 public abstract class BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseController.class);
+    private transient ResponseEntityExceptionHandler handler = new ResponseEntityExceptionHandler() { };
+
+    public void setHandler(ResponseEntityExceptionHandler handler) {
+        this.handler = handler;
+    }
 
     /**
      * 返回 POST 请求的响应
@@ -169,7 +174,6 @@ public abstract class BaseController {
     }
 
     protected HttpStatus handleStatus(Exception ex, WebRequest request) {
-        ResponseEntityExceptionHandler handler = new ResponseEntityExceptionHandler() { };
         try {
             ResponseEntity res = handler.handleException(ex, request);
             if (res != null) {
