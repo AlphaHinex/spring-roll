@@ -1,7 +1,8 @@
 apply plugin: 'java-library'
 
 dependencies {
-    api libraries.commons_collections,
+    api libraries.commons_codec,
+        libraries.commons_collections,
         libraries.commons_lang3,
         libraries.jackson_databind
 }
