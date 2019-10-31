@@ -154,6 +154,7 @@ libraries.spring_boot_devtools                = 'org.springframework.boot:spring
 libraries.spring_boot_starter_actuator        = 'org.springframework.boot:spring-boot-starter-actuator'
 libraries.spring_boot_starter_cache           = 'org.springframework.boot:spring-boot-starter-cache'
 libraries.spring_boot_starter_data_jpa        = 'org.springframework.boot:spring-boot-starter-data-jpa'
+libraries.spring_boot_starter_logging         = 'org.springframework.boot:spring-boot-starter-logging'
 libraries.spring_boot_starter_mail            = 'org.springframework.boot:spring-boot-starter-mail'
 libraries.spring_boot_starter_data_mongodb    = 'org.springframework.boot:spring-boot-starter-data-mongodb'
 libraries.spring_boot_starter_test            = 'org.springframework.boot:spring-boot-starter-test'

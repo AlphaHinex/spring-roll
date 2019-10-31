@@ -1,3 +1,2 @@
 dependencies {
-    implementation libraries.spring_context
 }

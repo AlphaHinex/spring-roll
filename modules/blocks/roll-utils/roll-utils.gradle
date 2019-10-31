@@ -5,4 +5,6 @@ dependencies {
         libraries.commons_collections,
         libraries.commons_lang3,
         libraries.jackson_databind
+
+    implementation project(':roll-base')
 }

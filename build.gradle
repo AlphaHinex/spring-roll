@@ -103,8 +103,7 @@ subprojects {
     dependencies {
         annotationProcessor libraries.spring_boot_configuration_processor
 
-//                compileOnly libraries.spring_boot_starter_web,
-//                            libraries.springfox
+                compileOnly libraries.spring_boot_starter_logging
 
          testImplementation libraries.groovy_all,
                             libraries.groovy_dateutil,
