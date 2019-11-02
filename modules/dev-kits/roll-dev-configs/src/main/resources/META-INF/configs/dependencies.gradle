@@ -68,7 +68,7 @@ libraries.aspectjweaver = "org.aspectj:aspectjweaver:1.8.6"
 
 libraries.checkstyle = 'com.puppycrawl.tools:checkstyle:8.14'
 
-libraries.commons_collections = 'commons-collections:commons-collections:3.2.2'
+libraries.commons_collections = 'org.apache.commons:commons-collections4:4.4'
 
 libraries.commons_codec = 'commons-codec:commons-codec:1.13'
 

@@ -1,11 +1,11 @@
 package io.github.springroll.utils;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class CollectionUtil extends CollectionUtils {
+public class CollectionUtil {
 
     /**
      * 私有化工具类的构造函数，避免对工具类的实例化
@@ -31,7 +31,7 @@ public class CollectionUtil extends CollectionUtils {
         if (!(obj1 instanceof Collection) || !(obj2 instanceof Collection)) {
             return false;
         }
-        return isEqualCollection((Collection) obj1, (Collection) obj2);
+        return CollectionUtils.isEqualCollection((Collection) obj1, (Collection) obj2);
     }
 
 }
