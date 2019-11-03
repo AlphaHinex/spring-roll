@@ -27,6 +27,11 @@
 |https://github.com/apache/commons-lang/tree/commons-lang-3.9[3.9]
 |http://commons.apache.org/proper/commons-lang/javadocs/api-3.9/index.html[Online Documentation]
 
+|
+|http://pinyin4j.sourceforge.net/[Pinyin4j]
+|https://github.com/belerweb/pinyin4j/tree/2.5.0[2.5.0]
+|http://pinyin4j.sourceforge.net/pinyin4j-doc/[JavaDoc]
+
 |Quality Tools
 |http://checkstyle.sourceforge.net/[Checkstyle]
 |https://github.com/checkstyle/checkstyle/tree/checkstyle-8.14[8.14]
@@ -50,7 +55,7 @@
 |Test Frameworks
 |http://junit.org/junit4/[JUnit]
 |https://github.com/junit-team/junit/tree/r4.12[4.12]
-|https://junit.org/junit4/javadoc/4.12/index.html[JavaDocs]
+|https://junit.org/junit4/javadoc/4.12/index.html[JavaDoc]
 
 |
 |http://spockframework.org[Spock Framework]

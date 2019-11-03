@@ -136,6 +136,8 @@ libraries.okhttp = 'com.squareup.okhttp3:okhttp:3.14.2'
 
 libraries.p3c_pmd = 'com.alibaba.p3c:p3c-pmd:2.0.0'
 
+libraries.pinyin4j = 'com.belerweb:pinyin4j:2.5.0'
+
 libraries.quartz = "org.quartz-scheduler:quartz:${versions.quartz}"
 
 libraries.reactor_netty = 'io.projectreactor.netty:reactor-netty:0.8.4.RELEASE'

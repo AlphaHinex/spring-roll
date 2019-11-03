@@ -4,7 +4,8 @@ dependencies {
     api libraries.commons_codec,
         libraries.commons_collections,
         libraries.commons_lang3,
-        libraries.jackson_databind
+        libraries.jackson_databind,
+        libraries.pinyin4j
 
     implementation project(':roll-base')
 }
