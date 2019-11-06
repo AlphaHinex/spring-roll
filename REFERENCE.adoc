@@ -42,10 +42,15 @@
 |https://github.com/jacoco/jacoco/tree/v0.8.4[0.8.4]
 |http://eclemma.org/jacoco/trunk/doc/[Online Documentation]
 
-|Spring Boot
+|Spring
 |https://spring.io/projects/spring-boot[Spring Boot]
 |https://github.com/spring-projects/spring-boot/tree/v2.2.0.RELEASE[2.2.0]
 |https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/reference/htmlsingle/[Reference]
+
+|
+|http://projects.spring.io/spring-framework/[Spring Framework]
+|https://github.com/spring-projects/spring-framework/tree/v5.2.0.RELEASE[5.2.0]
+|https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/[Reference]
 
 |Swagger
 |http://springfox.github.io/springfox/[Spring Fox]
