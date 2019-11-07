@@ -1,6 +1,6 @@
 package io.github.springroll.utils.cipher
 
-import io.github.springroll.CharacterEncoding
+import io.github.springroll.base.CharacterEncoding
 import spock.lang.Specification
 
 class AesSpec extends Specification {

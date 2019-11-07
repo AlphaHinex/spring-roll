@@ -1,6 +1,6 @@
 package io.github.springroll.web.model;
 
-import io.github.springroll.Version;
+import io.github.springroll.base.Version;
 import io.github.springroll.utils.CollectionUtil;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;

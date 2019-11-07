@@ -1,6 +1,6 @@
 package io.github.springroll.utils.cipher;
 
-import io.github.springroll.CharacterEncoding;
+import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.utils.StringUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;

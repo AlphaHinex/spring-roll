@@ -1,4 +1,4 @@
-package io.github.springroll;
+package io.github.springroll.base;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

@@ -1,6 +1,6 @@
 package io.github.springroll.web.exception;
 
-import io.github.springroll.Version;
+import io.github.springroll.base.Version;
 
 /**
  * 用于只关心错误消息，不关心异常堆栈等信息的场景

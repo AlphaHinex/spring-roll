@@ -1,4 +1,4 @@
-package io.github.springroll;
+package io.github.springroll.base;
 
 public class Version {
 
