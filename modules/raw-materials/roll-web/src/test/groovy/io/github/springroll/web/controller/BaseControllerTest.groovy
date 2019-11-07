@@ -50,7 +50,7 @@ class BaseControllerTest extends AbstractSpringTest {
         assert result.getBody().getTotal() == 10
 
         def r = get('/web/test-ctrl/emptylist', HttpStatus.OK)
-        assert r.getResponse().getContentType() == MediaType.APPLICATION_JSON_UTF8_VALUE
+        assert r.getResponse().getContentType() == MediaType.APPLICATION_JSON_VALUE
         assert r.getResponse().getContentAsString() == '[]'
     }
 
@@ -94,7 +94,7 @@ class BaseControllerTest extends AbstractSpringTest {
         def textPlainUtf8 = MediaType.TEXT_PLAIN_VALUE + ';charset=UTF-8'
 
         def r = get('/web/test-ctrl/trouble/1?div=1', HttpStatus.OK)
-        assert r.getResponse().getContentType() == MediaType.APPLICATION_JSON_UTF8_VALUE
+        assert r.getResponse().getContentType() == MediaType.APPLICATION_JSON_VALUE
 
         def r1 = get('/web/test-ctrl/trouble/1?div=0', HttpStatus.INTERNAL_SERVER_ERROR)
         assert 'Division by zero' == r1.getResponse().getContentAsString()

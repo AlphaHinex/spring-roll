@@ -30,7 +30,7 @@ class TestController extends BaseController {
         return responseOfGet([])
     }
 
-    @GetMapping(path = "/trouble/1", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = "/trouble/1", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Map<String, String>> test1(@RequestParam String div) {
         return new ResponseEntity<String>(['result': 10 / Integer.parseInt(div) + ""], HttpStatus.OK);
     }
