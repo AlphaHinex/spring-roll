@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.Collection;
 import java.util.List;
 
-public abstract class BaseController {
+public class BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseController.class);
     private transient ResponseEntityExceptionHandler handler = new ResponseEntityExceptionHandler() { };
