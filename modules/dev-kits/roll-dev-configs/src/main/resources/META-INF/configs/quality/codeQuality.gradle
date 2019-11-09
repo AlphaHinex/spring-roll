@@ -10,6 +10,7 @@ ext.checkstyleConfigDir = "$configDir/checkstyle"
 
 dependencies {
     pmd libraries.p3c_pmd
+    checkstyle project(':roll-dev-configs')
 }
 
 checkstyle {
@@ -18,13 +19,15 @@ checkstyle {
     toolVersion = '8.14'
 }
 
-dependencies {
-    checkstyle project(':roll-dev-configs')
-}
-
 codenarc {
     configFile = new File(configDir, "codenarc.xml")
     toolVersion = '1.2.1'
+}
+
+pmd {
+    // According to https://github.com/alibaba/p3c/blob/p3c-pmd-2.0.0/p3c-pmd/pom.xml#L17
+    toolVersion = '6.15.0'
+    ruleSets = ["category/java/errorprone.xml", "category/java/bestpractices.xml"]
 }
 
 spotbugs {
