@@ -162,13 +162,14 @@ libraries.spring_boot_starter_data_mongodb    = 'org.springframework.boot:spring
 libraries.spring_boot_starter_test            = 'org.springframework.boot:spring-boot-starter-test'
 libraries.spring_boot_starter_web             = 'org.springframework.boot:spring-boot-starter-web'
 
+libraries.spring_context = "org.springframework:spring-context:${versions.spring}"
 libraries.spring_context_support = "org.springframework:spring-context-support:${versions.spring}"
+libraries.spring_core = "org.springframework:spring-core:${versions.spring}"
 libraries.spring_messaging = "org.springframework:spring-messaging:${versions.spring}"
 libraries.spring_orm = [
-    "org.springframework:spring-orm:${versions.spring}",
-    libraries.aspectjweaver
+        "org.springframework:spring-orm:${versions.spring}",
+        libraries.aspectjweaver
 ]
-libraries.spring_context = "org.springframework:spring-context:${versions.spring}"
 libraries.spring_oxm = "org.springframework:spring-oxm:${versions.spring}"
 libraries.spring_test = "org.springframework:spring-test:${versions.spring}"
 libraries.spring_tx = "org.springframework:spring-tx:${versions.spring}"
