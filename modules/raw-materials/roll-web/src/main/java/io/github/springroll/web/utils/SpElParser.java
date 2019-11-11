@@ -42,11 +42,11 @@ public class SpElParser {
 
     public <T> T parse(String spEl, Map<String, Object> vars, boolean isExpTpl, Class<T> clz) throws ExpressionException {
         // 不使用 Expression template 时，过滤掉表达式中的单行注释内容
-        spEl = isExpTpl ? spEl : spEl.replaceAll("//.*", "");
+        String el = isExpTpl ? spEl : spEl.replaceAll("//.*", "");
         if (vars != null) {
             context.setVariables(vars);
         }
-        Expression expression = isExpTpl ? parser.parseExpression(spEl, parserContext) : parser.parseExpression(spEl);
+        Expression expression = isExpTpl ? parser.parseExpression(el, parserContext) : parser.parseExpression(el);
         return expression.getValue(context, clz);
     }
 
