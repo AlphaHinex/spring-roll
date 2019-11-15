@@ -32,6 +32,11 @@
 |https://github.com/belerweb/pinyin4j/tree/2.5.0[2.5.0]
 |http://pinyin4j.sourceforge.net/pinyin4j-doc/[JavaDoc]
 
+|Dynamic Language
+|http://www.groovy-lang.org/[Groovy]
+|https://github.com/apache/groovy/tree/GROOVY_2_5_8[2.5.8]
+|http://docs.groovy-lang.org/docs/groovy-2.5.8/html/[Documentations Trunk]
+
 |Quality Tools
 |http://checkstyle.sourceforge.net/[Checkstyle]
 |https://github.com/checkstyle/checkstyle/tree/checkstyle-8.14[8.14]
