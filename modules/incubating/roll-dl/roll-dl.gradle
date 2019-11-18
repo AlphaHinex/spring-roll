@@ -1,3 +1,5 @@
 dependencies {
     implementation libraries.groovy
+
+    implementation project(':roll-base')
 }
