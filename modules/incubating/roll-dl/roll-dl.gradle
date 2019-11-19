@@ -1,5 +1,8 @@
 dependencies {
     implementation libraries.groovy
+    implementation libraries.spring_boot_starter_web
 
     implementation project(':roll-base')
+
+    testImplementation project(':roll-test')
 }

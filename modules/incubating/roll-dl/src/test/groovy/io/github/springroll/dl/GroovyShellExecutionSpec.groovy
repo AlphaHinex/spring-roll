@@ -6,11 +6,13 @@ import spock.lang.Unroll
 
 import java.nio.charset.StandardCharsets
 
-class GroovyScriptExecutionSpec extends Specification {
+class GroovyShellExecutionSpec extends Specification {
+
+    def shell = new GroovyShellExecution(new Binding())
 
     @Unroll
     def "Execute groovy script [ #script ] and get result [ #result ]"() {
-        def res = GroovyScriptExecution.execute(script)
+        def res = shell.execute(script)
 
         expect:
         res == result
@@ -23,7 +25,7 @@ class GroovyScriptExecutionSpec extends Specification {
     }
 
     def 'Return with type'() {
-        def result = GroovyScriptExecution.execute('"test".length() > 0', Boolean.class)
+        def result = shell.execute('"test".length() > 0', Boolean.class)
         expect:
         result
         result instanceof Boolean
@@ -31,27 +33,27 @@ class GroovyScriptExecutionSpec extends Specification {
 
     def 'Handle exception'() {
         when:
-        GroovyScriptExecution.execute(null)
+        shell.execute(null)
         then:
-        def e1 = thrown(ScriptException)
+        def e1 = thrown(GroovyScriptException)
         e1.cause instanceof IllegalArgumentException
 
         when:
-        GroovyScriptExecution.execute('invalid script content')
+        shell.execute('invalid script content')
         then:
-        def e2 = thrown(ScriptException)
+        def e2 = thrown(GroovyScriptException)
         e2.cause instanceof MissingPropertyException
 
         when:
-        GroovyScriptExecution.execute('"test".lengthz()')
+        shell.execute('"test".lengthz()')
         then:
-        def e3 = thrown(ScriptException)
+        def e3 = thrown(GroovyScriptException)
         e3.cause instanceof MissingMethodException
 
         when:
-        GroovyScriptExecution.execute('http://www.baidu.com')
+        shell.execute('http://www.baidu.com')
         then:
-        def e4 = thrown(ScriptException)
+        def e4 = thrown(GroovyScriptException)
         e4.cause instanceof MultipleCompilationErrorsException
     }
 
