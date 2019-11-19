@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GroovyShellExecution {
 
-    private GroovyShell shell;
+    private transient GroovyShell shell;
 
     @Autowired
     public GroovyShellExecution(Binding groovyShellBinding) {
