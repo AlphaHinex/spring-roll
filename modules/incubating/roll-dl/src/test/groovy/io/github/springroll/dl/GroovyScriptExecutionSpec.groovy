@@ -19,6 +19,7 @@ class GroovyScriptExecutionSpec extends Specification {
         result                                                       | script
         'HinexHinexHinex'                                            | '"Hinex"*3'
         new String('通过'.getBytes('UTF-8'), StandardCharsets.UTF_8) | 'def age = 26; age < 60 ? "通过" : "不通过"'
+        'ok'                                                         | 'class Foo { def doIt() { "ok" } }; new Foo().doIt()'
     }
 
     def 'Return with type'() {
