@@ -13,7 +13,7 @@ public class GroovyShellConfiguration implements ApplicationContextAware {
     private transient ApplicationContext applicationContext;
 
     @Bean
-    Binding groovyShellBinding() {
+    public Binding groovyShellBinding() {
         return new Binding(applicationContext.getBeansOfType(Scriptable.class));
     }
 

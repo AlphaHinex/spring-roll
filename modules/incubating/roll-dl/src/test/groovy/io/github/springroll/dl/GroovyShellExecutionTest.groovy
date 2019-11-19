@@ -11,7 +11,15 @@ class GroovyShellExecutionTest extends AbstractSpringTest {
 
     @Test
     void interactWithBean() {
-        assert 1 == execution.execute('1')
+        def check = 'scriptableBean.getInterval() < 60 && scriptableBean.isFixed()'
+        assert !execution.execute(check)
+
+        def script = """
+            scriptableBean.setInterval(30)
+            scriptableBean.setFixed(true)
+            $check
+"""
+        assert execution.execute(script)
     }
 
 }
