@@ -15,4 +15,8 @@ public class GroovyScriptException extends RuntimeException {
         super(throwable);
     }
 
+    GroovyScriptException(String message) {
+        super(message);
+    }
+
 }

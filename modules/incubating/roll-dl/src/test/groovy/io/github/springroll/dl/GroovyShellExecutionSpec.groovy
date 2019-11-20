@@ -23,6 +23,7 @@ class GroovyShellExecutionSpec extends Specification {
         'HinexHinexHinex'                                            | '"Hinex"*3'
         new String('通过'.getBytes('UTF-8'), StandardCharsets.UTF_8) | 'def age = 26; age < 60 ? "通过" : "不通过"'
         'ok'                                                         | 'class Foo { def doIt() { "ok" } }; new Foo().doIt()'
+        null                                                         | ''
     }
 
     def 'Return with type'() {
@@ -36,26 +37,25 @@ class GroovyShellExecutionSpec extends Specification {
         when:
         shell.execute(null)
         then:
-        def e1 = thrown(GroovyScriptException)
-        e1.cause instanceof IllegalArgumentException
+        thrown(GroovyScriptException)
 
         when:
         shell.execute('invalid script content')
         then:
-        def e2 = thrown(GroovyScriptException)
-        e2.cause instanceof MissingPropertyException
+        def e = thrown(GroovyScriptException)
+        e.cause instanceof MissingPropertyException
 
         when:
         shell.execute('"test".lengthz()')
         then:
-        def e3 = thrown(GroovyScriptException)
-        e3.cause instanceof MissingMethodException
+        e = thrown(GroovyScriptException)
+        e.cause instanceof MissingMethodException
 
         when:
         shell.execute('http://www.baidu.com')
         then:
-        def e4 = thrown(GroovyScriptException)
-        e4.cause instanceof MultipleCompilationErrorsException
+        e = thrown(GroovyScriptException)
+        e.cause instanceof MultipleCompilationErrorsException
     }
 
     @Ignore

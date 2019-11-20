@@ -13,6 +13,8 @@ class Md5Spec extends Specification {
         where:
         result                              | input
         'e10adc3949ba59abbe56e057f20f883e'  | '123456'
+        'd41d8cd98f00b204e9800998ecf8427e'  | ''
+        null                                | null
     }
 
 }
