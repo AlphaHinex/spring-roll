@@ -1,6 +1,7 @@
 package io.github.springroll.dl
 
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -55,6 +56,25 @@ class GroovyShellExecutionSpec extends Specification {
         then:
         def e4 = thrown(GroovyScriptException)
         e4.cause instanceof MultipleCompilationErrorsException
+    }
+
+    @Ignore
+    def 'justInTime'() {
+        def rootDir = "${new File('').getAbsolutePath()}/src/test/resources"
+
+        while (true) {
+            try {
+                new File("$rootDir/io/github/springroll/dl/DynamicScript.groovy").withReader {
+                    shell.shell.evaluate(it)
+                }
+            } catch(Throwable t) {
+                t.printStackTrace()
+            }
+            sleep(1000)
+        }
+
+        expect:
+        true
     }
 
 }

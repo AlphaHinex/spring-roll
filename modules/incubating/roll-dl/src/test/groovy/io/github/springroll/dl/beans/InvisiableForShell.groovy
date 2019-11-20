@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 class InvisiableForShell {
 
     def shouldNotBeInvokedInShell() {
-        throw new RuntimeException('This method SHOULD NOT be invoked in groovy shell execution')
+        'This method SHOULD NOT be invoked in groovy shell execution'
     }
 
 }

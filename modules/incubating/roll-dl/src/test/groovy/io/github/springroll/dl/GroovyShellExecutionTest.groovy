@@ -22,4 +22,18 @@ class GroovyShellExecutionTest extends AbstractSpringTest {
         assert execution.execute(script)
     }
 
+    @Test(expected = GroovyScriptException)
+    void couldNotGetInvisiableBeanDirectly() {
+        execution.execute('invisiableForShell.shouldNotBeInvokedInShell()')
+    }
+
+    @Test
+    void invisibleBeanWorkAround() {
+        def script = """
+            def bean = io.github.springroll.web.ApplicationContextHolder.getBean('invisiableForShell')
+            bean.shouldNotBeInvokedInShell()
+"""
+        execution.execute(script)
+    }
+
 }
