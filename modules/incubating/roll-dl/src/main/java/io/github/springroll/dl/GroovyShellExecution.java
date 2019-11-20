@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,38 +40,64 @@ public class GroovyShellExecution {
     }
 
     public Object execute(String scriptContent) {
+        return genericExecute(scriptContent);
+    }
+
+    public <T> T execute(String scriptContent, Class<T> clz) {
+        return genericExecute(scriptContent, clz);
+    }
+
+    public Object execute(File file) {
+        return genericExecute(file);
+    }
+
+    private Object genericExecute(Object scriptContent) {
         if (scriptContent == null) {
-            throw new GroovyScriptException("Script content should not null!");
+            throw new GroovyScriptException("Script content SHOULD NOT null!");
         }
         try {
             Script script = getScriptObject(scriptContent);
             return script.run();
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             LOGGER.error("Execute script ERROR!\r\nScript: {}", scriptContent, e);
             throw new GroovyScriptException(e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T execute(String scriptContent, Class<T> clz) {
-        Object result = execute(scriptContent);
-        return (T) result;
+    private  <T> T genericExecute(Object scriptContent, Class<T> clz) {
+        Object result = genericExecute(scriptContent);
+        return clz.cast(result);
     }
 
     /**
      * 避免每次都进行脚本文件的编译及加载，
      * 根据脚本内容做 md5，并以此为 key，缓存 Script 对象
      *
-     * @param  scriptContent 脚本内容
+     * @param  obj 脚本内容
      * @return 解析后的脚本对象
      */
-    private Script getScriptObject(String scriptContent) {
-        String md5 = Md5.md5Hex(scriptContent);
-        if (scriptCache.containsKey(md5)) {
-            return scriptCache.get(md5);
+    private Script getScriptObject(Object obj) throws IOException {
+        if (!(obj instanceof String) && !(obj instanceof File)) {
+            throw new GroovyScriptException("Not supported content type: " + obj.getClass());
         }
-        Script script = shell.parse(scriptContent);
-        scriptCache.put(md5, script);
+
+        String key;
+        if (obj instanceof String) {
+            key = Md5.md5Hex((String) obj);
+        } else {
+            key = ((File) obj).getAbsolutePath() + ((File) obj).lastModified();
+        }
+
+        if (scriptCache.containsKey(key)) {
+            return scriptCache.get(key);
+        }
+        Script script;
+        if (obj instanceof String) {
+            script = shell.parse((String) obj);
+        } else {
+            script = shell.parse((File) obj);
+        }
+        scriptCache.put(key, script);
         return script;
     }
 

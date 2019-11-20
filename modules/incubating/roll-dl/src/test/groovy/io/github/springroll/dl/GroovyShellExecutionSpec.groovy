@@ -35,7 +35,7 @@ class GroovyShellExecutionSpec extends Specification {
 
     def 'Handle exception'() {
         when:
-        shell.execute(null)
+        shell.execute((String) null)
         then:
         thrown(GroovyScriptException)
 
@@ -64,9 +64,7 @@ class GroovyShellExecutionSpec extends Specification {
 
         while (true) {
             try {
-                new File("$rootDir/io/github/springroll/dl/DynamicScript.groovy").withReader {
-                    shell.shell.evaluate(it)
-                }
+                shell.execute(new File("$rootDir/io/github/springroll/dl/DynamicScript.groovy"))
             } catch(Throwable t) {
                 t.printStackTrace()
             }
