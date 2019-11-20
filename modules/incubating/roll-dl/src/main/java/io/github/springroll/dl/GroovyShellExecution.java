@@ -4,6 +4,8 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import io.github.springroll.base.CharacterEncoding;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class GroovyShellExecution {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroovyShellExecution.class);
 
     private transient GroovyShell shell;
 
@@ -30,6 +34,7 @@ public class GroovyShellExecution {
         try {
             return shell.evaluate(scriptContent);
         } catch (RuntimeException e) {
+            LOGGER.error("Execute script ERROR!\r\nScript: {}", scriptContent, e);
             throw new GroovyScriptException(e);
         }
     }
