@@ -33,7 +33,7 @@ public class GroovyShellExecution {
         return (T) result;
     }
 
-    public GroovyShell getShell() {
+    GroovyShell getShell() {
         return shell;
     }
 
