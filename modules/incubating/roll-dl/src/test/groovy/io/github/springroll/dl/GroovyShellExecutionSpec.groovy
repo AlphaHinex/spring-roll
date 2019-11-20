@@ -65,7 +65,7 @@ class GroovyShellExecutionSpec extends Specification {
         while (true) {
             try {
                 new File("$rootDir/io/github/springroll/dl/DynamicScript.groovy").withReader {
-                    shell.getShell().evaluate(it)
+                    shell.shell.evaluate(it)
                 }
             } catch(Throwable t) {
                 t.printStackTrace()
