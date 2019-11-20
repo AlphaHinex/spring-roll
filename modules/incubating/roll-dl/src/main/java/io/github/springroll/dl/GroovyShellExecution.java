@@ -89,6 +89,7 @@ public class GroovyShellExecution {
         }
 
         if (scriptCache.containsKey(key)) {
+            LOGGER.debug("Found key [{}] from cache, use cached Script object.", key);
             return scriptCache.get(key);
         }
         Script script;
