@@ -28,7 +28,7 @@ public class GroovyShellExecution {
 
     private transient GroovyShell shell;
 
-    private transient Map<String, Script> scriptMap = new ConcurrentHashMap<>();
+    private transient Map<String, Script> scriptCache = new ConcurrentHashMap<>();
 
     @Autowired
     public GroovyShellExecution(Binding groovyShellBinding) {
@@ -56,13 +56,20 @@ public class GroovyShellExecution {
         return (T) result;
     }
 
+    /**
+     * 避免每次都进行脚本文件的编译及加载，
+     * 根据脚本内容做 md5，并以此为 key，缓存 Script 对象
+     *
+     * @param  scriptContent 脚本内容
+     * @return 解析后的脚本对象
+     */
     private Script getScriptObject(String scriptContent) {
         String md5 = Md5.md5Hex(scriptContent);
-        if (scriptMap.containsKey(md5)) {
-            return scriptMap.get(md5);
+        if (scriptCache.containsKey(md5)) {
+            return scriptCache.get(md5);
         }
         Script script = shell.parse(scriptContent);
-        scriptMap.put(md5, script);
+        scriptCache.put(md5, script);
         return script;
     }
 
