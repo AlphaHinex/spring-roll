@@ -7,6 +7,13 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Groovy 脚本的运行环境
+ * 因 {@code Binding} 对象的非线程安全性，其中的数据在所有脚本中共享
+ * 在多线程环境下使用时务必小心
+ * 本运行环境的一个主要使用场景是校验，通过动态脚本或类，使校验规则能够灵活定义并动态加载
+ * 校验时应尽量使用读操作，避免写操作，以免对共享数据对象造成改变及预期之外的影响
+ */
 @Component
 public class GroovyShellExecution {
 
