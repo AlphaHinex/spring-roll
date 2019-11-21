@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class GroovyShellConfiguration implements ApplicationContextAware {
+public class GroovyShellBindingConfiguration implements ApplicationContextAware {
 
     private transient ApplicationContext applicationContext;
 

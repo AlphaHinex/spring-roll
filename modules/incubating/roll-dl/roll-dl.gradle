@@ -3,6 +3,7 @@ dependencies {
     implementation libraries.spring_boot_starter_web
 
     implementation project(':roll-base')
+    implementation project(':roll-utils')
 
     testImplementation project(':roll-test')
 

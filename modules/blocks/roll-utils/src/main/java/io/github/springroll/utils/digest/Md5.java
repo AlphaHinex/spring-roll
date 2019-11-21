@@ -19,6 +19,9 @@ public class Md5 {
      * @return MD5 值 16 进制表示
      */
     public static String md5Hex(String input) {
+        if (input == null) {
+            return null;
+        }
         return DigestUtils.md5Hex(input);
     }
 

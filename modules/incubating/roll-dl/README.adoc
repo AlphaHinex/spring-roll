@@ -1,3 +1,15 @@
 = roll-dl
 
-动态语言包，引入对动态语言（Groovy）的支持
+动态语言包，引入对动态语言（Groovy）的支持。
+
+主要实现了使用 Groovy 动态脚本或类进行校验的场景的支持。
+
+可通过 `GroovyShellExecution` 进行脚本的执行。
+
+> 由于 `groovy.lang.Binding` 的非线程安全性，在多线程场景下使用 `GroovyShellException` 时，需注意，从 Binding 中获得的数据为所有脚本共享。
+
+在 Spring 环境中，会将标记为 `Scriptable` 的 bean 加入到 `Binding` 中，供脚本调用。
+没有实现此接口的类，原则上不可以在脚本中通过 bean name 的方式直接调用。
+但若必需，可考虑从 `ApplicationContextHolder` 中获取。
+
+`GroovyShellExecution` 执行时产生的异常，都被封装到了 `GroovyScriptException` 中。
