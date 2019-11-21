@@ -1023,7 +1023,28 @@ $ git push upstream v0.4.0</pre>
 <div class="sect2">
 <h3 id="_roll_dl">6.1. roll-dl</h3>
 <div class="paragraph">
-<p>动态语言包，引入对动态语言（Groovy）的支持</p>
+<p>动态语言包，引入对动态语言（Groovy）的支持。</p>
+</div>
+<div class="paragraph">
+<p>主要实现了使用 Groovy 动态脚本或类进行校验的场景的支持。</p>
+</div>
+<div class="paragraph">
+<p>可通过 <code>GroovyShellExecution</code> 进行脚本的执行。</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>由于 <code>groovy.lang.Binding</code> 的非线程安全性，在多线程场景下使用 <code>GroovyShellException</code> 时，需注意，从 Binding 中获得的数据为所有脚本共享。</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>在 Spring 环境中，会将标记为 <code>Scriptable</code> 的 bean 加入到 <code>Binding</code> 中，供脚本调用。
+没有实现此接口的类，原则上不可以在脚本中通过 bean name 的方式直接调用。
+但若必需，可考虑从 <code>ApplicationContextHolder</code> 中获取。</p>
+</div>
+<div class="paragraph">
+<p><code>GroovyShellExecution</code> 执行时产生的异常，都被封装到了 <code>GroovyScriptException</code> 中。</p>
 </div>
 </div>
 </div>
@@ -1052,7 +1073,7 @@ $ git push upstream v0.4.0</pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.1.0-SNAPSHOT<br>
-Last updated 2019-11-20 04:52:02 UTC
+Last updated 2019-11-21 02:50:15 UTC
 </div>
 </div>
 </body>
