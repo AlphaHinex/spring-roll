@@ -1,20 +1,21 @@
 package io.github.springroll.dl;
 
-import groovy.lang.Binding;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Map;
+
 @Configuration
-public class GroovyShellBindingConfiguration implements ApplicationContextAware {
+public class GroovyShellApplicationContextConfiguration implements ApplicationContextAware {
 
     private transient ApplicationContext applicationContext;
 
     @Bean
-    public Binding groovyShellBinding() {
-        return new Binding(applicationContext.getBeansOfType(Scriptable.class));
+    public Map<String, Scriptable> groovyShellApplicationContext() {
+        return applicationContext.getBeansOfType(Scriptable.class);
     }
 
     @Override

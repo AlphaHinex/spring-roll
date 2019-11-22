@@ -1,11 +1,13 @@
 package io.github.springroll.dl;
 
 import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
-import groovy.lang.Script;
 import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.utils.digest.Md5;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,59 +32,66 @@ public class GroovyShellExecution {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroovyShellExecution.class);
 
-    private transient GroovyShell shell;
-
-    private transient Map<String, Script> scriptCache = new ConcurrentHashMap<>();
+    private transient GroovyClassLoader loader;
+    private transient Map<String, Scriptable> applicationContext;
+    private transient CompilerConfiguration configuration = new CompilerConfiguration();
+    private transient Map<String, Class> classCache = new ConcurrentHashMap<>();
 
     @Autowired
-    public GroovyShellExecution(Binding groovyShellBinding) {
-        CompilerConfiguration configuration = new CompilerConfiguration();
+    public GroovyShellExecution(Map<String, Scriptable> groovyShellApplicationContext) {
+        this.applicationContext = groovyShellApplicationContext;
         configuration.setSourceEncoding(CharacterEncoding.getCharset().name());
-        shell = new GroovyShell(null, groovyShellBinding, configuration);
+        loader = AccessController.doPrivileged((PrivilegedAction<GroovyClassLoader>) () ->
+                new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), configuration));
     }
 
     public Object execute(String scriptContent) {
-        return genericExecute(scriptContent);
+        return genericExecute(scriptContent, null);
+    }
+
+    public Object execute(String scriptContent, Map<String, Object> scriptContext) {
+        return genericExecute(scriptContent, scriptContext);
     }
 
     public <T> T execute(String scriptContent, Class<T> clz) {
-        return genericExecute(scriptContent, clz);
+        return genericExecute(scriptContent, clz, null);
     }
 
     public Object execute(File file) {
-        return genericExecute(file);
+        return genericExecute(file, null);
     }
 
-    private Object genericExecute(Object scriptContent) {
+    private Object genericExecute(Object scriptContent, Map<String, Object> scriptContext) {
         if (scriptContent == null) {
             throw new GroovyScriptException("Script content SHOULD NOT null!");
         }
         try {
-            Script script = getScriptObject(scriptContent);
-            return script.run();
+            Binding binding = new Binding();
+            binding.setVariable("applicationContext", applicationContext);
+            binding.setVariable("scriptContext", scriptContext);
+            Class scriptClass = getScriptClass(scriptContent);
+            return InvokerHelper.createScript(scriptClass, binding).run();
         } catch (Exception e) {
             LOGGER.error("Execute script ERROR!\r\nScript: {}", scriptContent, e);
             throw new GroovyScriptException(e);
         }
     }
 
-    private  <T> T genericExecute(Object scriptContent, Class<T> clz) {
-        Object result = genericExecute(scriptContent);
+    private  <T> T genericExecute(Object scriptContent, Class<T> clz, Map<String, Object> scriptContext) {
+        Object result = genericExecute(scriptContent, scriptContext);
         return clz.cast(result);
     }
 
     /**
-     * 避免每次都进行脚本文件的编译及加载，
-     * 根据脚本内容做 md5，并以此为 key，缓存 Script 对象
+     * 将脚本编译成类并缓存，相同脚本不重新编译
+     * 脚本类型目前支持字符串和文件
+     * 字符串脚本以内容 md5 为 key 进行缓存
+     * 文件脚本以文件路径及最后修改时间为 key
      *
      * @param  obj 脚本内容
-     * @return 解析后的脚本对象
+     * @return 解析后的脚本类
      */
-    private Script getScriptObject(Object obj) throws IOException {
-        if (!(obj instanceof String) && !(obj instanceof File)) {
-            throw new GroovyScriptException("Not supported content type: " + obj.getClass());
-        }
-
+    private Class getScriptClass(Object obj) throws IOException {
         String key;
         if (obj instanceof String) {
             key = Md5.md5Hex((String) obj);
@@ -88,18 +99,21 @@ public class GroovyShellExecution {
             key = ((File) obj).getAbsolutePath() + ((File) obj).lastModified();
         }
 
-        if (scriptCache.containsKey(key)) {
+        if (classCache.containsKey(key)) {
             LOGGER.debug("Found key [{}] from cache, use cached Script object.", key);
-            return scriptCache.get(key);
+            return classCache.get(key);
         }
-        Script script;
+
+        GroovyCodeSource gcs;
         if (obj instanceof String) {
-            script = shell.parse((String) obj);
+            gcs = AccessController.doPrivileged((PrivilegedAction<GroovyCodeSource>) () ->
+                    new GroovyCodeSource((String) obj, key, GroovyShell.DEFAULT_CODE_BASE));
         } else {
-            script = shell.parse((File) obj);
+            gcs = new GroovyCodeSource((File) obj, configuration.getSourceEncoding());
         }
-        scriptCache.put(key, script);
-        return script;
+        Class clz = loader.parseClass(gcs, false);
+        classCache.put(key, clz);
+        return clz;
     }
 
 }
