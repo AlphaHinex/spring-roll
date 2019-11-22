@@ -49,6 +49,10 @@ public class GroovyShellExecution {
         return genericExecute(scriptContent, null);
     }
 
+    public Object execute(String scriptContent, Map<String, Object> scriptContext) {
+        return genericExecute(scriptContent, scriptContext);
+    }
+
     public <T> T execute(String scriptContent, Class<T> clz) {
         return genericExecute(scriptContent, clz, null);
     }
@@ -88,10 +92,6 @@ public class GroovyShellExecution {
      * @return 解析后的脚本类
      */
     private Class getScriptClass(Object obj) throws IOException {
-        if (!(obj instanceof String) && !(obj instanceof File)) {
-            throw new GroovyScriptException("Not supported content type: " + obj.getClass());
-        }
-
         String key;
         if (obj instanceof String) {
             key = Md5.md5Hex((String) obj);
