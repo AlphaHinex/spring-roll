@@ -1039,9 +1039,9 @@ $ git push upstream v0.4.0</pre>
 </blockquote>
 </div>
 <div class="paragraph">
-<p>在 Spring 环境中，会将标记为 <code>Scriptable</code> 的 bean 加入到 <code>Binding</code> 中，供脚本调用。
-没有实现此接口的类，原则上不可以在脚本中通过 bean name 的方式直接调用。
-但若必需，可考虑从 <code>ApplicationContextHolder</code> 中获取。</p>
+<p>在 Spring 环境中，会将标记为 <code>Scriptable</code> 的 bean 集合以 <code>applicationContext</code> 为 key 加入到 <code>Binding</code> 中，供脚本调用。
+没有实现此接口的类，原则上不可以在脚本中通过 <code>applicationContext.beanName</code> 的方式直接调用。
+但若必需，可考虑从 <code>ApplicationContextHolder</code> 中直接获取。</p>
 </div>
 <div class="paragraph">
 <p><code>GroovyShellExecution</code> 执行时产生的异常，都被封装到了 <code>GroovyScriptException</code> 中。</p>
@@ -1073,7 +1073,7 @@ $ git push upstream v0.4.0</pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.1.0-SNAPSHOT<br>
-Last updated 2019-11-21 03:20:57 UTC
+Last updated 2019-11-22 05:45:37 UTC
 </div>
 </div>
 </body>
