@@ -6,6 +6,7 @@ import groovy.lang.Script;
 import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.utils.digest.Md5;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +29,15 @@ public class GroovyShellExecution {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroovyShellExecution.class);
 
-    private transient GroovyShell shell;
-
-    private transient Map<String, Script> scriptCache = new ConcurrentHashMap<>();
+    private transient Map<String, Scriptable> shellContext;
+    private transient Map<String, Class> classCache = new ConcurrentHashMap<>();
 
     @Autowired
-    public GroovyShellExecution(Binding groovyShellBinding) {
+    public GroovyShellExecution(Map<String, Scriptable> groovyShellContext) {
         CompilerConfiguration configuration = new CompilerConfiguration();
         configuration.setSourceEncoding(CharacterEncoding.getCharset().name());
-        shell = new GroovyShell(null, groovyShellBinding, configuration);
+
+        shell = new GroovyShell(null, configuration);
     }
 
     public Object execute(String scriptContent) {
@@ -56,6 +57,10 @@ public class GroovyShellExecution {
             throw new GroovyScriptException("Script content SHOULD NOT null!");
         }
         try {
+            Binding binding = new Binding();
+
+            Class scriptClass = getScriptClass(scriptContent);
+            InvokerHelper.createScript(scriptClass, );
             Script script = getScriptObject(scriptContent);
             return script.run();
         } catch (Exception e) {
@@ -88,9 +93,9 @@ public class GroovyShellExecution {
             key = ((File) obj).getAbsolutePath() + ((File) obj).lastModified();
         }
 
-        if (scriptCache.containsKey(key)) {
+        if (classCache.containsKey(key)) {
             LOGGER.debug("Found key [{}] from cache, use cached Script object.", key);
-            return scriptCache.get(key);
+            return classCache.get(key);
         }
         Script script;
         if (obj instanceof String) {
@@ -98,7 +103,7 @@ public class GroovyShellExecution {
         } else {
             script = shell.parse((File) obj);
         }
-        scriptCache.put(key, script);
+        classCache.put(key, script);
         return script;
     }
 
