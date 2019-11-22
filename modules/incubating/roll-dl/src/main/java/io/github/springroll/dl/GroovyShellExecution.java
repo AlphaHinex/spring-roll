@@ -41,12 +41,8 @@ public class GroovyShellExecution {
     public GroovyShellExecution(Map<String, Scriptable> groovyShellApplicationContext) {
         this.applicationContext = groovyShellApplicationContext;
         configuration.setSourceEncoding(CharacterEncoding.getCharset().name());
-        loader = AccessController.doPrivileged(new PrivilegedAction<GroovyClassLoader>() {
-            @Override
-            public GroovyClassLoader run() {
-                return new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), configuration);
-            }
-        });
+        loader = AccessController.doPrivileged((PrivilegedAction<GroovyClassLoader>) () ->
+                new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), configuration));
     }
 
     public Object execute(String scriptContent) {
