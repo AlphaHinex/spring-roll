@@ -44,7 +44,7 @@ public class GroovyShellExecution {
         loader = AccessController.doPrivileged(new PrivilegedAction<GroovyClassLoader>() {
             @Override
             public GroovyClassLoader run() {
-                return new GroovyClassLoader(this.getClass().getClassLoader(), configuration);
+                return new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), configuration);
             }
         });
     }
