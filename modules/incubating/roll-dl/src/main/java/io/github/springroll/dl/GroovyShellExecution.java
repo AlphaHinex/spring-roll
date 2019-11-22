@@ -1,8 +1,9 @@
 package io.github.springroll.dl;
 
 import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
-import groovy.lang.Script;
 import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.utils.digest.Md5;
 import org.codehaus.groovy.control.CompilerConfiguration;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,59 +32,66 @@ public class GroovyShellExecution {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroovyShellExecution.class);
 
-    private transient Map<String, Scriptable> shellContext;
+    private transient GroovyClassLoader loader;
+    private transient Map<String, Scriptable> applicationContext;
+    private transient CompilerConfiguration configuration = new CompilerConfiguration();
     private transient Map<String, Class> classCache = new ConcurrentHashMap<>();
 
     @Autowired
-    public GroovyShellExecution(Map<String, Scriptable> groovyShellContext) {
-        CompilerConfiguration configuration = new CompilerConfiguration();
+    public GroovyShellExecution(Map<String, Scriptable> groovyShellApplicationContext) {
+        this.applicationContext = groovyShellApplicationContext;
         configuration.setSourceEncoding(CharacterEncoding.getCharset().name());
-
-        shell = new GroovyShell(null, configuration);
+        loader = AccessController.doPrivileged(new PrivilegedAction<GroovyClassLoader>() {
+            @Override
+            public GroovyClassLoader run() {
+                return new GroovyClassLoader(this.getClass().getClassLoader(), configuration);
+            }
+        });
     }
 
     public Object execute(String scriptContent) {
-        return genericExecute(scriptContent);
+        return genericExecute(scriptContent, null);
     }
 
     public <T> T execute(String scriptContent, Class<T> clz) {
-        return genericExecute(scriptContent, clz);
+        return genericExecute(scriptContent, clz, null);
     }
 
     public Object execute(File file) {
-        return genericExecute(file);
+        return genericExecute(file, null);
     }
 
-    private Object genericExecute(Object scriptContent) {
+    private Object genericExecute(Object scriptContent, Map<String, Object> scriptContext) {
         if (scriptContent == null) {
             throw new GroovyScriptException("Script content SHOULD NOT null!");
         }
         try {
             Binding binding = new Binding();
-
+            binding.setVariable("applicationContext", applicationContext);
+            binding.setVariable("scriptContext", scriptContext);
             Class scriptClass = getScriptClass(scriptContent);
-            InvokerHelper.createScript(scriptClass, );
-            Script script = getScriptObject(scriptContent);
-            return script.run();
+            return InvokerHelper.createScript(scriptClass, binding).run();
         } catch (Exception e) {
             LOGGER.error("Execute script ERROR!\r\nScript: {}", scriptContent, e);
             throw new GroovyScriptException(e);
         }
     }
 
-    private  <T> T genericExecute(Object scriptContent, Class<T> clz) {
-        Object result = genericExecute(scriptContent);
+    private  <T> T genericExecute(Object scriptContent, Class<T> clz, Map<String, Object> scriptContext) {
+        Object result = genericExecute(scriptContent, scriptContext);
         return clz.cast(result);
     }
 
     /**
-     * 避免每次都进行脚本文件的编译及加载，
-     * 根据脚本内容做 md5，并以此为 key，缓存 Script 对象
+     * 将脚本编译成类并缓存，相同脚本不重新编译
+     * 脚本类型目前支持字符串和文件
+     * 字符串脚本以内容 md5 为 key 进行缓存
+     * 文件脚本以文件路径及最后修改时间为 key
      *
      * @param  obj 脚本内容
-     * @return 解析后的脚本对象
+     * @return 解析后的脚本类
      */
-    private Script getScriptObject(Object obj) throws IOException {
+    private Class getScriptClass(Object obj) throws IOException {
         if (!(obj instanceof String) && !(obj instanceof File)) {
             throw new GroovyScriptException("Not supported content type: " + obj.getClass());
         }
@@ -97,14 +107,17 @@ public class GroovyShellExecution {
             LOGGER.debug("Found key [{}] from cache, use cached Script object.", key);
             return classCache.get(key);
         }
-        Script script;
+
+        GroovyCodeSource gcs;
         if (obj instanceof String) {
-            script = shell.parse((String) obj);
+            gcs = AccessController.doPrivileged((PrivilegedAction<GroovyCodeSource>) () ->
+                    new GroovyCodeSource((String) obj, key, GroovyShell.DEFAULT_CODE_BASE));
         } else {
-            script = shell.parse((File) obj);
+            gcs = new GroovyCodeSource((File) obj, configuration.getSourceEncoding());
         }
-        classCache.put(key, script);
-        return script;
+        Class clz = loader.parseClass(gcs, false);
+        classCache.put(key, clz);
+        return clz;
     }
 
 }

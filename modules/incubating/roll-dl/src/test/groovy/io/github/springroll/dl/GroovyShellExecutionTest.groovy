@@ -11,12 +11,12 @@ class GroovyShellExecutionTest extends AbstractSpringTest {
 
     @Test
     void interactWithBean() {
-        def check = 'scriptableBean.getInterval() < 60 && scriptableBean.isFixed()'
+        def check = 'applicationContext.scriptableBean.getInterval() < 60 && applicationContext.scriptableBean.isFixed()'
         assert !execution.execute(check)
 
         def script = """
-            scriptableBean.setInterval(30)
-            scriptableBean.setFixed(true)
+            applicationContext.scriptableBean.setInterval(30)
+            applicationContext.scriptableBean.setFixed(true)
             $check
 """
         assert execution.execute(script)
@@ -24,7 +24,7 @@ class GroovyShellExecutionTest extends AbstractSpringTest {
 
     @Test(expected = GroovyScriptException)
     void couldNotGetInvisiableBeanDirectly() {
-        execution.execute('invisiableForShell.shouldNotBeInvokedInShell()')
+        execution.execute('applicationContext.invisiableForShell.shouldNotBeInvokedInShell()')
     }
 
     @Test

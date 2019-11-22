@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets
 
 class GroovyShellExecutionSpec extends Specification {
 
-    def shell = new GroovyShellExecution(new Binding())
+    def shell = new GroovyShellExecution([:])
 
     @Unroll
     def "Execute groovy script [ #script ] and get result [ #result ]"() {

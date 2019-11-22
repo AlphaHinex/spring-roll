@@ -9,12 +9,12 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Map;
 
 @Configuration
-public class GroovyShellContextConfiguration implements ApplicationContextAware {
+public class GroovyShellApplicationContextConfiguration implements ApplicationContextAware {
 
     private transient ApplicationContext applicationContext;
 
     @Bean
-    public Map<String, Scriptable> groovyShellContext() {
+    public Map<String, Scriptable> groovyShellApplicationContext() {
         return applicationContext.getBeansOfType(Scriptable.class);
     }
 
