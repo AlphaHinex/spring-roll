@@ -61,6 +61,12 @@ class GroovyShellExecutionSpec extends Specification {
         e.cause instanceof MultipleCompilationErrorsException
     }
 
+    def 'Check script context'() {
+        expect:
+        shell.execute('scriptContext.a * scriptContext.b', [a:3, b:5]) == 15
+        shell.execute('scriptContext.a * scriptContext.b', [a:4, b:6]) == 24
+    }
+
     @Ignore
     def 'justInTime'() {
         while (true) {
