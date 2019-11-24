@@ -65,6 +65,12 @@ class GroovyShellExecutionSpec extends Specification {
         expect:
         shell.execute('scriptContext.a * scriptContext.b', [a:3, b:5]) == 15
         shell.execute('scriptContext.a * scriptContext.b', [a:4, b:6]) == 24
+
+        when:
+        shell.execute('scriptContext.a * scriptContext.b')
+        then:
+        def e = thrown(GroovyScriptException)
+        e.cause instanceof NullPointerException
     }
 
     @Ignore
