@@ -6,10 +6,11 @@
 
 可通过 `GroovyShellExecution` 进行脚本的执行。
 
-> 由于 `groovy.lang.Binding` 的非线程安全性，在多线程场景下使用 `GroovyShellException` 时，需注意，从 Binding 中获得的数据为所有脚本共享。
-
 在 Spring 环境中，会将标记为 `Scriptable` 的 bean 集合以 `applicationContext` 为 key 加入到 `Binding` 中，供脚本调用。
 没有实现此接口的类，原则上不可以在脚本中通过 `applicationContext.beanName` 的方式直接调用。
 但若必需，可考虑从 `ApplicationContextHolder` 中直接获取。
+
+针对单独脚本要用到的变量（非共享），可通过 `execute(String scriptContent, Map<String, Object> scriptContext)` 中的 `scriptContext` 进行传递，
+并在调用时，通过 `scriptContext.varName` 进行调用。
 
 `GroovyShellExecution` 执行时产生的异常，都被封装到了 `GroovyScriptException` 中。
