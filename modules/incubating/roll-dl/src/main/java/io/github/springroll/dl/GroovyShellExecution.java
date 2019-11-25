@@ -53,8 +53,12 @@ public class GroovyShellExecution {
         return genericExecute(scriptContent, scriptContext);
     }
 
+    public <T> T execute(String scriptContent, Map<String, Object> scriptContext, Class<T> clz) {
+        return genericExecute(scriptContent, scriptContext, clz);
+    }
+
     public <T> T execute(String scriptContent, Class<T> clz) {
-        return genericExecute(scriptContent, clz, null);
+        return genericExecute(scriptContent, null, clz);
     }
 
     public Object execute(File file) {
@@ -77,7 +81,7 @@ public class GroovyShellExecution {
         }
     }
 
-    private  <T> T genericExecute(Object scriptContent, Class<T> clz, Map<String, Object> scriptContext) {
+    private  <T> T genericExecute(Object scriptContent, Map<String, Object> scriptContext, Class<T> clz) {
         Object result = genericExecute(scriptContent, scriptContext);
         return clz.cast(result);
     }
