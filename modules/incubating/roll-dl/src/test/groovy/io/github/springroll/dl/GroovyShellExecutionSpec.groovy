@@ -124,7 +124,7 @@ class GroovyShellExecutionSpec extends Specification {
 
     def 'multiDataMultiRules'() {
         // 一批数据要执行相同的一批规则，关注哪些数据没通过。数据顺序或并行执行规则，结果取并集
-        def result = execution.executeParallel(batRules.toArray(new String[0]), data)
+        def result = execution.executeParallel(batRules.toArray(new String[0]), [data: data])
 
         expect:
         CollectionUtil.equalCollections(result, data)
