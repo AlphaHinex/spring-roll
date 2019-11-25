@@ -73,7 +73,7 @@ public class GroovyShellExecution {
      * 注意，使用此方法的前提条件为脚本运算的结果是一个集合
      *
      * @param  scripts       脚本集合
-     * @param  scriptContext 包含数据集合的上下文 // TODO 数据集合很大的时候怎么办？
+     * @param  scriptContext 包含数据集合的上下文
      * @return 脚本执行结果集合的并集
      */
     public List executeParallel(String[] scripts, Map<String, Object> scriptContext) {
