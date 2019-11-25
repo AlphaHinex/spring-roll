@@ -17,8 +17,12 @@ import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Groovy 脚本的运行环境
@@ -59,6 +63,26 @@ public class GroovyShellExecution {
 
     public <T> T execute(String scriptContent, Class<T> clz) {
         return genericExecute(scriptContent, null, clz);
+    }
+
+    /**
+     * 针对 collection 并行执行脚本集合 scripts
+     * 对脚本执行结果集合取并集，并返回
+     *
+     * 注意，使用此方法的前提条件为脚本运算的结果是一个集合
+     *
+     * @param  scripts    脚本集合
+     * @param  collection 数据集合 // TODO collection 很大的时候怎么办？
+     * @return 脚本执行结果集合的并集
+     */
+    public Object executeParallel(String[] scripts, Collection collection) {
+        Map scriptContext = Collections.singletonMap("data", collection);
+        return Arrays.stream(scripts)
+                .parallel()
+                .map(script -> execute(script, scriptContext, Collection.class))
+                .flatMap(col -> ((Collection)col).parallelStream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public Object execute(File file) {
