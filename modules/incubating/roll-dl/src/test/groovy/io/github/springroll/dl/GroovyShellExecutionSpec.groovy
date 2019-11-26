@@ -76,7 +76,7 @@ class GroovyShellExecutionSpec extends Specification {
 
         where:
         result  | scripts              | ctx
-        []      | new String[2]        | null
+        []      | new String[0]        | null
         []      | ['', ''] as String[] | null
     }
 
