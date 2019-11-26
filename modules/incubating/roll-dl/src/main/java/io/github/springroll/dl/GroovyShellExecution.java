@@ -17,8 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Groovy 脚本的运行环境
@@ -53,12 +54,35 @@ public class GroovyShellExecution {
         return genericExecute(scriptContent, scriptContext);
     }
 
+    public <T> T execute(String scriptContent, Map<String, Object> scriptContext, Class<T> clz) {
+        return genericExecute(scriptContent, scriptContext, clz);
+    }
+
     public <T> T execute(String scriptContent, Class<T> clz) {
-        return genericExecute(scriptContent, clz, null);
+        return genericExecute(scriptContent, null, clz);
     }
 
     public Object execute(File file) {
         return genericExecute(file, null);
+    }
+
+    /**
+     * 针对数据集合并行执行脚本集合 scripts
+     * 对脚本执行结果集合取并集，并返回
+     *
+     * 注意，使用此方法的前提条件为脚本运算的结果是一个集合
+     *
+     * @param  scripts       脚本集合
+     * @param  scriptContext 包含数据集合的上下文
+     * @return 脚本执行结果集合的并集
+     */
+    public List executeParallel(String[] scripts, Map<String, Object> scriptContext) {
+        return Arrays.stream(scripts)
+                .parallel()
+                .map(script -> execute(script, scriptContext, Collection.class))
+                .flatMap(Collection::parallelStream)
+                .distinct()
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private Object genericExecute(Object scriptContent, Map<String, Object> scriptContext) {
@@ -77,7 +101,7 @@ public class GroovyShellExecution {
         }
     }
 
-    private  <T> T genericExecute(Object scriptContent, Class<T> clz, Map<String, Object> scriptContext) {
+    private  <T> T genericExecute(Object scriptContent, Map<String, Object> scriptContext, Class<T> clz) {
         Object result = genericExecute(scriptContent, scriptContext);
         return clz.cast(result);
     }
