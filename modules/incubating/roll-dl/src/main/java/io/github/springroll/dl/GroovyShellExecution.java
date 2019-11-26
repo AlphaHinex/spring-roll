@@ -81,12 +81,12 @@ public class GroovyShellExecution {
 
     public boolean execute(String[] scripts, Map<String, Object> scriptContext, int op) {
         Stream<String> stream = buildScriptsStream(scripts);
-        return AND == op ?
-                stream.allMatch(script -> execute(script, scriptContext, Boolean.class)) :
-                stream.anyMatch(script -> execute(script, scriptContext, Boolean.class));
+        return AND == op
+                ? stream.allMatch(script -> execute(script, scriptContext, Boolean.class))
+                : stream.anyMatch(script -> execute(script, scriptContext, Boolean.class));
     }
 
-    private Stream<String> buildScriptsStream(String[] scripts) {
+    private Stream<String> buildScriptsStream(String... scripts) {
         if (scripts == null) {
             throw new GroovyScriptException("Script content SHOULD NOT null!");
         }
