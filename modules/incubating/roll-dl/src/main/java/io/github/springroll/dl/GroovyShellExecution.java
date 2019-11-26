@@ -5,6 +5,7 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 import io.github.springroll.base.CharacterEncoding;
+import io.github.springroll.utils.StringUtil;
 import io.github.springroll.utils.digest.Md5;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -77,8 +78,12 @@ public class GroovyShellExecution {
      * @return 脚本执行结果集合的并集
      */
     public List executeParallel(String[] scripts, Map<String, Object> scriptContext) {
+        if (scripts == null) {
+            throw new GroovyScriptException("Script content SHOULD NOT null!");
+        }
         return Arrays.stream(scripts)
                 .parallel()
+                .filter(StringUtil::isNotBlank)
                 .map(script -> execute(script, scriptContext, Collection.class))
                 .flatMap(Collection::parallelStream)
                 .distinct()

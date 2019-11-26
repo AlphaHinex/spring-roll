@@ -60,6 +60,24 @@ class GroovyShellExecutionSpec extends Specification {
         then:
         e = thrown(GroovyScriptException)
         e.cause instanceof MultipleCompilationErrorsException
+
+        when:
+        execution.executeParallel(null, null)
+        then:
+        thrown(GroovyScriptException)
+    }
+
+    @Unroll
+    def "Execute groovy scripts [ #script ] parallel and get result [ #result ]"() {
+        def res = execution.executeParallel(scripts, ctx)
+
+        expect:
+        res == result
+
+        where:
+        result  | scripts              | ctx
+        []      | new String[2]        | null
+        []      | ['', ''] as String[] | null
     }
 
     def 'Check script context'() {
