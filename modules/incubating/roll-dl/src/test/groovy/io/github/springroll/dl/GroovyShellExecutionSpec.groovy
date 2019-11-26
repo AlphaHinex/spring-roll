@@ -141,7 +141,6 @@ class GroovyShellExecutionSpec extends Specification {
         [data: data[0]] | GroovyShellExecution.AND  | true
         [data: data[1]] | GroovyShellExecution.AND  | false
         [data: data[3]] | GroovyShellExecution.OR   | true
-        [data: data[3]] | GroovyShellExecution.OR   | true
         [data: data[4]] | GroovyShellExecution.OR   | true
         [data: data[5]] | GroovyShellExecution.OR   | false
     }
