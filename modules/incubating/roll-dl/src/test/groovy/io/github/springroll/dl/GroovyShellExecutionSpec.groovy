@@ -92,12 +92,13 @@ class GroovyShellExecutionSpec extends Specification {
         e.cause instanceof NullPointerException
     }
 
-    def data = [
+    def static data = [
             [id: 0, interval: 30, baseInfo: true],
             [id: 1, interval: 50, baseInfo: false],
             [id: 2, interval: 80, baseInfo: false],
             [id: 3, interval: 90, baseInfo: true],
-            [id: 4, interval: 40, baseInfo: true]
+            [id: 4, interval: 40, baseInfo: true],
+            [id: 5, interval: 70, baseInfo: false]
     ]
 
     def rules = [
@@ -111,13 +112,13 @@ class GroovyShellExecutionSpec extends Specification {
             'scriptContext.data.findAll { it.interval > 85 == it.baseInfo }'
     ]
 
-    def 'singleDataSingleRule'() {
+    def 'single data single rule'() {
         // 关注校验结果是否通过
         expect:
         execution.execute(rules[0], [data: data[0]], Boolean.class)
     }
 
-    def 'singleDataMultiRules'() {
+    def 'single data multi rules (customize compose type)'() {
         // 关注哪条规则没通过
         def notPassed = []
         rules.each { rule ->
@@ -130,7 +131,22 @@ class GroovyShellExecutionSpec extends Specification {
         notPassed[0] == rules[1]
     }
 
-    def 'multiDataSingleRule'() {
+    @Unroll
+    def 'Execute multi rules (#op) on single data [#data] has result [#result]'() {
+        expect:
+        result == execution.execute(rules as String[], d, op)
+
+        where:
+        d               | op                        | result
+        [data: data[0]] | GroovyShellExecution.AND  | true
+        [data: data[1]] | GroovyShellExecution.AND  | false
+        [data: data[3]] | GroovyShellExecution.OR   | true
+        [data: data[3]] | GroovyShellExecution.OR   | true
+        [data: data[4]] | GroovyShellExecution.OR   | true
+        [data: data[5]] | GroovyShellExecution.OR   | false
+    }
+
+    def 'multi data single rule'() {
         // 关注哪些数据没通过
         List result = execution.execute(batRules[1], [data: data], List.class)
 
@@ -140,7 +156,7 @@ class GroovyShellExecutionSpec extends Specification {
         result[1] == data[4]
     }
 
-    def 'multiDataMultiRules'() {
+    def 'multi data multi rules'() {
         // 一批数据要执行相同的一批规则，关注哪些数据没通过。数据顺序或并行执行规则，结果取并集
         def result = execution.executeParallel(batRules.toArray(new String[0]), [data: data])
 
