@@ -5,6 +5,7 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 import io.github.springroll.base.CharacterEncoding;
+import io.github.springroll.utils.StringUtil;
 import io.github.springroll.utils.digest.Md5;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -20,6 +21,7 @@ import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Groovy 脚本的运行环境
@@ -32,6 +34,17 @@ import java.util.stream.Collectors;
 public class GroovyShellExecution {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroovyShellExecution.class);
+
+    /**
+     * 按照"与"的方式，组合脚本执行结果
+     * 单个脚本执行结果需为布尔型
+     */
+    public static final int AND = 1;
+    /**
+     * 按照"或"的方式，组合脚本执行结果
+     * 单个脚本执行结果需为布尔型
+     */
+    public static final int OR = 0;
 
     private transient GroovyClassLoader loader;
     private transient Map<String, Scriptable> applicationContext;
@@ -66,6 +79,20 @@ public class GroovyShellExecution {
         return genericExecute(file, null);
     }
 
+    public boolean execute(String[] scripts, Map<String, Object> scriptContext, int op) {
+        Stream<String> stream = buildScriptsStream(scripts);
+        return AND == op
+                ? stream.allMatch(script -> execute(script, scriptContext, Boolean.class))
+                : stream.anyMatch(script -> execute(script, scriptContext, Boolean.class));
+    }
+
+    private Stream<String> buildScriptsStream(String... scripts) {
+        if (scripts == null) {
+            throw new GroovyScriptException("Script content SHOULD NOT null!");
+        }
+        return Arrays.stream(scripts).parallel().filter(StringUtil::isNotBlank);
+    }
+
     /**
      * 针对数据集合并行执行脚本集合 scripts
      * 对脚本执行结果集合取并集，并返回
@@ -77,8 +104,7 @@ public class GroovyShellExecution {
      * @return 脚本执行结果集合的并集
      */
     public List executeParallel(String[] scripts, Map<String, Object> scriptContext) {
-        return Arrays.stream(scripts)
-                .parallel()
+        return buildScriptsStream(scripts)
                 .map(script -> execute(script, scriptContext, Collection.class))
                 .flatMap(Collection::parallelStream)
                 .distinct()
