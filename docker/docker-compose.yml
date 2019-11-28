@@ -7,3 +7,16 @@ sr-server:
   environment:
     - JAVA_OPTS=-server -Xms512m -Xmx4096m
   command: java -jar /usr/local/sr/app/sr.jar
+
+sr-mysql:
+  image: mysql:5.7.28
+  volumes:
+    - ~/data/mysql:/var/lib/mysql
+    - ./mysql/conf:/etc/mysql/conf.d
+  environment:
+    - MYSQL_ROOT_PASSWORD=3426
+    - MYSQL_DATABASE=spring_roll
+    - MYSQL_USER=sr
+    - MYSQL_PASSWORD=sr
+  ports:
+    - "3306:3306"
