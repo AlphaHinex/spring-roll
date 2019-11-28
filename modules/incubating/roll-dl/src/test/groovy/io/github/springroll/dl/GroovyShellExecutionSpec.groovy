@@ -178,4 +178,42 @@ class GroovyShellExecutionSpec extends Specification {
         true
     }
 
+    @Ignore
+    def 'generate sql'() {
+        def start = System.nanoTime()
+        def tableName = 'performance_test'
+
+        def cols = [
+                id: 'UUID.randomUUID()',
+                create_time: "new Date().format('yyyy-MM-dd HH:mm:ss')",
+                create_opt: 'org.apache.commons.lang3.RandomStringUtils.randomAlphabetic(3, 10)',
+                modify_time: "new Date().format('yyyy-MM-dd HH:mm:ss')",
+                modify_opt: 'org.apache.commons.lang3.RandomStringUtils.randomAlphabetic(3, 10)',
+                id_card: 'org.apache.commons.lang3.RandomStringUtils.randomNumeric(20)',
+                user_name: 'org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(3, 45)',
+                tel: 'org.apache.commons.lang3.RandomStringUtils.randomNumeric(11)',
+                address: 'org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(3, 45)',
+                email: '"${org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(3, 30)}@${org.apache.commons.lang3.RandomStringUtils.randomAlphabetic(3, 5)}.${[\'com\',\'cn\',\'edu.cn\', \'org\', \'io\'].get(org.apache.commons.lang3.RandomUtils.nextInt(0, 5))}"'
+        ]
+
+        10.times { idx ->
+            cols.put("c$idx", 'org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(100, 200)')
+            cols.put("m$idx", 'org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(200, 500)')
+        }
+
+        10.times {
+            def vals = []
+            cols.values().each {
+                vals << execution.execute(it)
+            }
+            println("INSERT $tableName (${cols.keySet().join(",")}) VALUES ('${vals.join("','")}');")
+        }
+
+        def estimatedTime = System.nanoTime() - start
+        println "use $estimatedTime nanoseconds, ${estimatedTime/1000000000} seconds"
+
+        expect:
+        true
+    }
+
 }
