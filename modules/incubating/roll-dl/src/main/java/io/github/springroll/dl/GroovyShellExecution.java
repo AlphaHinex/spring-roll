@@ -143,16 +143,20 @@ public class GroovyShellExecution {
      */
     private Class getScriptClass(Object obj) throws IOException {
         String key;
+        String val;
         if (obj instanceof String) {
-            key = Md5.md5Hex((String) obj);
+            val = (String) obj;
+            key = Md5.md5Hex(val);
         } else {
             key = ((File) obj).getAbsolutePath() + ((File) obj).lastModified();
+            val = "File";
         }
 
         if (classCache.containsKey(key)) {
-            LOGGER.debug("Found key [{}] from cache, use cached Script object.", key);
+            LOGGER.trace("Found key [{}] with value [{}] from cache, use cached Script object.", key, val);
             return classCache.get(key);
         }
+        LOGGER.debug("Could NOT find key [{}] with value [{}] from cache, create a new one.", key, val);
 
         GroovyCodeSource gcs;
         if (obj instanceof String) {
