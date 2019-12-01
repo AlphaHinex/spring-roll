@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="5 seconds">
+
+<!--    <property name="LOG_FILE" value="logs/roll.temp.log"/>-->
+<!--    <property name="FILE_LOG_PATTERN" value="%5p [%d{yy-MM-dd-HH:mm:ss}] %40.40c:%4L - %m%n"/>-->
+<!--    <property name="CONSOLE_LOG_PATTERN" value="%5p [%d{yy-MM-dd-HH:mm:ss}] %40.40c:%4L - %m%n"/>-->
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" optional="true" />
+
+    <logger name="io.github.springroll" level="debug"/>
+    <!-- Map url to controller -->
+<!--    <logger name="org.springframework.web.servlet.mvc.method.annotation" level="trace" />-->
+    <!--<logger name="org.springframework.messaging.simp.stomp" level="trace" />-->
+    <!--<logger name="org.springframework.web.socket.sockjs" level="trace" />-->
+
+    <root level="warn">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>
