@@ -8,4 +8,6 @@ dependencies {
         libraries.pinyin4j
 
     implementation project(':roll-base')
+
+    testImplementation project(':roll-test')
 }

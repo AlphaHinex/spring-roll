@@ -1,3 +1,5 @@
 dependencies {
     implementation libraries.spring_core
+
+    testImplementation project(':roll-test')
 }

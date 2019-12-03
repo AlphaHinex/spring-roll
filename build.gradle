@@ -104,12 +104,6 @@ subprojects {
         annotationProcessor libraries.spring_boot_configuration_processor
 
                 compileOnly libraries.spring_boot_starter_logging
-
-         testImplementation libraries.groovy_all,
-                            libraries.groovy_dateutil,
-                            libraries.spock,
-                            libraries.spring_boot_starter_web,
-                            libraries.spring_boot_starter_test
     }
 
     // spring boot configuration processor only build meta json into build folder

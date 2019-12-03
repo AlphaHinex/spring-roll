@@ -1,5 +1,7 @@
 dependencies {
     implementation libraries.checkstyle
+
+    testImplementation project(':roll-test')
 }
 
 task regModules

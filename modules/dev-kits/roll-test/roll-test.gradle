@@ -1,5 +1,10 @@
+apply plugin: 'java-library'
+
 dependencies {
-    implementation libraries.groovy_json,
-                   libraries.spring_boot_starter_test,
-                   libraries.spring_boot_starter_web
+    api libraries.groovy_dateutil,
+        libraries.spock,
+        libraries.spring_boot_starter_web,
+        libraries.spring_boot_starter_test
+
+    implementation libraries.groovy_json
 }
