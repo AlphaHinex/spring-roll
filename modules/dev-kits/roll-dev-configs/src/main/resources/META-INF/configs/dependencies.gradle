@@ -124,6 +124,8 @@ libraries.jaxws_rt = 'com.sun.xml.ws:jaxws-rt:2.3.1'
 
 libraries.jpa_api = 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final'
 
+libraries.lombok = 'org.projectlombok:lombok:1.18.10'
+
 libraries.mail = 'com.sun.mail:javax.mail:1.6.2'
 
 libraries.mongodb_driver = "org.mongodb:mongodb-driver:${versions.mongo}"

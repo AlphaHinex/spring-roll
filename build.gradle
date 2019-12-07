@@ -13,6 +13,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.6.RELEASE'
     id 'org.springframework.boot' version '2.1.8.RELEASE'
     id "com.github.spotbugs" version "2.0.0"
+    id "io.freefair.lombok" version "4.1.6"
 }
 
 buildScan {
@@ -101,9 +102,11 @@ subprojects {
     }
 
     dependencies {
-        annotationProcessor libraries.spring_boot_configuration_processor
+        annotationProcessor libraries.lombok,
+                            libraries.spring_boot_configuration_processor
 
-                compileOnly libraries.spring_boot_starter_logging
+                compileOnly libraries.lombok,
+                            libraries.spring_boot_starter_logging
     }
 
     // spring boot configuration processor only build meta json into build folder
