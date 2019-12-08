@@ -12,6 +12,16 @@
 |https://github.com/gradle/gradle/tree/v5.6.2[5.6.2]
 |https://docs.gradle.org/5.6.2/userguide/userguide.html[User Guide]
 
+|Code Generators
+|https://projectlombok.org/[Lombok]
+|https://github.com/rzwitserloot/lombok/tree/v1.18.10[1.18.10]
+|https://projectlombok.org/features/all[Stable Features]
+
+|
+|https://plugins.gradle.org/plugin/io.freefair.lombok[Lombok Gradle Plugin]
+|https://github.com/freefair/gradle-plugins/tree/4.1.6/lombok-plugin[4.1.6]
+|https://docs.freefair.io/gradle-plugins/current/reference/[Reference]
+
 |Common Utilities
 |https://commons.apache.org/proper/commons-codec/[Commons Codec]
 |https://github.com/apache/commons-codec/tree/commons-codec-1.13[1.13]
