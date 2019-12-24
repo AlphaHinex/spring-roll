@@ -112,7 +112,7 @@ subprojects {
                 url = uri('https://maven.pkg.github.com/AlphaHinex/spring-roll')
                 credentials {
                     username = project.findProperty("gpr.user") ?: System.getenv("GH_OWNER")
-                    password = project.findProperty("gpr.key") ?: System.getenv("GH_OAUTH_TOKEN")
+                    password = project.findProperty("gpr.key") ?: System.getenv("GH_PKG_ADMIN")
                 }
             }
         }
