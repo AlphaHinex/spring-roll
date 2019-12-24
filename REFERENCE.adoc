@@ -9,8 +9,8 @@
 
 |Build System
 |http://gradle.org/[Gradle]
-|https://github.com/gradle/gradle/tree/v5.6.2[5.6.2]
-|https://docs.gradle.org/5.6.2/userguide/userguide.html[User Guide]
+|https://github.com/gradle/gradle/tree/v6.0.1[6.0.1]
+|https://docs.gradle.org/6.0.1/userguide/userguide.html[User Guide]
 
 |Code Generators
 |https://projectlombok.org/[Lombok]
