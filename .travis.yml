@@ -10,8 +10,6 @@ branches:
 script: ./gradlew check
 
 after_success:
-  # publish to gpr
-  - ./gradlew publish
   # upload report to codecov
   - bash <(curl -s https://codecov.io/bash)
   # publish ascii doctor docs
