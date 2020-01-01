@@ -1,4 +1,4 @@
-task publish(type: Copy) {
+task publishDoc(type: Copy) {
     File index = new File("$rootDir/build/index.adoc")
     index.parentFile.mkdirs()
     def header = """= Spring Roll
@@ -33,7 +33,7 @@ include::{gradle-rootdir}/REFERENCE.adoc[leveloffset=+1]
 }
 
 asciidoctor {
-    dependsOn publish
+    dependsOn publishDoc
     sourceDir rootProject.buildDir
     sources {
         include 'index.adoc'
