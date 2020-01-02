@@ -50,8 +50,10 @@ apply plugin: 'org.asciidoctor.convert'
 apply from: "$devConfRoot/configs/docs.gradle"
 
 group = 'io.github.spring-roll'
+// Needs to change version in io/github/springroll/base/Version.java:13:17 TOGETHER!!
+// And keep them SAME!!
 // Use .RELEASE or -SNAPSHOT suffix after version code
-version = '0.1.0-SNAPSHOT'
+version = '0.0.2.RELEASE'
 
 subprojects {
     apply plugin: 'idea'

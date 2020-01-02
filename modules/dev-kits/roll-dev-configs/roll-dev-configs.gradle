@@ -13,7 +13,7 @@ regModules.doLast {
             supplement.append("libraries.${it.name.replaceAll('-', '_')} = '${it.group}:${it.name}:${it.version}'\r\n")
         }
     }
-    project.file('build/resources/main/META-INF/configs/dependencies.gradle').write(supplement.toString())
+    project.file('build/resources/main/META-INF/configs/dependencies.gradle').append(supplement.toString())
 }
 
 jar.dependsOn regModules
