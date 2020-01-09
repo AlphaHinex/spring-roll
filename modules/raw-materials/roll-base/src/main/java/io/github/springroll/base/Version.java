@@ -10,7 +10,7 @@ public class Version {
         // Avoid FindBugs match version string as hard coded IP,
         // use .RELEASE or -SNAPSHOT suffix
         // https://pmd.github.io/pmd-6.15.0/pmd_rules_java_bestpractices.html#avoidusinghardcodedip
-        return "0.0.2.RELEASE";
+        return "0.0.3-SNAPSHOT";
     }
 
 }
