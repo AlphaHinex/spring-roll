@@ -48,6 +48,7 @@ apply plugin: 'idea'
 apply plugin: 'org.asciidoctor.convert'
 
 apply from: "$devConfRoot/configs/docs.gradle"
+apply from: "$devConfRoot/configs/scaffold/module.gradle"
 
 group = 'io.github.spring-roll'
 // Needs to change version in io/github/springroll/base/Version.java:13:17 TOGETHER!!

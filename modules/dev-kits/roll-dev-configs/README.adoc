@@ -1,3 +1,29 @@
 = roll-dev-configs
 
-开发配置库，包括依赖定义、质量检查配置及具体规则等。
+开发配置库，包括依赖定义、质量检查配置及具体规则、脚手架等。
+
+== 脚手架
+
+=== 初始化新模块
+
+例如要新增一个 test-init 模块，可以通过下面的任务初始化该模块的基本路径及文件：
+
+```bash
+$ ./gradlew init-test-init
+```
+
+初始化内容包括：
+
+```
+modules/test-init
+modules/test-init/src/main/java/io/github/springroll/test/init
+modules/test-init/src/main/resources
+modules/test-init/src/test/groovy/io/github/springroll/test/init
+modules/test-init/src/test/resources
+modules/test-init/test-init.gradle
+modules/test-init/README.md
+```
+
+其中 package 为 `project_group + module_name`。
+
+> 注意：初始化任务执行时会先将改模块根路径删除

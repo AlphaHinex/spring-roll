@@ -1,0 +1,24 @@
+// could use init-${module-name} task to initial a sub module skeleton
+tasks.addRule('Pattern: init-<moduleName>') { String initModule ->
+    if (initModule.startsWith('init-')) {
+        task(initModule).doLast {
+            def moduleName = (initModule - 'init-').toLowerCase()
+            def moduleRoot = "${rootProject.projectDir}/modules/$moduleName"
+            def pkg = "${rootProject.getGroup().replace('-', '').replace('.', '/')}/${moduleName.replace('-', '/')}"
+
+            delete(moduleRoot)
+            mkdir(moduleRoot)
+            mkdir("$moduleRoot/src/main/java/$pkg")
+            mkdir("$moduleRoot/src/main/resources")
+            mkdir("$moduleRoot/src/test/groovy/$pkg")
+            mkdir("$moduleRoot/src/test/resources")
+
+            file("$moduleRoot/${moduleName}.gradle").createNewFile()
+            file("$moduleRoot/README.md").withWriter {
+                it.write("""$moduleName
+${'=' * moduleName.length()}
+Powered by Spring-roll""")
+            }
+        }
+    }
+}
