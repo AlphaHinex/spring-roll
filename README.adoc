@@ -35,11 +35,19 @@ image:https://codecov.io/gh/AlphaHinex/spring-roll/branch/master/graph/badge.svg
 > 在 `Windows` 环境下使用时，需使用 `gradlew.bat` 批处理指令，构建命令也需相应变化，如整体构建命令为 `gradlew build`
 
 
-== 发布到 GitHub Packages
+== 发布
+
+=== 发布到 GitHub Packages
 
     $ ./gradlew publish
 
 > 注意，仅 release 版本可被其他项目依赖，snapshot 版本虽然可以发布上去，但无法被下载。
+
+=== 发布到本地 Maven 库
+
+```bash
+$ ./gradlew publishToMavenLocal
+```
 
 
 == 部署及运行
