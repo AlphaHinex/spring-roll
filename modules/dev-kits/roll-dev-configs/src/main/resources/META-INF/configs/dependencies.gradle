@@ -12,7 +12,7 @@ versions.spring               = '5.2.2.RELEASE'
 versions.spring_boot          = '2.2.2.RELEASE'
 versions.spring_cloud         = 'Hoxton.RELEASE'
 versions.spring_cloud_alibaba = '2.1.1.RELEASE'
-versions.spring_data          = 'Lovelace-SR10'
+versions.spring_data          = 'Moore-SR3'
 versions.springfox            = '3.0.0-SNAPSHOT'
 
 configurations.all {
