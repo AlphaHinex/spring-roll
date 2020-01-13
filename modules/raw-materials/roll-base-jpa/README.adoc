@@ -1,3 +1,3 @@
 = roll-base-jpa
 
-Powered by Spring-roll
+为平台提供使用 JPA 的基础支持
