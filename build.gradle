@@ -10,7 +10,7 @@ buildscript {
 
 plugins {
     id 'io.spring.dependency-management' version '1.0.6.RELEASE'
-    id 'org.springframework.boot' version '2.1.8.RELEASE'
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
     id "com.github.spotbugs" version "2.0.0"
     id "io.freefair.lombok" version "4.1.6"
 }
@@ -50,12 +50,6 @@ apply plugin: 'org.asciidoctor.convert'
 apply from: "$devConfRoot/configs/docs.gradle"
 apply from: "$devConfRoot/configs/scaffold/module.gradle"
 
-group = 'io.github.spring-roll'
-// Needs to change version in io/github/springroll/base/Version.java:13:17 TOGETHER!!
-// And keep them SAME!!
-// Use .RELEASE or -SNAPSHOT suffix after version code
-version = '0.0.4-SNAPSHOT'
-
 subprojects {
     apply plugin: 'idea'
     apply plugin: 'java'
@@ -76,8 +70,11 @@ subprojects {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    group = rootProject.group
-    version = rootProject.version
+    group = 'io.github.spring-roll'
+    // Needs to change version in io/github/springroll/base/Version.java:13:17 TOGETHER!!
+    // And keep them SAME!!
+    // Use .RELEASE or -SNAPSHOT suffix after version code
+    version = '0.0.4-SNAPSHOT'
 
     test {
         reports.html.enabled = false

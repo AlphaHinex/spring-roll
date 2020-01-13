@@ -64,13 +64,13 @@
 
 |Spring
 |https://spring.io/projects/spring-boot[Spring Boot]
-|https://github.com/spring-projects/spring-boot/tree/v2.2.1.RELEASE[2.2.1]
-|https://docs.spring.io/spring-boot/docs/2.2.1.RELEASE/reference/htmlsingle/[Reference]
+|https://github.com/spring-projects/spring-boot/tree/v2.2.2.RELEASE[2.2.2]
+|https://docs.spring.io/spring-boot/docs/2.2.2.RELEASE/reference/htmlsingle/[Reference]
 
 |
 |http://projects.spring.io/spring-framework/[Spring Framework]
-|https://github.com/spring-projects/spring-framework/tree/v5.2.1.RELEASE[5.2.1]
-|https://docs.spring.io/spring/docs/5.2.1.RELEASE/spring-framework-reference/[Reference]
+|https://github.com/spring-projects/spring-framework/tree/v5.2.2.RELEASE[5.2.2]
+|https://docs.spring.io/spring/docs/5.2.2.RELEASE/spring-framework-reference/[Reference]
 
 |Swagger
 |http://springfox.github.io/springfox/[Spring Fox]
