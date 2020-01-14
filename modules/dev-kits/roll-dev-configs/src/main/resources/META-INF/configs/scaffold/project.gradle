@@ -1,0 +1,131 @@
+apply from: "$rootDir/modules/dev-kits/roll-dev-configs/src/main/resources/META-INF/configs/dependencies.gradle"
+
+// could use new-$group:$artifact task to initial a new project skeleton
+tasks.addRule('Pattern: new-<group>:<artifact>') { String pattern ->
+    if (pattern.startsWith('new-')) {
+        task(pattern).doLast {
+            def ga = (pattern - 'init-').toLowerCase().split(':')
+            def group = ga[0]
+            def artifact = ga[1]
+            def projectRoot = "${rootProject.projectDir}/$artifact"
+            delete(projectRoot)
+            mkdir(projectRoot)
+            mkdir("$projectRoot/modules")
+
+            copy {
+                into projectRoot
+                from '.gitignore'
+                from 'gradle'
+                from 'gradle.properties'
+                from 'gradlew'
+                from 'gradlew.bat'
+                from 'settings.gradle'
+
+                filesMatching('settings.gradle') {
+                    filter { String line ->
+                        line.startsWith('rootProject.name') ? "rootProject.name = '$artifact'" : line
+                    }
+                }
+            }
+
+            file("$projectRoot/build.gradle").withWriter {
+                it.write("""buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url 'https://maven.pkg.github.com/AlphaHinex/spring-roll'
+            credentials(PasswordCredentials) {
+                username = project.findProperty("gpr.user") ?: System.getenv("GH_OWNER")
+                password = project.findProperty("gpr.reader") ?: System.getenv("GH_PKG_READER")
+            }
+        }
+    }
+    dependencies {
+        classpath 'io.github.spring-roll:roll-dev-configs:${rootProject.version}'
+    }
+}
+
+plugins {
+    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+    id 'org.springframework.boot' version '${versions.spring_boot}'
+    id "io.freefair.lombok" version "4.1.6"
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url 'https://maven.pkg.github.com/AlphaHinex/spring-roll'
+            credentials(PasswordCredentials) {
+                username = project.findProperty("gpr.user") ?: System.getenv("GH_OWNER")
+                password = project.findProperty("gpr.reader") ?: System.getenv("GH_PKG_READER")
+            }
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'utf-8'
+        options.compilerArgs = [
+            '-Xlint:-options',
+            '-Xlint:deprecation',
+            '-Xlint:unchecked',
+            '-Werror'
+        ]
+    }
+
+    tasks.withType(GroovyCompile) {
+        options.encoding = 'utf-8'
+        options.compilerArgs = ['-Xlint:-options']
+        groovyOptions.encoding = 'utf-8'
+    }
+}
+
+apply plugin: 'idea'
+apply from: this.getClass().getClassLoader().getResource("META-INF/configs/scaffold/module.gradle")
+
+group = '$group'
+version = '0.0.1-SNAPSHOT'
+
+subprojects {
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: "io.freefair.lombok"
+
+    apply from: this.getClass().getClassLoader().getResource("META-INF/configs/dependencies.gradle")
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot:\${versions.spring_boot}"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:\${versions.spring_cloud}"
+            mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:\${versions.spring_cloud_alibaba}"
+        }
+    }
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    group = rootProject.group
+    version = rootProject.version
+
+    dependencies {
+        annotationProcessor libraries.lombok,
+                            libraries.spring_boot_configuration_processor
+
+                compileOnly libraries.lombok,
+                            libraries.spring_boot_starter_logging
+
+        testImplementation libraries.spring_boot_starter_test
+        testImplementation libraries.h2
+        testImplementation libraries.roll_test
+    }
+
+}""")
+            }
+        }
+    }
+}
