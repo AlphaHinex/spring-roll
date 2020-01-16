@@ -55,7 +55,7 @@ group = 'io.github.spring-roll'
 // Needs to change version in io/github/springroll/base/Version.java:13:17 TOGETHER!!
 // And keep them SAME!!
 // Use .RELEASE or -SNAPSHOT suffix after version code
-version = '0.0.4-SNAPSHOT'
+version = '0.0.4.RELEASE'
 
 subprojects {
     apply plugin: 'idea'
