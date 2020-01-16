@@ -48,8 +48,8 @@ apply plugin: 'idea'
 apply plugin: 'org.asciidoctor.convert'
 
 apply from: "$devConfRoot/configs/docs.gradle"
-apply from: "$devConfRoot/configs/scaffold/module.gradle"
 apply from: "$devConfRoot/configs/scaffold/project.gradle"
+apply from: "$devConfRoot/configs/scaffold/module.gradle"
 
 // Need to define group and verion at root project for module scaffold use
 group = 'io.github.spring-roll'

@@ -1,10 +1,8 @@
-apply from: "$rootDir/modules/dev-kits/roll-dev-configs/src/main/resources/META-INF/configs/dependencies.gradle"
-
 // could use new-$group:$artifact task to initial a new project skeleton
-tasks.addRule('Pattern: new-<group>:<artifact>') { String pattern ->
+tasks.addRule('Pattern: new-<group>_<artifact>') { String pattern ->
     if (pattern.startsWith('new-')) {
         task(pattern).doLast {
-            def ga = (pattern - 'init-').toLowerCase().split(':')
+            def ga = (pattern - 'init-').toLowerCase().split('_')
             def group = ga[0]
             def artifact = ga[1]
             def projectRoot = "${rootProject.projectDir}/$artifact"
@@ -15,7 +13,6 @@ tasks.addRule('Pattern: new-<group>:<artifact>') { String pattern ->
             copy {
                 into projectRoot
                 from '.gitignore'
-                from 'gradle'
                 from 'gradle.properties'
                 from 'gradlew'
                 from 'gradlew.bat'
@@ -26,6 +23,11 @@ tasks.addRule('Pattern: new-<group>:<artifact>') { String pattern ->
                         line.startsWith('rootProject.name') ? "rootProject.name = '$artifact'" : line
                     }
                 }
+            }
+
+            copy {
+                from 'gradle'
+                into "$projectRoot/gradle"
             }
 
             file("$projectRoot/build.gradle").withWriter {
@@ -48,7 +50,7 @@ tasks.addRule('Pattern: new-<group>:<artifact>') { String pattern ->
 
 plugins {
     id 'io.spring.dependency-management' version '1.0.6.RELEASE'
-    id 'org.springframework.boot' version '${versions.spring_boot}'
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
     id "io.freefair.lombok" version "4.1.6"
 }
 
