@@ -49,7 +49,6 @@ tasks.addRule('Pattern: new-<group>_<artifact>') { String pattern ->
 }
 
 plugins {
-    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
     id 'org.springframework.boot' version '2.2.2.RELEASE'
     id "io.freefair.lombok" version "4.1.6"
 }
@@ -95,18 +94,9 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'groovy'
 
-    apply plugin: 'io.spring.dependency-management'
     apply plugin: "io.freefair.lombok"
 
     apply from: this.getClass().getClassLoader().getResource("META-INF/configs/dependencies.gradle")
-
-    dependencyManagement {
-        imports {
-            mavenBom "org.springframework.boot:spring-boot:\${versions.spring_boot}"
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:\${versions.spring_cloud}"
-            mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:\${versions.spring_cloud_alibaba}"
-        }
-    }
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -115,6 +105,11 @@ subprojects {
     version = rootProject.version
 
     dependencies {
+        annotationProcessor platform("org.springframework.boot:spring-boot-dependencies:\${versions.spring_boot}")
+             implementation platform("org.springframework.boot:spring-boot-dependencies:\${versions.spring_boot}")
+             implementation platform("org.springframework.cloud:spring-cloud-dependencies:\${versions.spring_cloud}")
+             implementation platform("com.alibaba.cloud:spring-cloud-alibaba-dependencies:\${versions.spring_cloud_alibaba}")
+    
         annotationProcessor libraries.lombok,
                             libraries.spring_boot_configuration_processor
 

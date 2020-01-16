@@ -9,7 +9,6 @@ buildscript {
 }
 
 plugins {
-    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
     id 'org.springframework.boot' version '2.2.2.RELEASE'
     id "com.github.spotbugs" version "2.0.0"
     id "io.freefair.lombok" version "4.1.6"
@@ -64,16 +63,8 @@ subprojects {
     apply plugin: 'groovy'
     apply plugin: 'maven-publish'
 
-    apply plugin: 'io.spring.dependency-management'
-
     apply from: "$devConfRoot/configs/dependencies.gradle"
     apply from: "$devConfRoot/configs/quality/codeQuality.gradle"
-
-    dependencyManagement {
-        imports {
-            mavenBom "org.springframework.boot:spring-boot-dependencies:${versions.spring_boot}"
-        }
-    }
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -95,6 +86,9 @@ subprojects {
     }
 
     dependencies {
+        annotationProcessor platform("org.springframework.boot:spring-boot-dependencies:${versions.spring_boot}")
+             implementation platform("org.springframework.boot:spring-boot-dependencies:${versions.spring_boot}")
+
         annotationProcessor libraries.lombok,
                             libraries.spring_boot_configuration_processor
 
