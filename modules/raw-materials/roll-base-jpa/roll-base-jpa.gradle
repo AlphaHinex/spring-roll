@@ -1,0 +1,3 @@
+dependencies {
+    implementation libraries.spring_boot_starter_data_jpa
+}

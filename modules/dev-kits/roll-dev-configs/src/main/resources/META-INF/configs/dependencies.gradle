@@ -3,15 +3,17 @@ ext {
     libraries = [:]
 }
 
-versions.groovy             = '2.5.8'
-versions.hibernate          = '5.2.17.Final'
-versions.jackson            = '2.9.9'
-versions.mongo              = '3.11.0'
-versions.quartz             = '2.3.1'
-versions.spring             = '5.2.1.RELEASE'
-versions.spring_boot        = '2.2.1.RELEASE'
-versions.spring_data        = 'Lovelace-SR10'
-versions.springfox          = '3.0.0-SNAPSHOT'
+versions.groovy               = '2.5.8'
+versions.hibernate            = '5.2.17.Final'
+versions.jackson              = '2.9.9'
+versions.mongo                = '3.11.0'
+versions.quartz               = '2.3.1'
+versions.spring               = '5.2.2.RELEASE'
+versions.spring_boot          = '2.2.2.RELEASE'
+versions.spring_cloud         = 'Hoxton.RELEASE'
+versions.spring_cloud_alibaba = '2.1.1.RELEASE'
+versions.spring_data          = 'Moore-SR3'
+versions.springfox            = '3.0.0-SNAPSHOT'
 
 configurations.all {
     resolutionStrategy.force 'xml-apis:xml-apis:1.4.01'
@@ -56,7 +58,7 @@ configurations.all {
     exclude group: 'log4j'
 
     // Exclude HikariCP
-    exclude module: 'HikariCP'
+//    exclude module: 'HikariCP'
 }
 
 configurations.testImplementation {
@@ -163,6 +165,10 @@ libraries.spring_boot_starter_mail            = 'org.springframework.boot:spring
 libraries.spring_boot_starter_data_mongodb    = 'org.springframework.boot:spring-boot-starter-data-mongodb'
 libraries.spring_boot_starter_test            = 'org.springframework.boot:spring-boot-starter-test'
 libraries.spring_boot_starter_web             = 'org.springframework.boot:spring-boot-starter-web'
+
+libraries.spring_cloud_starter_openfeign = 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+libraries.spring_cloud_alibaba_nacos_discovery = 'com.alibaba.cloud:spring-cloud-alibaba-nacos-discovery'
 
 libraries.spring_context = "org.springframework:spring-context:${versions.spring}"
 libraries.spring_context_support = "org.springframework:spring-context-support:${versions.spring}"

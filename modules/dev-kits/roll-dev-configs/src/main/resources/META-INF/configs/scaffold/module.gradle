@@ -4,7 +4,10 @@ tasks.addRule('Pattern: init-<moduleName>') { String initModule ->
         task(initModule).doLast {
             def moduleName = (initModule - 'init-').toLowerCase()
             def moduleRoot = "${rootProject.projectDir}/modules/$moduleName"
-            def pkg = "${rootProject.getGroup().replace('-', '').replace('.', '/')}/${moduleName.replace('-', '/')}"
+            def len = moduleName.split('-').length
+            // Try to remove prefix of module name to use it in package
+            def pkg = len > 1 ? moduleName.split('-')[1,len - 1].join('/') : moduleName.replace('-', '/')
+            pkg = "${rootProject.getGroup().replace('-', '').replace('.', '/')}/$pkg"
 
             delete(moduleRoot)
             mkdir(moduleRoot)
@@ -14,9 +17,9 @@ tasks.addRule('Pattern: init-<moduleName>') { String initModule ->
             mkdir("$moduleRoot/src/test/resources")
 
             file("$moduleRoot/${moduleName}.gradle").createNewFile()
-            file("$moduleRoot/README.md").withWriter {
-                it.write("""$moduleName
-${'=' * moduleName.length()}
+            file("$moduleRoot/README.adoc").withWriter {
+                it.write("""= $moduleName
+
 Powered by Spring-roll""")
             }
         }
