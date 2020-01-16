@@ -2,7 +2,7 @@
 tasks.addRule('Pattern: new-<group>_<artifact>') { String pattern ->
     if (pattern.startsWith('new-')) {
         task(pattern).doLast {
-            def ga = (pattern - 'init-').toLowerCase().split('_')
+            def ga = (pattern - 'new-').toLowerCase().split('_')
             def group = ga[0]
             def artifact = ga[1]
             def projectRoot = "${rootProject.projectDir}/$artifact"
