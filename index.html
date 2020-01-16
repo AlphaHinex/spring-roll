@@ -439,7 +439,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="details">
 <span id="author" class="author">AlphaHinex</span><br>
 <span id="email" class="email"><a href="https://github.com/AlphaHinex">@AlphaHinex</a></span><br>
-<span id="revnumber">version 0.0.4-SNAPSHOT</span>
+<span id="revnumber">version 0.0.4.RELEASE</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1031,6 +1031,36 @@ $ git push upstream v0.4.0</pre>
 <div class="sect3">
 <h4 id="_脚手架">5.1.1. 脚手架</h4>
 <div class="sect4">
+<h5 id="_初始化一个项目">初始化一个项目</h5>
+<div class="paragraph">
+<p>依照 Spring Roll 框架体系新建一个项目时，可使用 <code>new-&lt;group&gt;_&lt;artifact&gt;</code> 模式脚手架，如：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ ./gradlew new-com.example_sr-demo</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>包括：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>沿用依赖版本</p>
+</li>
+<li>
+<p>模块定义方式</p>
+</li>
+<li>
+<p>开发模式规范</p>
+</li>
+<li>
+<p>质量控制体系</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect4">
 <h5 id="_初始化新模块">初始化新模块</h5>
 <div class="paragraph">
 <p>例如要新增一个 test-init 模块，可以通过下面的任务初始化该模块的基本路径及文件：</p>
@@ -1136,8 +1166,8 @@ modules/test-init/README.md</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.0.4-SNAPSHOT<br>
-Last updated 2020-01-16 01:37:10 UTC
+Version 0.0.4.RELEASE<br>
+Last updated 2020-01-16 01:43:15 UTC
 </div>
 </div>
 </body>
