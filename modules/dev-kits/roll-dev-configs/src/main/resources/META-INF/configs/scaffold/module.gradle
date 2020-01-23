@@ -6,7 +6,7 @@ tasks.addRule('Pattern: init-<moduleName>') { String initModule ->
             def moduleRoot = "${rootProject.projectDir}/modules/$moduleName"
             def len = moduleName.split('-').length
             // Try to remove prefix of module name to use it in package
-            def pkg = len > 1 ? moduleName.split('-')[1,len - 1].join('/') : moduleName.replace('-', '/')
+            def pkg = len > 1 ? (len == 2 ? moduleName.split('-')[1] : moduleName.split('-')[1,len - 1].join('/')) : moduleName.replace('-', '/')
             pkg = "${rootProject.getGroup().replace('-', '').replace('.', '/')}/$pkg"
 
             delete(moduleRoot)
