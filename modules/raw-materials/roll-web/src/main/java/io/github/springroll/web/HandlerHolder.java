@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 @Service
 public class HandlerHolder {
 
-    private RequestMappingHandlerMapping mapping;
+    private transient RequestMappingHandlerMapping mapping;
 
     @Autowired
     public HandlerHolder(RequestMappingHandlerMapping mapping) {
