@@ -127,12 +127,14 @@ class JsonUtilSpec extends Specification {
         def id, createUserId
     }
 
+    class EmptyBean { }
+
     def 'Parse having exception'() {
         expect:
         JsonUtil.parseIgnoreException('abc', String.class) == null
         JsonUtil.parseIgnoreException('abc'.bytes, String.class) == null
         JsonUtil.parseIgnoreException('abc', new TypeReference<String>() {}) == null
-        JsonUtil.toJsonIgnoreException('zzz') == '""'
+        JsonUtil.toJsonIgnoreException(new EmptyBean()) == ''
     }
 
 }
