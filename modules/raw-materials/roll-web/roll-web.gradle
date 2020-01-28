@@ -1,8 +1,10 @@
-dependencies {
-    implementation libraries.spring_boot_starter_web
+apply plugin: 'java-library'
 
-    implementation project(':roll-base'),
-                   project(':roll-utils')
+dependencies {
+                   api libraries.spring_boot_starter_web
+
+                   api project(':roll-base'),
+                       project(':roll-utils')
 
     testImplementation project(':roll-test')
 }
