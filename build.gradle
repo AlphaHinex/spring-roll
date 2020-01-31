@@ -17,6 +17,7 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
+        mavenLocal()
         maven {
             url 'https://repo.gradle.org/gradle/libs/'
         }

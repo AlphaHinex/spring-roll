@@ -4,14 +4,26 @@ apply plugin: "com.github.spotbugs"
 apply plugin: 'jacoco'
 apply plugin: 'pmd'
 
-def configDir = new File(devConfRoot, 'configs/quality')
-
-ext.checkstyleConfigDir = "$configDir/checkstyle"
+// Extract config files in jar
+def devConfExtractPath = "${rootProject.projectDir}/build/roll-dev-configs"
+delete devConfExtractPath
+def jars = rootProject.buildscript.configurations.classpath.files as List<File>
+def devConfJar = jars.find { it.name.matches '.*roll-dev-configs.*'}
+if (devConfJar) {
+    ant.unjar src: devConfJar, dest: devConfExtractPath
+}
 
 dependencies {
     pmd libraries.p3c_pmd
-    checkstyle project(':roll-dev-configs')
+//    checkstyle project(':roll-dev-configs')
+    checkstyle 'io.github.alphahinex:checkstyle-checkers:1.0.0-SNAPSHOT'
 }
+
+def configDir = hasProperty('devConfRoot')
+        ? new File(devConfRoot, 'configs/quality')
+        : new File(devConfExtractPath, 'META-INF/configs/quality')
+
+ext.checkstyleConfigDir = "$configDir/checkstyle"
 
 checkstyle {
     configFile = new File(checkstyleConfigDir, "checkstyle.xml")
