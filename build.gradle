@@ -73,15 +73,6 @@ subprojects {
     group = rootProject.group
     version = rootProject.version
 
-    test {
-        reports.html.enabled = false
-        reports.junitXml.enabled = false
-        //project unit parallel
-        //maxParallelForks = 2
-        //GC
-        forkEvery = 100
-    }
-
     java {
         withSourcesJar()
     }

@@ -88,5 +88,14 @@ tasks.withType(Pmd) {
     }
 }
 
+test {
+    reports.html.enabled = false
+    reports.junitXml.enabled = false
+    //project unit parallel
+    //maxParallelForks = 2
+    //GC
+    forkEvery = 100
+}
+
 check.dependsOn jacocoTestReport
 build.dependsOn jacocoTestReport
