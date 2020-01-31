@@ -21,6 +21,13 @@ allprojects {
         maven {
             url 'https://repo.gradle.org/gradle/libs/'
         }
+        maven {
+            url 'https://maven.pkg.github.com/AlphaHinex/checkstyle-checkers'
+            credentials(PasswordCredentials) {
+                username = project.findProperty("gpr.user") ?: System.getenv("GH_OWNER")
+                password = project.findProperty("gpr.reader") ?: System.getenv("GH_PKG_READER")
+            }
+        }
     }
 }
 
