@@ -3,6 +3,27 @@ apply plugin: 'codenarc'
 apply plugin: "com.github.spotbugs"
 apply plugin: 'jacoco'
 apply plugin: 'pmd'
+apply plugin: 'java'
+
+java {
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'utf-8'
+    options.compilerArgs = [
+        '-Xlint:-options',
+        '-Xlint:deprecation',
+        '-Xlint:unchecked',
+        '-Werror'
+    ]
+}
+
+tasks.withType(GroovyCompile) {
+    options.encoding = 'utf-8'
+    options.compilerArgs = ['-Xlint:-options']
+    groovyOptions.encoding = 'utf-8'
+}
 
 // Extract config files in jar
 def devConfExtractPath = "${rootProject.projectDir}/build/roll-dev-configs"
