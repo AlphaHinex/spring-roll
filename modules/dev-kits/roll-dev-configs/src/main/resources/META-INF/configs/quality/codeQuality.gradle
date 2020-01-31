@@ -15,7 +15,6 @@ if (devConfJar) {
 
 dependencies {
     pmd libraries.p3c_pmd
-//    checkstyle project(':roll-dev-configs')
     checkstyle 'io.github.alphahinex:checkstyle-checkers:1.0.0-SNAPSHOT'
 }
 
