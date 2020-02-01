@@ -10,32 +10,24 @@ buildscript {
 
 plugins {
     id 'org.springframework.boot' version '2.2.2.RELEASE'
-    id "com.github.spotbugs" version "2.0.0"
+    id "com.github.spotbugs" version "3.0.0"
     id "io.freefair.lombok" version "4.1.6"
 }
 
 allprojects {
     repositories {
         mavenCentral()
+        mavenLocal()
         maven {
             url 'https://repo.gradle.org/gradle/libs/'
         }
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = 'utf-8'
-        options.compilerArgs = [
-            '-Xlint:-options',
-            '-Xlint:deprecation',
-            '-Xlint:unchecked',
-            '-Werror'
-        ]
-    }
-
-    tasks.withType(GroovyCompile) {
-        options.encoding = 'utf-8'
-        options.compilerArgs = ['-Xlint:-options']
-        groovyOptions.encoding = 'utf-8'
+        maven {
+            url 'https://maven.pkg.github.com/AlphaHinex/checkstyle-checkers'
+            credentials(PasswordCredentials) {
+                username = project.findProperty("gpr.user") ?: System.getenv("GH_OWNER")
+                password = project.findProperty("gpr.reader") ?: System.getenv("GH_PKG_READER")
+            }
+        }
     }
 }
 
@@ -55,7 +47,7 @@ group = 'io.github.spring-roll'
 // Needs to change version in io/github/springroll/base/Version.java:13:17 TOGETHER!!
 // And keep them SAME!!
 // Use .RELEASE or -SNAPSHOT suffix after version code
-version = '0.0.5-SNAPSHOT'
+version = '0.0.5.RELEASE'
 
 subprojects {
     apply plugin: 'idea'
@@ -71,19 +63,6 @@ subprojects {
 
     group = rootProject.group
     version = rootProject.version
-
-    test {
-        reports.html.enabled = false
-        reports.junitXml.enabled = false
-        //project unit parallel
-        //maxParallelForks = 2
-        //GC
-        forkEvery = 100
-    }
-
-    java {
-        withSourcesJar()
-    }
 
     dependencies {
         annotationProcessor platform("org.springframework.boot:spring-boot-dependencies:${versions.spring_boot}")
