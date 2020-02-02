@@ -21,10 +21,10 @@ class ArtificialHttpServletRequest implements HttpServletRequest {
     public static final String INTERVAL_TOKEN = "&";
     public static final String EQUATION_TOKEN = "=";
 
-    private String servletPath;
-    private String contextPath;
-    private String uri;
-    private Map<String, String> params;
+    private transient String servletPath;
+    private transient String contextPath;
+    private transient String uri;
+    private transient Map<String, String> params;
 
     public ArtificialHttpServletRequest(String servletPath, String contextPath, String uri, Map<String, String> params) {
         this.servletPath = servletPath;
