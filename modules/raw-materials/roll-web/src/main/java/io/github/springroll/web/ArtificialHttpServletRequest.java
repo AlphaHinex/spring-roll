@@ -13,13 +13,9 @@ import java.util.Map;
 
 /**
  * 人造的 HttpServletRequest
- * 用来根据表格查询 url，构造查询请求，作为入参传入具体业务查询方法
+ * 可用来根据需求构造一个 HttpServletRequest 的实现，作为入参传入方法中
  */
 class ArtificialHttpServletRequest implements HttpServletRequest {
-
-    public static final String START_TOKEN = "?";
-    public static final String INTERVAL_TOKEN = "&";
-    public static final String EQUATION_TOKEN = "=";
 
     private transient String servletPath;
     private transient String contextPath;
