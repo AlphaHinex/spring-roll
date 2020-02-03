@@ -1,5 +1,7 @@
 package io.github.springroll.web;
 
+import org.springframework.util.Assert;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.BufferedReader;
@@ -12,19 +14,23 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * 人造的 HttpServletRequest
- * 可用来根据需求构造一个 HttpServletRequest 的实现，作为入参传入方法中
+ * 人造的 {@link javax.servlet.http.HttpServletRequest} 实现
+ *
+ * 可用来根据需求构造一个 HttpServletRequest，作为入参传入方法中
+ *
+ * 仅实现了部分方法，借用自 org.springframework.mock.web.MockHttpServletRequest
+ * 调用未实现方法会抛出异常
  */
 class ArtificialHttpServletRequest implements HttpServletRequest {
 
-    private transient String servletPath;
     private transient String contextPath;
+    private transient String servletPath;
     private transient String uri;
-    private transient Map<String, String> params;
+    private transient Map<String, String[]> params;
 
-    public ArtificialHttpServletRequest(String servletPath, String contextPath, String uri, Map<String, String> params) {
-        this.servletPath = servletPath;
+    public ArtificialHttpServletRequest(String contextPath, String servletPath, String uri, Map<String, String[]> params) {
         this.contextPath = contextPath;
+        this.servletPath = servletPath;
         this.uri = uri;
         this.params = params;
     }
@@ -46,7 +52,9 @@ class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getParameter(String name) {
-        return params.get(name);
+        Assert.notNull(name, "Parameter name must not be null");
+        String[] arr = this.params.get(name);
+        return (arr != null && arr.length > 0 ? arr[0] : null);
     }
 
     // Below methods not implement
@@ -58,7 +66,7 @@ class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Cookie[] getCookies() {
-        return new Cookie[0];
+        return null;
     }
 
     @Override
@@ -244,7 +252,7 @@ class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String[] getParameterValues(String name) {
-        return new String[0];
+        return null;
     }
 
     @Override
