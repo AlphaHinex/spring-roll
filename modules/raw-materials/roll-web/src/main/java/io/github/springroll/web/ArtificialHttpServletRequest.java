@@ -21,7 +21,7 @@ import java.util.Map;
  * 仅实现了部分方法，借用自 org.springframework.mock.web.MockHttpServletRequest
  * 调用未实现方法会抛出异常
  */
-class ArtificialHttpServletRequest implements HttpServletRequest {
+public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     private transient String contextPath;
     private transient String servletPath;
