@@ -89,7 +89,15 @@ jacocoTestReport {
 
 configurations.codenarc.resolutionStrategy.force(libraries.groovy_all)
 
+def excludeArtificialHttpServletRequest = 'io/github/springroll/web/ArtificialHttpServletRequest*'
+
+tasks.withType(Checkstyle) {
+    exclude "**/$excludeArtificialHttpServletRequest"
+}
+
 tasks.withType(Pmd) {
+    exclude "**/$excludeArtificialHttpServletRequest"
+
     ruleSetFiles = files(
         "$configDir/pmd/ali-comment.xml",
         "$configDir/pmd/ali-concurrent.xml",
