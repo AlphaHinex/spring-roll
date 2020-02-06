@@ -1,6 +1,7 @@
 package io.github.springroll.export.excel;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.springroll.export.excel.handler.PaginationHandler;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
 import io.github.springroll.web.ArtificialHttpServletRequest;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
@@ -24,10 +26,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/export/excel")
@@ -44,6 +43,8 @@ public class ExportExcelController {
     private static final int ROW_INDEX_CONTENT = 1;
 
     private HandlerHolder handlerHolder;
+    // TODO
+    private List<PaginationHandler> paginationHandlers;
 
     @Autowired
     public ExportExcelController(HandlerHolder handlerHolder) {
@@ -129,7 +130,7 @@ public class ExportExcelController {
     }
 
     private List getPageData(String contextPath, String url, String total) throws Exception {
-        Map<String, String[]> params = new HashMap<>(2);
+        Map<String, String[]> params = new HashMap<>(16);
         params.put("page", new String[] {"1"});
         params.put("rows", new String[] {total});
         params.putAll(parseParams(url));
@@ -141,18 +142,17 @@ public class ExportExcelController {
         HttpServletRequest request = new ArtificialHttpServletRequest(contextPath, servletPath, url, params);
         HandlerMethod handlerMethod = handlerHolder.getHandler(request);
         Method method = handlerMethod.getMethod();
-        Object result = method.invoke(handlerMethod.getBean(), buildParamForMethod(handlerMethod.getMethodParameters(), request));
+        Object rawObject = method.invoke(handlerMethod.getBean(), buildParamForMethod(handlerMethod.getMethodParameters(), request));
 
-        String rowsKey = "rows";
-        if (result instanceof Page) {
-            return ((Page) result).getRows();
-        } else if (result instanceof Map && ((Map) result).containsKey(rowsKey)) {
-            return (List) ((Map) result).get(rowsKey);
-        } else {
-            String resultType = result.getClass().getName();
-            LOGGER.error("Not support query data type: {}", resultType);
-            throw new RuntimeException("Only support Page and Map type, but here has " + resultType);
+        Optional<List> optional;
+        for (PaginationHandler handler : paginationHandlers) {
+            optional = handler.getPaginationData(rawObject);
+            if (optional.isPresent()) {
+                return optional.get();
+            }
         }
+        String resultType = rawObject.getClass().getName();
+        throw new RuntimeException("Could not find property PaginationHandler for " + resultType);
     }
 
     private Map<String, String[]> parseParams(String url) {
