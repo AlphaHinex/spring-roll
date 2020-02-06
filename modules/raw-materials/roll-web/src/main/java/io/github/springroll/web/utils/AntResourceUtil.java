@@ -1,4 +1,4 @@
-package io.github.springroll.base.util;
+package io.github.springroll.web.utils;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
