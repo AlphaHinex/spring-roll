@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
@@ -43,12 +42,12 @@ public class ExportExcelController {
     private static final int ROW_INDEX_CONTENT = 1;
 
     private HandlerHolder handlerHolder;
-    // TODO
-    private List<PaginationHandler> paginationHandlers;
+    private Collection<PaginationHandler> paginationHandlers;
 
     @Autowired
-    public ExportExcelController(HandlerHolder handlerHolder) {
+    public ExportExcelController(HandlerHolder handlerHolder, Collection<PaginationHandler> paginationHandlers) {
         this.handlerHolder = handlerHolder;
+        this.paginationHandlers = paginationHandlers;
     }
 
     /**
