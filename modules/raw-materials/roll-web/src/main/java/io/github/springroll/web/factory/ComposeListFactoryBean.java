@@ -41,16 +41,12 @@ public class ComposeListFactoryBean extends AbstractFactoryBean<List> {
         }
 
         LOGGER.debug("Composing list with '{}' pattern...", listBeanNamePattern);
-        try {
-            String[] beanNames = ApplicationContextHolder.getApplicationContext().getBeanNamesForType(List.class);
-            for (String beanName : beanNames) {
-                if (beanName.matches(listBeanNamePattern)) {
-                    LOGGER.debug("Add '{}' with '{}' pattern.", beanNames, listBeanNamePattern);
-                    instance.addAll(ApplicationContextHolder.getBean(beanName, List.class));
-                }
+        String[] beanNames = ApplicationContextHolder.getApplicationContext().getBeanNamesForType(List.class);
+        for (String beanName : beanNames) {
+            if (beanName.matches(listBeanNamePattern)) {
+                LOGGER.debug("Add '{}' with '{}' pattern.", beanNames, listBeanNamePattern);
+                instance.addAll(ApplicationContextHolder.getBean(beanName, List.class));
             }
-        } catch (Exception e) {
-            LOGGER.error("Find beans with '{}' pattern error!", listBeanNamePattern, e);
         }
         return instance;
     }
