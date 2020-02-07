@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.method.HandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -33,7 +36,7 @@ public class ExportExcelController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExportExcelController.class);
 
-    private static final String DEFAULT_ENCODING = "UTF-8";
+    private static final String DEFAULT_ENCODING = "UTF8";
     private static final String PARAMS_TOKEN_START = "?";
     private static final String PARAMS_TOKEN_INTERVAL = "&";
     private static final String PARAMS_TOKEN_EQUATION = "=";
@@ -52,22 +55,24 @@ public class ExportExcelController {
 
     /**
      * 根据查询请求 url，找到对应方法，查询出全部数据，导出到 excel 中
+     * 注意必填参数均需进行 URL encode
      *
-     * @param  cols              列表中对 columns 的定义
+     * @param  title             导出文件标题
+     * @param  cols              列表中对 columns 的定义，JSON 格式表示
      * @param  url               查询数据请求 url
      * @param  total             导出数据总数
-     * @param  title             导出文件标题
      * @param  tomcatUriEncoding tomcat server.xml 中 Connector 设定的 URIEncoding 值，若未设置，默认为 ISO-8859-1
      * @param  request           请求对象
      * @param  response          响应对象
      * @throws Exception         导出过程中可能会出现的各种异常
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/all")
-    public void exportAll(String cols, String url, String total, String title, String tomcatUriEncoding,
+    @RequestMapping(method = RequestMethod.GET, value = "/all/{title}")
+    public void exportAll(@PathVariable String title, @RequestParam String cols, @RequestParam String url,
+                          String total, String tomcatUriEncoding,
                           HttpServletRequest request, HttpServletResponse response) throws Exception {
-        cols = handleEncoding(cols, tomcatUriEncoding);
-        url = handleEncoding(url, tomcatUriEncoding);
-        title = handleEncoding(title, tomcatUriEncoding);
+        title = decode(title, tomcatUriEncoding);
+        cols = decode(cols, tomcatUriEncoding);
+        url = decode(url, tomcatUriEncoding);
         LOGGER.debug("Cols string after encoding is {}", cols);
 
         HSSFWorkbook wb = new HSSFWorkbook();
@@ -79,9 +84,15 @@ public class ExportExcelController {
         outputToResponse(title, response, wb);
     }
 
-    private String handleEncoding(String str, String encoding) throws UnsupportedEncodingException {
-        return DEFAULT_ENCODING.equals(encoding) || StringUtil.isBlank(encoding) ?
+    private String decode(String str, String encoding) throws UnsupportedEncodingException {
+        str = StringUtil.isBlank(encoding) ? URLDecoder.decode(str) : URLDecoder.decode(str, encoding);
+        return isDefaultEncoding(encoding) || StringUtil.isBlank(encoding) ?
                 str : new String(str.getBytes(encoding), DEFAULT_ENCODING);
+    }
+
+    private boolean isDefaultEncoding(String encoding) {
+        return StringUtil.isNotBlank(encoding)
+                && DEFAULT_ENCODING.equalsIgnoreCase(encoding.replace("-", ""));
     }
 
     private void writeTitle(HSSFSheet sheet, List<ColumnDef> cols) {

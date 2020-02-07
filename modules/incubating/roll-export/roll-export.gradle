@@ -1,5 +1,7 @@
 dependencies {
-    implementation libraries.poi
+        implementation libraries.poi
 
-    implementation project(':roll-web')
+        implementation project(':roll-web')
+
+    testImplementation project(':roll-test')
 }
