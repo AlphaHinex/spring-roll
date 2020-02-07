@@ -1,4 +1,4 @@
-package io.github.springroll.base.util
+package io.github.springroll.web.utils
 
 import spock.lang.Specification
 
