@@ -45,8 +45,8 @@ public class ExportExcelController {
     private static final int ROW_INDEX_TITLE = 0;
     private static final int ROW_INDEX_CONTENT = 1;
 
-    private HandlerHolder handlerHolder;
-    private Collection<PaginationHandler> paginationHandlers;
+    private transient HandlerHolder handlerHolder;
+    private transient Collection<PaginationHandler> paginationHandlers;
 
     @Autowired
     public ExportExcelController(HandlerHolder handlerHolder, Collection<PaginationHandler> paginationHandlers) {
@@ -71,25 +71,25 @@ public class ExportExcelController {
     public void exportAll(@PathVariable String title, @RequestParam String cols, @RequestParam String url,
                           String total, String tomcatUriEncoding,
                           HttpServletRequest request, HttpServletResponse response) throws Exception {
-        title = decode(title, tomcatUriEncoding);
-        cols = decode(cols, tomcatUriEncoding);
-        url = decode(url, tomcatUriEncoding);
-        LOGGER.debug("Cols string after encoding is {}", cols);
+        String decodedTitle = decode(title, tomcatUriEncoding);
+        String decodedCols = decode(cols, tomcatUriEncoding);
+        String decodedUrl = decode(url, tomcatUriEncoding);
+        LOGGER.debug("Cols string after encoding is {}", decodedCols);
 
         HSSFWorkbook wb = new HSSFWorkbook();
-        HSSFSheet sheet = wb.createSheet(title);
+        HSSFSheet sheet = wb.createSheet(decodedTitle);
 
-        List<ColumnDef> columnDefs = JsonUtil.parse(cols, new TypeReference<List<ColumnDef>>() {});
+        List<ColumnDef> columnDefs = JsonUtil.parse(decodedCols, new TypeReference<List<ColumnDef>>() {});
         writeTitle(sheet, columnDefs);
-        writeContent(request.getContextPath(), url, total, columnDefs, sheet);
-        outputToResponse(title, response, wb);
+        writeContent(request.getContextPath(), decodedUrl, total, columnDefs, sheet);
+        outputToResponse(decodedTitle, response, wb);
     }
 
     private String decode(String str, String encoding) throws UnsupportedEncodingException {
-        str = StringUtil.isBlank(encoding) ? URLDecoder.decode(str, CharacterEncoding.DEFAULT_ENCODE_NAME)
+        String decodedStr = StringUtil.isBlank(encoding) ? URLDecoder.decode(str, CharacterEncoding.DEFAULT_ENCODE_NAME)
                 : URLDecoder.decode(str, encoding);
-        return isDefaultEncoding(encoding) || StringUtil.isBlank(encoding) ?
-                str : new String(str.getBytes(encoding), DEFAULT_ENCODING);
+        return isDefaultEncoding(encoding) || StringUtil.isBlank(encoding)
+                ? decodedStr : new String(decodedStr.getBytes(encoding), DEFAULT_ENCODING);
     }
 
     private boolean isDefaultEncoding(String encoding) {
@@ -147,11 +147,11 @@ public class ExportExcelController {
         params.put("rows", new String[] {total});
         params.putAll(parseParams(url));
 
-        url = cleanUri(url, contextPath);
+        String cleanUrl = cleanUri(url, contextPath);
 
-        String servletPath = url.replaceFirst(contextPath, "");
+        String servletPath = cleanUrl.replaceFirst(contextPath, "");
 
-        HttpServletRequest request = new ArtificialHttpServletRequest(contextPath, servletPath, url, params);
+        HttpServletRequest request = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl, params);
         HandlerMethod handlerMethod = handlerHolder.getHandler(request);
         Method method = handlerMethod.getMethod();
         Object rawObject = method.invoke(handlerMethod.getBean(), buildParamForMethod(handlerMethod.getMethodParameters(), request));
@@ -200,7 +200,9 @@ public class ExportExcelController {
         }
         Object[] params = new Object[methodParameters.length];
         for (int i = 0; i < methodParameters.length; i++) {
-            params[i] = "javax.servlet.http.HttpServletRequest".equals(methodParameters[i].getParameterType().getName()) ? request : null;
+            if ("javax.servlet.http.HttpServletRequest".equals(methodParameters[i].getParameterType().getName())) {
+                params[i] = request;
+            }
         }
         return params;
     }
