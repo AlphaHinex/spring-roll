@@ -41,6 +41,7 @@ public class ExportExcelController {
     private static final String PARAMS_TOKEN_START = "?";
     private static final String PARAMS_TOKEN_INTERVAL = "&";
     private static final String PARAMS_TOKEN_EQUATION = "=";
+    private static final int PARAMS_PAIR_LEN = 2;
 
     private static final int ROW_INDEX_TITLE = 0;
     private static final int ROW_INDEX_CONTENT = 1;
@@ -177,10 +178,7 @@ public class ExportExcelController {
         String[] keyValue;
         for (String param : params) {
             keyValue = param.split(PARAMS_TOKEN_EQUATION);
-            if (keyValue.length != 2) {
-                continue;
-            }
-            map.put(keyValue[0], new String[] {keyValue[1]});
+            map.put(keyValue[0], keyValue.length == PARAMS_PAIR_LEN ? new String[] {keyValue[1]} : null);
         }
         return map;
     }
