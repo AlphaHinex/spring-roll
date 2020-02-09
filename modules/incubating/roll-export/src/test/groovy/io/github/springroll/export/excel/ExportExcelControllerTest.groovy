@@ -2,9 +2,13 @@ package io.github.springroll.export.excel
 
 import io.github.springroll.export.excel.handler.PaginationHandler
 import io.github.springroll.test.AbstractSpringTest
+import io.github.springroll.test.TestResource
 import io.github.springroll.utils.JsonUtil
 import io.github.springroll.web.controller.BaseController
 import io.github.springroll.web.model.DataTrunk
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.Workbook
 import org.junit.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,7 +24,28 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def title = URLEncoder.encode('中文','utf-8')
         def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException([new ColumnDef("名称", "name")]), 'UTF-8')
         def url = URLEncoder.encode('/test/query', 'UTF-8')
-        get("/export/excel/all/$title?cols=$cols&url=$url", HttpStatus.OK)
+        def response = get("/export/excel/all/$title?cols=$cols&url=$url", HttpStatus.OK).getResponse()
+
+        def disposition = response.getHeader('Content-Disposition')
+        assert disposition.contains('filename=')
+        def filename = disposition.substring(disposition.indexOf('filename=') + 9)
+
+        def bytes = response.getContentAsByteArray()
+        assert bytes.length > 0
+
+        def xlsFile = TestResource.getFile(URLDecoder.decode(filename, 'utf-8'))
+        xlsFile.withOutputStream { os ->
+            os.write(bytes)
+        }
+        assert filename == "${title}.xls"
+
+        xlsFile.withInputStream { is ->
+            Workbook wb = new HSSFWorkbook(is)
+            Sheet sheet = wb.getSheetAt(0)
+            assert sheet.getRow(0).getCell(0).getStringCellValue() == '名称'
+            assert sheet.getLastRowNum() == 3
+        }
+        xlsFile.delete()
     }
 
 }
@@ -31,7 +56,11 @@ class Controller extends BaseController {
 
     @GetMapping
     ResponseEntity<DataTrunk<Planet>> query() {
-        responseOfGet(new DataTrunk<>([new Planet('水星'), new Planet('金星')]))
+        responseOfGet(new DataTrunk<>([
+                new Planet('水星'),
+                new Planet('金星'),
+                new Planet('地球')
+        ]))
     }
 
 }
