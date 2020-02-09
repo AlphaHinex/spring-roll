@@ -5,6 +5,11 @@ import java.nio.charset.StandardCharsets;
 
 public class CharacterEncoding {
 
+    /**
+     * The platform default encoding
+     */
+    public static final String DEFAULT_ENCODE_NAME = System.getProperty("file.encoding");
+
     private CharacterEncoding() { }
 
     private static Charset charset = StandardCharsets.UTF_8;
