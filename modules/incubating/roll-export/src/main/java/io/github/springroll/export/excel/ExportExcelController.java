@@ -119,7 +119,7 @@ public class ExportExcelController {
 
     private void writeContent(String contextPath, String url, String total, List<ColumnDef> cols, HSSFSheet sheet) throws Exception {
         int rowNum = ROW_INDEX_CONTENT;
-        List result = getPageData(contextPath, url, total);
+        Collection result = getPageData(contextPath, url, total);
         HSSFRow row;
         String content;
         for (Object rowData : result) {
@@ -141,7 +141,7 @@ public class ExportExcelController {
         }
     }
 
-    private List getPageData(String contextPath, String url, String total) throws Exception {
+    private Collection getPageData(String contextPath, String url, String total) throws Exception {
         Map<String, String[]> params = new HashMap<>(16);
         params.put("page", new String[] {"1"});
         params.put("rows", new String[] {total});
@@ -156,7 +156,7 @@ public class ExportExcelController {
         Method method = handlerMethod.getMethod();
         Object rawObject = method.invoke(handlerMethod.getBean(), buildParamForMethod(handlerMethod.getMethodParameters(), request));
 
-        Optional<List> optional;
+        Optional<Collection> optional;
         for (PaginationHandler handler : paginationHandlers) {
             optional = handler.getPaginationData(rawObject);
             if (optional.isPresent()) {

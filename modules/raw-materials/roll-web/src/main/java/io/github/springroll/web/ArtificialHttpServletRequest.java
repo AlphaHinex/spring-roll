@@ -27,6 +27,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     private transient String servletPath;
     private transient String uri;
     private transient Map<String, String[]> params;
+    private transient String method = "GET";
 
     public ArtificialHttpServletRequest(String contextPath, String servletPath, String uri, Map<String, String[]> params) {
         this.contextPath = contextPath;
@@ -55,6 +56,15 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         Assert.notNull(name, "Parameter name must not be null");
         String[] arr = this.params.get(name);
         return (arr != null && arr.length > 0 ? arr[0] : null);
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    @Override
+    public String getMethod() {
+        return method;
     }
 
     // Below methods not implement
@@ -92,11 +102,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     @Override
     public int getIntHeader(String name) {
         return 0;
-    }
-
-    @Override
-    public String getMethod() {
-        return null;
     }
 
     @Override

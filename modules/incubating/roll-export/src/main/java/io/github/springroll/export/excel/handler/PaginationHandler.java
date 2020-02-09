@@ -1,6 +1,6 @@
 package io.github.springroll.export.excel.handler;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -16,6 +16,6 @@ public interface PaginationHandler {
      * @param  rawObject 原始对象
      * @return 数据集合
      */
-    Optional<List> getPaginationData(Object rawObject);
+    Optional<Collection> getPaginationData(Object rawObject);
 
 }
