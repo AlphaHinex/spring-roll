@@ -1,6 +1,7 @@
 package io.github.springroll.export.excel;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.export.excel.handler.PaginationHandler;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
@@ -85,7 +86,8 @@ public class ExportExcelController {
     }
 
     private String decode(String str, String encoding) throws UnsupportedEncodingException {
-        str = StringUtil.isBlank(encoding) ? URLDecoder.decode(str) : URLDecoder.decode(str, encoding);
+        str = StringUtil.isBlank(encoding) ? URLDecoder.decode(str, CharacterEncoding.DEFAULT_ENCODE_NAME)
+                : URLDecoder.decode(str, encoding);
         return isDefaultEncoding(encoding) || StringUtil.isBlank(encoding) ?
                 str : new String(str.getBytes(encoding), DEFAULT_ENCODING);
     }
