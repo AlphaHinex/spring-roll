@@ -26,6 +26,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         checkExportData('中文', '/test/query', 3)
         // Add 2 params in ExportExcelController.getPageData
         checkExportData('from request', '/test/query/req?a=1&b=2', 2 + 2)
+        checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球', 3)
     }
 
     void checkExportData(String fileTitle, String queryUrl, int rowCount) {
