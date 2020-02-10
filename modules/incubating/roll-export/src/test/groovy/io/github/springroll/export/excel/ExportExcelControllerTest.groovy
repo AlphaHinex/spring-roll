@@ -82,12 +82,12 @@ class Controller extends BaseController {
     }
 
     @GetMapping('/multi')
-    ResponseEntity<DataTrunk<Planet>> query(Integer integer, String str, Planet planet) {
+    Map<String, List<Planet>> query(Integer integer, String str, Planet planet) {
         def list = []
         list << new Planet(integer + '')
         list << new Planet(str)
         list << planet
-        responseOfGet(new DataTrunk<>(list))
+        ['rows': list]
     }
 
 }
@@ -112,7 +112,7 @@ class DataTrunkPaginationHandler implements PaginationHandler {
                 return Optional.of(dataTrunk.getData())
             }
         }
-        return null
+        return Optional.empty()
     }
 
 }
