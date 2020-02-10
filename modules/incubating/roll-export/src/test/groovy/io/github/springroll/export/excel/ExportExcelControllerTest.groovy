@@ -23,9 +23,13 @@ class ExportExcelControllerTest extends AbstractSpringTest {
 
     @Test
     void testExportAll() {
-        def title = URLEncoder.encode('中文','utf-8')
+        checkExportData('中文', '/test/query', 3)
+    }
+
+    void checkExportData(String fileTitle, String queryUrl, int rowCount) {
+        def title = URLEncoder.encode(fileTitle,'utf-8')
         def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException([new ColumnDef("名称", "name")]), 'UTF-8')
-        def url = URLEncoder.encode('/test/query', 'UTF-8')
+        def url = URLEncoder.encode(queryUrl, 'UTF-8')
         def response = get("/export/excel/all/$title?cols=$cols&url=$url", HttpStatus.OK).getResponse()
 
         def disposition = response.getHeader('Content-Disposition')
@@ -45,7 +49,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
             Workbook wb = new HSSFWorkbook(is)
             Sheet sheet = wb.getSheetAt(0)
             assert sheet.getRow(0).getCell(0).getStringCellValue() == '名称'
-            assert sheet.getLastRowNum() == 3
+            assert sheet.getLastRowNum() == rowCount
         }
         xlsFile.delete()
     }
