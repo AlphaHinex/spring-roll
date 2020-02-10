@@ -67,6 +67,12 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         return method;
     }
 
+    @Override
+    public String[] getParameterValues(String name) {
+        Assert.notNull(name, "Parameter name must not be null");
+        return this.params.get(name);
+    }
+
     // Below methods not implement
 
     @Override
@@ -252,11 +258,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Enumeration<String> getParameterNames() {
-        return null;
-    }
-
-    @Override
-    public String[] getParameterValues(String name) {
         return null;
     }
 
