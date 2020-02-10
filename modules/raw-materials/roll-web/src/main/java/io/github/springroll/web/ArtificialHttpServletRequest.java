@@ -8,10 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 人造的 {@link javax.servlet.http.HttpServletRequest} 实现
@@ -71,6 +68,11 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     public String[] getParameterValues(String name) {
         Assert.notNull(name, "Parameter name must not be null");
         return this.params.get(name);
+    }
+
+    @Override
+    public Enumeration<String> getParameterNames() {
+        return Collections.enumeration(this.params.keySet());
     }
 
     // Below methods not implement
@@ -253,11 +255,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> getParameterNames() {
         return null;
     }
 

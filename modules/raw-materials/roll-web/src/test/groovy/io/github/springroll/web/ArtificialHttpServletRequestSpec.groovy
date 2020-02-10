@@ -22,6 +22,7 @@ class ArtificialHttpServletRequestSpec extends Specification {
         request.setMethod('POST')
         request.getMethod() == 'POST'
         request.getParameterValues('a') == params.get('a')
+        request.getParameterNames().toList() == ['a', 'c']
     }
 
     def 'not support methods'() {
@@ -33,6 +34,7 @@ class ArtificialHttpServletRequestSpec extends Specification {
                 'getMethod',
                 'setMethod',
                 'getParameterValues',
+                'getParameterNames',
                 '$jacocoInit'
         ]
 
