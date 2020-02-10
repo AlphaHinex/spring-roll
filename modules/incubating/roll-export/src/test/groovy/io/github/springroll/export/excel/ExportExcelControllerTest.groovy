@@ -24,6 +24,8 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     @Test
     void testExportAll() {
         checkExportData('中文', '/test/query', 3)
+        // Add 2 params in ExportExcelController.getPageData
+        checkExportData('from request', '/test/query/req?a=1&b=2', 2 + 2)
     }
 
     void checkExportData(String fileTitle, String queryUrl, int rowCount) {
