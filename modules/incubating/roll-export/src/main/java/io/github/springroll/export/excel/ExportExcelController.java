@@ -5,6 +5,7 @@ import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.export.excel.handler.PaginationHandler;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
+import io.github.springroll.web.ApplicationContextHolder;
 import io.github.springroll.web.ArtificialHttpServletRequest;
 import io.github.springroll.web.HandlerHolder;
 import org.apache.poi.hssf.usermodel.*;
@@ -12,21 +13,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.method.support.HandlerMethodArgumentResolverComposite;
+import org.springframework.web.method.support.InvocableHandlerMethod;
+import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.ServletRequestDataBinderFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
@@ -149,13 +156,23 @@ public class ExportExcelController {
         params.putAll(parseParams(url));
 
         String cleanUrl = cleanUri(url, contextPath);
-
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
 
         HttpServletRequest request = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl, params);
         HandlerMethod handlerMethod = handlerHolder.getHandler(request);
-        Method method = handlerMethod.getMethod();
-        Object rawObject = method.invoke(handlerMethod.getBean(), buildParamForMethod(handlerMethod.getMethodParameters(), request));
+        InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(handlerMethod);
+
+        HandlerMethodArgumentResolverComposite composite = new HandlerMethodArgumentResolverComposite();
+        RequestMappingHandlerAdapter handlerAdapter = ApplicationContextHolder.getBean(RequestMappingHandlerAdapter.class);
+        composite.addResolvers(handlerAdapter.getArgumentResolvers());
+        invocableHandlerMethod.setHandlerMethodArgumentResolvers(composite);
+
+        invocableHandlerMethod.setDataBinderFactory(
+                new ServletRequestDataBinderFactory(new ArrayList<>(), new ConfigurableWebBindingInitializer()));
+
+        NativeWebRequest nativeWebRequest = new DispatcherServletWebRequest(request);
+        Object rawObject = invocableHandlerMethod.invokeForRequest(nativeWebRequest, new ModelAndViewContainer());
+        Assert.notNull(rawObject, "Could not get return value from " + url);
 
         Optional<Collection> optional;
         for (PaginationHandler handler : paginationHandlers) {
@@ -189,20 +206,8 @@ public class ExportExcelController {
         if (startTokenIdx > 0) {
             len = startTokenIdx;
         }
-        return url.substring(url.indexOf(contextPath), len).replaceAll("//", "/");
-    }
-
-    private Object[] buildParamForMethod(MethodParameter[] methodParameters, HttpServletRequest request) {
-        if (methodParameters == null) {
-            return null;
-        }
-        Object[] params = new Object[methodParameters.length];
-        for (int i = 0; i < methodParameters.length; i++) {
-            if ("javax.servlet.http.HttpServletRequest".equals(methodParameters[i].getParameterType().getName())) {
-                params[i] = request;
-            }
-        }
-        return params;
+        return url.substring(url.contains(contextPath) ? url.indexOf(contextPath) : 0, len)
+                .replaceAll("//", "/");
     }
 
     private void outputToResponse(String fileName, HttpServletResponse response, HSSFWorkbook wb) throws UnsupportedEncodingException {

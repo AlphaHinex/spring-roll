@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+import javax.servlet.http.HttpServletRequest
+
 class ExportExcelControllerTest extends AbstractSpringTest {
 
     @Test
@@ -61,6 +63,24 @@ class Controller extends BaseController {
                 new Planet('金星'),
                 new Planet('地球')
         ]))
+    }
+
+    @GetMapping('/req')
+    ResponseEntity<DataTrunk<Planet>> query(HttpServletRequest request) {
+        def list = []
+        request.getParameterNames().each {
+            list << new Planet(it)
+        }
+        responseOfGet(new DataTrunk<>(list))
+    }
+
+    @GetMapping('/multi')
+    ResponseEntity<DataTrunk<Planet>> query(Integer integer, String str, Planet planet) {
+        def list = []
+        list << new Planet(integer + '')
+        list << new Planet(str)
+        list << planet
+        responseOfGet(new DataTrunk<>(list))
     }
 
 }
