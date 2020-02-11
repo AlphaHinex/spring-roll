@@ -18,10 +18,25 @@ class ArtificialHttpServletRequestSpec extends Specification {
         request.getParameter('a') == params.get('a')[0]
         request.getParameter('b') == null
         request.getParameter('c') == null
+        request.getMethod() == 'GET'
+        request.setMethod('POST')
+        request.getMethod() == 'POST'
+        request.getParameterValues('a') == params.get('a')
+        request.getParameterNames().toList() == ['a', 'c']
     }
 
     def 'not support methods'() {
-        def exclude = ['getContextPath', 'getServletPath', 'getRequestURI', 'getParameter', '$jacocoInit']
+        def exclude = [
+                'getContextPath',
+                'getServletPath',
+                'getRequestURI',
+                'getParameter',
+                'getMethod',
+                'setMethod',
+                'getParameterValues',
+                'getParameterNames',
+                '$jacocoInit'
+        ]
 
         expect:
         request.getClass().getDeclaredMethods().findAll {

@@ -8,10 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 人造的 {@link javax.servlet.http.HttpServletRequest} 实现
@@ -27,6 +24,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     private transient String servletPath;
     private transient String uri;
     private transient Map<String, String[]> params;
+    private transient String method = "GET";
 
     public ArtificialHttpServletRequest(String contextPath, String servletPath, String uri, Map<String, String[]> params) {
         this.contextPath = contextPath;
@@ -55,6 +53,26 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         Assert.notNull(name, "Parameter name must not be null");
         String[] arr = this.params.get(name);
         return (arr != null && arr.length > 0 ? arr[0] : null);
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    @Override
+    public String getMethod() {
+        return method;
+    }
+
+    @Override
+    public String[] getParameterValues(String name) {
+        Assert.notNull(name, "Parameter name must not be null");
+        return this.params.get(name);
+    }
+
+    @Override
+    public Enumeration<String> getParameterNames() {
+        return Collections.enumeration(this.params.keySet());
     }
 
     // Below methods not implement
@@ -92,11 +110,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     @Override
     public int getIntHeader(String name) {
         return 0;
-    }
-
-    @Override
-    public String getMethod() {
-        return null;
     }
 
     @Override
@@ -242,16 +255,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> getParameterNames() {
-        return null;
-    }
-
-    @Override
-    public String[] getParameterValues(String name) {
         return null;
     }
 

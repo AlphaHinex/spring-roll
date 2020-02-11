@@ -23,7 +23,7 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="SwaggerAnnotation"/>
+<!--        <module name="SwaggerAnnotation"/>-->
         <module name="MethodLimit">
             <property name="max" value="65"/>
         </module>
