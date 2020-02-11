@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.util.NestedServletException
 
 import javax.servlet.http.HttpServletRequest
 
@@ -57,6 +58,11 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         xlsFile.delete()
     }
 
+    @Test(expected = NestedServletException)
+    void invalidMapKeyWouldThrowRuntimeException() {
+        checkExportData('null', '/test/query/null?name=pn', 0)
+    }
+
 }
 
 @RestController
@@ -88,6 +94,11 @@ class Controller extends BaseController {
         list << new Planet(str)
         list << planet
         ['rows': list]
+    }
+
+    @GetMapping('/null')
+    Map<String, List<Planet>> query(Planet planet) {
+        [otherKey: [planet]]
     }
 
 }
