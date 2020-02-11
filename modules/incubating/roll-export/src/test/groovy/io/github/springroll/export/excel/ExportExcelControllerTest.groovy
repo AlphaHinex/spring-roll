@@ -31,7 +31,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         col.setHidden(true)
         colDef << col
         // Add 2 params in ExportExcelController.getPageData
-        checkExportData('from request', '/test/query/req?a=1&b=2', 2 + 2, '', colDef)
+        checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2 + 2, '', colDef)
 
         col.setShowTitle(true)
         checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球&des=', 3, 'ISO_8859_1', colDef)

@@ -148,7 +148,7 @@ public class ExportExcelController {
         params.put("rows", new String[] {total});
         params.putAll(parseParams(url));
 
-        String cleanUrl = cleanUri(url, contextPath);
+        String cleanUrl = cleanUrl(url);
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
 
         HttpServletRequest request = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl, params);
@@ -193,35 +193,32 @@ public class ExportExcelController {
         return map;
     }
 
-    private String cleanUri(String url, String contextPath) {
-        int len = url.length();
-        int startTokenIdx = url.indexOf(PARAMS_TOKEN_START);
+    /**
+     * 仅保留 url 中从 context path 到请求参数之前的部分，如：
+     * 传入：http://localhost:8080/demo/foo/bar?v=2000
+     * 返回：/demo/foo/bar
+     *
+     * @param  url         URL
+     * @return 处理之后的 url
+     */
+    private String cleanUrl(String url) {
+        String cleanUrl = url.replaceFirst("https?://[^/]*/", "/");
+
+        int len = cleanUrl.length();
+        int startTokenIdx = cleanUrl.indexOf(PARAMS_TOKEN_START);
         if (startTokenIdx > 0) {
             len = startTokenIdx;
         }
-        return url.substring(url.contains(contextPath) ? url.indexOf(contextPath) : 0, len)
-                .replaceAll("//", "/");
+        return cleanUrl.substring(0, len);
     }
 
-    private void outputToResponse(String fileName, HttpServletResponse response, HSSFWorkbook wb) throws UnsupportedEncodingException {
+    private void outputToResponse(String fileName, HttpServletResponse response, HSSFWorkbook wb) throws IOException {
         String exportFileName = URLEncoder.encode(fileName, DEFAULT_ENCODING);
         response.setContentType("application/x-msdownload;charset=utf-8");
         response.setHeader("Content-Disposition", "attachment;filename=" + exportFileName + ".xls");
 
-        OutputStream os = null;
-        try {
-            os = response.getOutputStream();
+        try (OutputStream os = response.getOutputStream()) {
             wb.write(os);
-        } catch (IOException e) {
-            LOGGER.error("Exception occurs when writing excel data!", e);
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    LOGGER.error("Exception occurs when close output stream!", e);
-                }
-            }
         }
     }
 
