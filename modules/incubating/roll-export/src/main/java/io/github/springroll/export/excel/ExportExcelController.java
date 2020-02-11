@@ -136,11 +136,7 @@ public class ExportExcelController {
                 }
                 HSSFCell cell = row.createCell(col++);
                 Assert.hasText(columnDef.getName(), "Property 'name' or 'filed' in cols string MUST NOT NULL!");
-                if (rowData instanceof Map) {
-                    content = noNull(((Map) rowData).get(columnDef.getName()));
-                } else {
-                    content = noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName()));
-                }
+                content = noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName()));
                 cell.setCellValue(new HSSFRichTextString(content));
             }
         }

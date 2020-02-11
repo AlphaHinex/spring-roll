@@ -34,7 +34,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         checkExportData('from request', '/test/query/req?a=1&b=2', 2 + 2, '', colDef)
 
         col.setShowTitle(true)
-        checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球', 3, 'ISO_8859_1', colDef)
+        checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球&des=', 3, 'ISO_8859_1', colDef)
     }
 
     void checkExportData(String fileTitle, String queryUrl, int rowCount, encode = 'utf-8', colDef = [new ColumnDef("名称", "name")]) {
