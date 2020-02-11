@@ -25,16 +25,23 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     @Test
     void testExportAll() {
         checkExportData('中文', '/test/query', 3)
+
+        def colDef = [new ColumnDef("名称", "name")]
+        def col = new ColumnDef('描述', 'des')
+        col.setHidden(true)
+        colDef << col
         // Add 2 params in ExportExcelController.getPageData
-        checkExportData('from request', '/test/query/req?a=1&b=2', 2 + 2)
-        checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球', 3)
+        checkExportData('from request', '/test/query/req?a=1&b=2', 2 + 2, '', colDef)
+
+        col.setShowTitle(true)
+        checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球', 3, 'ISO_8859_1', colDef)
     }
 
-    void checkExportData(String fileTitle, String queryUrl, int rowCount) {
+    void checkExportData(String fileTitle, String queryUrl, int rowCount, encode = 'utf-8', colDef = [new ColumnDef("名称", "name")]) {
         def title = URLEncoder.encode(fileTitle,'utf-8')
-        def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException([new ColumnDef("名称", "name")]), 'UTF-8')
+        def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'UTF-8')
         def url = URLEncoder.encode(queryUrl, 'UTF-8')
-        def response = get("/export/excel/all/$title?cols=$cols&url=$url", HttpStatus.OK).getResponse()
+        def response = get("/export/excel/all/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
 
         def disposition = response.getHeader('Content-Disposition')
         assert disposition.contains('filename=')
@@ -105,6 +112,7 @@ class Controller extends BaseController {
 
 class Planet {
     String name
+    String des
 
     Planet(String name) {
         this. name = name

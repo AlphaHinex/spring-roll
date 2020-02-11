@@ -106,10 +106,7 @@ public class ExportExcelController {
     }
 
     private void writeTitle(HSSFSheet sheet, List<ColumnDef> cols) {
-        HSSFRow row = sheet.getRow(ROW_INDEX_TITLE);
-        if (null == row) {
-            row = sheet.createRow((short) ROW_INDEX_TITLE);
-        }
+        HSSFRow row = sheet.createRow((short) ROW_INDEX_TITLE);
         int col = 0;
         HSSFCell cell;
         for (ColumnDef columnDef : cols) {
