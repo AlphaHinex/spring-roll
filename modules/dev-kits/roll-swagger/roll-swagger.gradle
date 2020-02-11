@@ -1,0 +1,6 @@
+dependencies {
+
+     implementation libraries.commons_collections,
+                    libraries.springfox
+
+}

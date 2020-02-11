@@ -1,0 +1,20 @@
+= roll-swagger
+
+Swagger 配置模块，引入后启动应用环境，浏览器输入以下网址即可浏览 API 文档
+
+``
+http://localhost:8080/swagger-ui.html
+``
+
+常用注解如下，如若有具体需要请参考 swagger 的[官方文档]：
+
+- `@Api` 用在类上，说明该类的作用；
+- `@ApiModel` 用在类上，表示对类进行说明，用于实体类中的参数接收说明；
+- `@ApiModelProperty` 用于字段,表示对model属性的说明；
+- `@ApiOperation` 用在 Controller 里的方法上，说明方法的作用，每一个接口的定义；
+- `@ApiParam` 用于Controller中方法的参数说明；
+- `@ApiImplicitParams` 用在方法上，为请求参数进行说明，如下：`@ApiImplicitParams({@ApiImplicitParam1,@ApiImplicitParam2,...})`；
+- `@ApiResponse` 用于方法上，说明接口响应的一些信息，`@ApiResponses`组装多个`@ApiResponse`
+
+@ApiOperation("''‍''...")、@ApiModelProperty() 等其他注解的括号内第一个为中文时，需在第一个中文前加 ''‍'' 零等宽字符，使checkStyle检查成功；
+可以参考AdminFeedbackController的 @ApiOperation 注解。
