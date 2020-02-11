@@ -70,6 +70,11 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         checkExportData('null', '/test/query/null?name=pn', 0)
     }
 
+    @Test(expected = NestedServletException)
+    void noSuitableHandler() {
+        checkExportData('list', '/test/query/list?name=pn', 0)
+    }
+
 }
 
 @RestController
@@ -106,6 +111,11 @@ class Controller extends BaseController {
     @GetMapping('/null')
     Map<String, List<Planet>> query(Planet planet) {
         [otherKey: [planet]]
+    }
+
+    @GetMapping('/list')
+    List<Planet> listQuery(Planet planet) {
+        [planet]
     }
 
 }
