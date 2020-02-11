@@ -1,5 +1,6 @@
 package io.github.springroll.export.excel;
 
+import com.alibaba.excel.EasyExcel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.export.excel.handler.PaginationHandler;
@@ -8,7 +9,6 @@ import io.github.springroll.utils.StringUtil;
 import io.github.springroll.web.ApplicationContextHolder;
 import io.github.springroll.web.ArtificialHttpServletRequest;
 import io.github.springroll.web.HandlerHolder;
-import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
@@ -32,7 +32,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletRequestDataB
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -49,9 +48,6 @@ public class ExportExcelController {
     private static final String PARAMS_TOKEN_INTERVAL = "&";
     private static final String PARAMS_TOKEN_EQUATION = "=";
     private static final int PARAMS_PAIR_LEN = 2;
-
-    private static final int ROW_INDEX_TITLE = 0;
-    private static final int ROW_INDEX_CONTENT = 1;
 
     private transient HandlerHolder handlerHolder;
     private transient Collection<PaginationHandler> paginationHandlers;
@@ -84,13 +80,10 @@ public class ExportExcelController {
         String decodedUrl = decode(url, tomcatUriEncoding);
         LOGGER.debug("Cols string after encoding is {}", decodedCols);
 
-        HSSFWorkbook wb = new HSSFWorkbook();
-        HSSFSheet sheet = wb.createSheet(decodedTitle);
-
         List<ColumnDef> columnDefs = JsonUtil.parse(decodedCols, new TypeReference<List<ColumnDef>>() {});
-        writeTitle(sheet, columnDefs);
-        writeContent(request.getContextPath(), decodedUrl, total, columnDefs, sheet);
-        outputToResponse(decodedTitle, response, wb);
+        List<List<String>> head = toHead(columnDefs);
+        List<List<String>> data = toData(request.getContextPath(), decodedUrl, total, columnDefs);
+        outputToResponse(decodedTitle, response, head, data);
     }
 
     private String decode(String str, String encoding) throws UnsupportedEncodingException {
@@ -105,41 +98,40 @@ public class ExportExcelController {
                 && DEFAULT_ENCODING.equalsIgnoreCase(encoding.replace("-", ""));
     }
 
-    private void writeTitle(HSSFSheet sheet, List<ColumnDef> cols) {
-        HSSFRow row = sheet.createRow((short) ROW_INDEX_TITLE);
-        int col = 0;
-        HSSFCell cell;
+    private List<List<String>> toHead(List<ColumnDef> cols) {
+        List<List<String>> result = new ArrayList<>();
+        List<String> head;
         for (ColumnDef columnDef : cols) {
             if (columnDef.isHidden()) {
                 continue;
             }
-            cell = row.createCell(col++);
-            cell.setCellValue(new HSSFRichTextString(noNull(columnDef.getDisplay())));
+            head = new ArrayList<>(1);
+            head.add(noNull(columnDef.getDisplay()));
+            result.add(head);
         }
+        return result;
     }
 
     private String noNull(Object obj) {
         return obj == null ? "" : obj.toString();
     }
 
-    private void writeContent(String contextPath, String url, String total, List<ColumnDef> cols, HSSFSheet sheet) throws Exception {
-        int rowNum = ROW_INDEX_CONTENT;
-        Collection result = getPageData(contextPath, url, total);
-        HSSFRow row;
-        String content;
-        for (Object rowData : result) {
-            row = sheet.createRow((short) (rowNum++));
-            int col = 0;
+    private List<List<String>> toData(String contextPath, String url, String total, List<ColumnDef> cols) throws Exception {
+        List<List<String>> result = new ArrayList<>();
+        Collection data = getPageData(contextPath, url, total);
+        List<String> row;
+        for (Object rowData : data) {
+            row = new ArrayList<>();
             for (ColumnDef columnDef : cols) {
                 if (columnDef.isHidden()) {
                     continue;
                 }
-                HSSFCell cell = row.createCell(col++);
                 Assert.hasText(columnDef.getName(), "Property 'name' or 'filed' in cols string MUST NOT NULL!");
-                content = noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName()));
-                cell.setCellValue(new HSSFRichTextString(content));
+                row.add(noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName())));
             }
+            result.add(row);
         }
+        return result;
     }
 
     private Collection getPageData(String contextPath, String url, String total) throws Exception {
@@ -212,14 +204,13 @@ public class ExportExcelController {
         return cleanUrl.substring(0, len);
     }
 
-    private void outputToResponse(String fileName, HttpServletResponse response, HSSFWorkbook wb) throws IOException {
+    private void outputToResponse(String fileName, HttpServletResponse response, List<List<String>> head, List data) throws IOException {
         String exportFileName = URLEncoder.encode(fileName, DEFAULT_ENCODING);
-        response.setContentType("application/x-msdownload;charset=utf-8");
-        response.setHeader("Content-Disposition", "attachment;filename=" + exportFileName + ".xls");
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Content-Disposition", "attachment;filename=" + exportFileName + ".xlsx");
 
-        try (OutputStream os = response.getOutputStream()) {
-            wb.write(os);
-        }
+        EasyExcel.write(response.getOutputStream()).head(head).sheet(fileName).doWrite(data);
     }
 
 }

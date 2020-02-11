@@ -54,7 +54,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         xlsFile.withOutputStream { os ->
             os.write(bytes)
         }
-        assert filename == "${title}.xls"
+        assert filename == "${title}.xlsx"
 
         xlsFile.withInputStream { is ->
             Workbook wb = new HSSFWorkbook(is)

@@ -1,5 +1,5 @@
 dependencies {
-        implementation libraries.poi
+        implementation libraries.easyexcel
 
         implementation project(':roll-web')
 
