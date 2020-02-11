@@ -1,3 +1,7 @@
 = roll-export
 
-Powered by Spring-roll
+通用导出功能
+
+使用一个通用 url（`GET:/export/excel/all/{title}`），传入表头定义、业务查询数据 url 及导出数据数量，直接导出一个统一格式的 Excel 文件。
+
+暂不支持特殊格式的表格导出。
