@@ -7,18 +7,16 @@ import io.github.springroll.export.excel.handler.PaginationHandler;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
 import io.github.springroll.web.ApplicationContextHolder;
-import io.github.springroll.web.ArtificialHttpServletRequest;
 import io.github.springroll.web.HandlerHolder;
+import io.github.springroll.web.request.ArtificialHttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.HandlerMethod;
@@ -58,6 +56,32 @@ public class ExportExcelController {
         this.paginationHandlers = paginationHandlers;
     }
 
+    @PostMapping("/all/{title}")
+    public void exportAll(@PathVariable String title, @RequestBody ExportModel model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String decodedUrl = decode(model.getUrl(), model.getTomcatUriEncoding());
+        String cleanUrl = cleanUrl(decodedUrl);
+        String contextPath = request.getContextPath();
+        String servletPath = cleanUrl.replaceFirst(contextPath, "");
+
+        ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
+        bizRequest.setMethod(HttpMethod.POST.name());
+        bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes());
+        bizRequest.setContentType(request.getContentType());
+
+        exportAll(title, model.getCols(), model.getTomcatUriEncoding(), response, bizRequest);
+    }
+
+    private void exportAll(String title, String cols, String tomcatUriEncoding, HttpServletResponse response, HttpServletRequest bizReq) throws Exception {
+        String decodedTitle = decode(title, tomcatUriEncoding);
+        String decodedCols = decode(cols, tomcatUriEncoding);
+        LOGGER.debug("Cols string after encoding is {}", decodedCols);
+
+        List<ColumnDef> columnDefs = JsonUtil.parse(decodedCols, new TypeReference<List<ColumnDef>>() {});
+        List<List<String>> head = toHead(columnDefs);
+        List<List<String>> data = toData(columnDefs, bizReq);
+        outputToResponse(decodedTitle, response, head, data);
+    }
+
     /**
      * 根据查询请求 url，找到对应方法，查询出全部数据，导出到 excel 中
      * 注意必填参数均需进行 URL encode
@@ -75,15 +99,19 @@ public class ExportExcelController {
     public void exportAll(@PathVariable String title, @RequestParam String cols, @RequestParam String url,
                           String total, String tomcatUriEncoding,
                           HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String decodedTitle = decode(title, tomcatUriEncoding);
-        String decodedCols = decode(cols, tomcatUriEncoding);
         String decodedUrl = decode(url, tomcatUriEncoding);
-        LOGGER.debug("Cols string after encoding is {}", decodedCols);
+        String cleanUrl = cleanUrl(decodedUrl);
+        String contextPath = request.getContextPath();
+        String servletPath = cleanUrl.replaceFirst(contextPath, "");
 
-        List<ColumnDef> columnDefs = JsonUtil.parse(decodedCols, new TypeReference<List<ColumnDef>>() {});
-        List<List<String>> head = toHead(columnDefs);
-        List<List<String>> data = toData(request.getContextPath(), decodedUrl, total, columnDefs);
-        outputToResponse(decodedTitle, response, head, data);
+        ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
+        Map<String, String[]> params = new HashMap<>(16);
+        params.put("page", new String[] {"1"});
+        params.put("rows", new String[] {total});
+        params.putAll(parseParams(decodedUrl));
+        bizRequest.setParams(params);
+
+        exportAll(title, cols, tomcatUriEncoding, response, bizRequest);
     }
 
     private String decode(String str, String encoding) throws UnsupportedEncodingException {
@@ -116,9 +144,9 @@ public class ExportExcelController {
         return obj == null ? "" : obj.toString();
     }
 
-    private List<List<String>> toData(String contextPath, String url, String total, List<ColumnDef> cols) throws Exception {
+    private List<List<String>> toData(List<ColumnDef> cols, HttpServletRequest request) throws Exception {
         List<List<String>> result = new ArrayList<>();
-        Collection data = getPageData(contextPath, url, total);
+        Collection data = getPageData(request);
         List<String> row;
         for (Object rowData : data) {
             row = new ArrayList<>();
@@ -134,42 +162,6 @@ public class ExportExcelController {
         return result;
     }
 
-    private Collection getPageData(String contextPath, String url, String total) throws Exception {
-        Map<String, String[]> params = new HashMap<>(16);
-        params.put("page", new String[] {"1"});
-        params.put("rows", new String[] {total});
-        params.putAll(parseParams(url));
-
-        String cleanUrl = cleanUrl(url);
-        String servletPath = cleanUrl.replaceFirst(contextPath, "");
-
-        HttpServletRequest request = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl, params);
-        HandlerMethod handlerMethod = handlerHolder.getHandler(request);
-        InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(handlerMethod);
-
-        HandlerMethodArgumentResolverComposite composite = new HandlerMethodArgumentResolverComposite();
-        RequestMappingHandlerAdapter handlerAdapter = ApplicationContextHolder.getBean(RequestMappingHandlerAdapter.class);
-        composite.addResolvers(handlerAdapter.getArgumentResolvers());
-        invocableHandlerMethod.setHandlerMethodArgumentResolvers(composite);
-
-        invocableHandlerMethod.setDataBinderFactory(
-                new ServletRequestDataBinderFactory(new ArrayList<>(), new ConfigurableWebBindingInitializer()));
-
-        NativeWebRequest nativeWebRequest = new DispatcherServletWebRequest(request);
-        Object rawObject = invocableHandlerMethod.invokeForRequest(nativeWebRequest, new ModelAndViewContainer());
-        Assert.notNull(rawObject, "Could not get return value from " + url);
-
-        Optional<Collection> optional;
-        for (PaginationHandler handler : paginationHandlers) {
-            optional = handler.getPaginationData(rawObject);
-            if (optional.isPresent()) {
-                return optional.get();
-            }
-        }
-        String resultType = rawObject.getClass().getName();
-        throw new RuntimeException("Could not find property PaginationHandler for " + resultType);
-    }
-
     private Map<String, String[]> parseParams(String url) {
         if (!url.contains(PARAMS_TOKEN_START)) {
             return Collections.emptyMap();
@@ -183,6 +175,33 @@ public class ExportExcelController {
             map.put(keyValue[0], keyValue.length == PARAMS_PAIR_LEN ? new String[] {keyValue[1]} : null);
         }
         return map;
+    }
+
+    private Collection getPageData(HttpServletRequest request) throws Exception {
+        HandlerMethod handlerMethod = handlerHolder.getHandler(request);
+        InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(handlerMethod);
+
+        HandlerMethodArgumentResolverComposite composite = new HandlerMethodArgumentResolverComposite();
+        RequestMappingHandlerAdapter handlerAdapter = ApplicationContextHolder.getBean(RequestMappingHandlerAdapter.class);
+        composite.addResolvers(handlerAdapter.getArgumentResolvers());
+        invocableHandlerMethod.setHandlerMethodArgumentResolvers(composite);
+
+        invocableHandlerMethod.setDataBinderFactory(
+                new ServletRequestDataBinderFactory(new ArrayList<>(), new ConfigurableWebBindingInitializer()));
+
+        NativeWebRequest nativeWebRequest = new DispatcherServletWebRequest(request);
+        Object rawObject = invocableHandlerMethod.invokeForRequest(nativeWebRequest, new ModelAndViewContainer());
+        Assert.notNull(rawObject, "Could not get return value from " + request.getRequestURI());
+
+        Optional<Collection> optional;
+        for (PaginationHandler handler : paginationHandlers) {
+            optional = handler.getPaginationData(rawObject);
+            if (optional.isPresent()) {
+                return optional.get();
+            }
+        }
+        String resultType = rawObject.getClass().getName();
+        throw new RuntimeException("Could not find property PaginationHandler for " + resultType);
     }
 
     /**

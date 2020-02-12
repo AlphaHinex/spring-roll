@@ -28,7 +28,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def col = new ColumnDef('描述', 'des')
         col.setHidden(true)
         colDef << col
-        // Add 2 params in ExportExcelController.getPageData
+        // Add 2 params in ExportExcelController.exportAll
         checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2 + 2, '', colDef)
 
         col.setShowTitle(true)
