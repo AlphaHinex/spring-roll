@@ -57,7 +57,8 @@ public class ExportExcelController {
     }
 
     @PostMapping("/all/{title}")
-    public void exportAll(@PathVariable String title, @RequestBody ExportModel model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void exportAll(@PathVariable String title, @RequestBody ExportModel model,
+                          HttpServletRequest request, HttpServletResponse response) throws Exception {
         String decodedUrl = decode(model.getUrl(), model.getTomcatUriEncoding());
         String cleanUrl = cleanUrl(decodedUrl);
         String contextPath = request.getContextPath();
@@ -65,13 +66,14 @@ public class ExportExcelController {
 
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
         bizRequest.setMethod(HttpMethod.POST.name());
-        bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes());
+        bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes(request.getCharacterEncoding()));
         bizRequest.setContentType(request.getContentType());
 
         exportAll(title, model.getCols(), model.getTomcatUriEncoding(), response, bizRequest);
     }
 
-    private void exportAll(String title, String cols, String tomcatUriEncoding, HttpServletResponse response, HttpServletRequest bizReq) throws Exception {
+    private void exportAll(String title, String cols, String tomcatUriEncoding,
+                           HttpServletResponse response, HttpServletRequest bizReq) throws Exception {
         String decodedTitle = decode(title, tomcatUriEncoding);
         String decodedCols = decode(cols, tomcatUriEncoding);
         LOGGER.debug("Cols string after encoding is {}", decodedCols);
@@ -104,11 +106,12 @@ public class ExportExcelController {
         String contextPath = request.getContextPath();
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
 
-        ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
         Map<String, String[]> params = new HashMap<>(16);
         params.put("page", new String[] {"1"});
         params.put("rows", new String[] {total});
         params.putAll(parseParams(decodedUrl));
+
+        ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
         bizRequest.setParams(params);
 
         exportAll(title, cols, tomcatUriEncoding, response, bizRequest);
