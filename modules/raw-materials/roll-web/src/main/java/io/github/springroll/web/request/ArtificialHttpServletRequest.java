@@ -1,12 +1,19 @@
-package io.github.springroll.web;
+package io.github.springroll.web.request;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.util.*;
+import org.springframework.util.Assert;
+import org.springframework.util.LinkedCaseInsensitiveMap;
+import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.*;
 
@@ -62,7 +69,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     public String getParameter(String name) {
         Assert.notNull(name, "Parameter name must not be null");
         String[] arr = this.params.get(name);
-        return (arr != null && arr.length > 0 ? arr[0] : null);
+        return arr != null && arr.length > 0 ? arr[0] : null;
     }
 
     public void setMethod(String method) {
@@ -90,11 +97,11 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         if (contentType != null) {
             try {
                 MediaType mediaType = MediaType.parseMediaType(contentType);
-                if (mediaType.getCharset() != null) {
-                    this.characterEncoding = mediaType.getCharset().name();
+                Charset charset = mediaType.getCharset();
+                if (charset != null) {
+                    this.characterEncoding = charset.name();
                 }
-            }
-            catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException ex) {
                 // Try to get charset value anyway
                 int charsetIndex = contentType.toLowerCase().indexOf(CHARSET_PREFIX);
                 if (charsetIndex != -1) {
@@ -124,11 +131,9 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         }
         if (value instanceof Collection) {
             header.addValues((Collection<?>) value);
-        }
-        else if (value.getClass().isArray()) {
+        } else if (value.getClass().isArray()) {
             header.addValueArray(value);
-        }
-        else {
+        } else {
             header.addValue(value);
         }
     }
@@ -140,7 +145,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public int getContentLength() {
-        return (this.content != null ? this.content.length : -1);
+        return this.content != null ? this.content.length : -1;
     }
 
     @Override
@@ -154,21 +159,21 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
             return this.inputStream;
         }
 
-        this.inputStream = (this.content != null ?
-                new DelegatingServletInputStream(new ByteArrayInputStream(this.content)) :
-                EMPTY_SERVLET_INPUT_STREAM);
+        this.inputStream = this.content != null
+                ? new DelegatingServletInputStream(new ByteArrayInputStream(this.content))
+                : EMPTY_SERVLET_INPUT_STREAM;
         return this.inputStream;
     }
 
     public void setContent(byte[] content) {
-        this.content = content;
+        this.content = content.clone();
         this.inputStream = null;
     }
 
     @Override
     public String getHeader(String name) {
         HeaderValueHolder header = this.headers.get(name);
-        return (header != null ? header.getStringValue() : null);
+        return header != null ? header.getStringValue() : null;
     }
 
     @Override
@@ -461,120 +466,4 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         return null;
     }
 
-}
-
-/**
- * Internal helper class that serves as value holder for request headers.
- *
- * @author Juergen Hoeller
- * @author Rick Evans
- * @since 2.0.1
- */
-class HeaderValueHolder {
-
-    private final List<Object> values = new LinkedList<>();
-
-    public void setValue(Object value) {
-        this.values.clear();
-        if (value != null) {
-            this.values.add(value);
-        }
-    }
-
-    void addValue(Object value) {
-        this.values.add(value);
-    }
-
-    void addValues(Collection<?> values) {
-        this.values.addAll(values);
-    }
-
-    void addValueArray(Object values) {
-        CollectionUtils.mergeArrayIntoCollection(values, this.values);
-    }
-
-    public List<Object> getValues() {
-        return Collections.unmodifiableList(this.values);
-    }
-
-    public List<String> getStringValues() {
-        List<String> stringList = new ArrayList<>(this.values.size());
-        for (Object value : this.values) {
-            stringList.add(value.toString());
-        }
-        return Collections.unmodifiableList(stringList);
-    }
-
-    public Object getValue() {
-        return (!this.values.isEmpty() ? this.values.get(0) : null);
-    }
-
-    public String getStringValue() {
-        return (!this.values.isEmpty() ? String.valueOf(this.values.get(0)) : null);
-    }
-
-    @Override
-    public String toString() {
-        return this.values.toString();
-    }
-
-}
-
-
-class DelegatingServletInputStream extends ServletInputStream {
-    private final InputStream sourceStream;
-
-    private boolean finished = false;
-
-    /**
-     * Create a DelegatingServletInputStream for the given source stream.
-     * @param sourceStream the source stream (never {@code null})
-     */
-    DelegatingServletInputStream(InputStream sourceStream) {
-        Assert.notNull(sourceStream, "Source InputStream must not be null");
-        this.sourceStream = sourceStream;
-    }
-
-    /**
-     * Return the underlying source stream (never {@code null}).
-     */
-    public final InputStream getSourceStream() {
-        return this.sourceStream;
-    }
-
-
-    @Override
-    public int read() throws IOException {
-        int data = this.sourceStream.read();
-        if (data == -1) {
-            this.finished = true;
-        }
-        return data;
-    }
-
-    @Override
-    public int available() throws IOException {
-        return this.sourceStream.available();
-    }
-
-    @Override
-    public void close() throws IOException {
-        super.close();
-        this.sourceStream.close();
-    }
-
-    @Override
-    public boolean isFinished() {
-        return this.finished;
-    }
-
-    @Override
-    public boolean isReady() {
-        return true;
-    }
-
-    @Override
-    public void setReadListener(ReadListener readListener) {
-        throw new UnsupportedOperationException();
-    }
 }

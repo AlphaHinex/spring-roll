@@ -76,20 +76,19 @@ jacocoTestReport {
         xml.enabled true
     }
 
-//    afterEvaluate {
-//        classDirectories = files(classDirectories.files.collect {
-//            fileTree(dir: it, exclude: [
-//                '**/RedisCacheManager**',
-//                '**/AbstractEhcacheRegionFactory**',
-//                '**/EhCacheRegionFactory**'
-//            ])
-//        })
-//    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/DelegatingServletInputStream**',
+                '**/HeaderValueHolder**'
+            ])
+        }))
+    }
 }
 
 configurations.codenarc.resolutionStrategy.force(libraries.groovy_all)
 
-def excludeArtificialHttpServletRequest = 'io/github/springroll/web/ArtificialHttpServletRequest*'
+def excludeArtificialHttpServletRequest = 'io/github/springroll/web/request/**'
 
 tasks.withType(Checkstyle) {
     exclude "**/$excludeArtificialHttpServletRequest"

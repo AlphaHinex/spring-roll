@@ -1,6 +1,7 @@
 package io.github.springroll.web
 
 import io.github.springroll.utils.JsonUtil
+import io.github.springroll.web.request.ArtificialHttpServletRequest
 import org.springframework.http.MediaType
 import spock.lang.Specification
 
