@@ -4,6 +4,7 @@ import io.github.springroll.utils.JsonUtil
 import io.github.springroll.web.request.ArtificialHttpServletRequest
 import org.springframework.http.MediaType
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class ArtificialHttpServletRequestSpec extends Specification {
 
@@ -28,6 +29,7 @@ class ArtificialHttpServletRequestSpec extends Specification {
 
     def 'set then get'() {
         request.setMethod('POST')
+        request.setCharacterEncoding('utf-8')
         request.setContentType(MediaType.APPLICATION_JSON_VALUE)
         def content = JsonUtil.toJsonIgnoreException([a:1, b:2]).getBytes()
         request.setContent(content)
@@ -39,6 +41,27 @@ class ArtificialHttpServletRequestSpec extends Specification {
         request.getContentLength() == content.length
         request.getInputStream().getBytes() == content
         request.getHeaderNames().hasMoreElements()
+        request.getHeader('Content-Type') != null
+        request.getHeader('Not-Exist') == null
+        request.getHeaders('Content-Type') != null
+        !request.getHeaders('Not-Exist').hasMoreElements()
+    }
+
+    @Unroll
+    def "Set content type #type and get #result"() {
+        request.setContentType(type)
+
+        expect:
+        request.getContentType() == result
+        request.getCharacterEncoding() == encoding
+
+        where:
+        type                             | result                           | encoding
+        null                             | null                             | null
+        ''                               | ''                               | null
+        'charset=utf-8'                  | 'charset=utf-8'                  | 'utf-8'
+        'application/json;charset=UTF-8' | 'application/json;charset=UTF-8' | 'UTF-8'
+        'application/json'               | 'application/json'               | null
     }
 
     def 'not support methods'() {
@@ -62,6 +85,7 @@ class ArtificialHttpServletRequestSpec extends Specification {
                 'getHeader',
                 'getHeaders',
                 'getHeaderNames',
+                'getCharacterEncoding',
                 '$jacocoInit'
         ]
 

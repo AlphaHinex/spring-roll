@@ -187,6 +187,17 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         return Collections.enumeration(this.headers.keySet());
     }
 
+    @Override
+    public void setCharacterEncoding(String characterEncoding) {
+        this.characterEncoding = characterEncoding;
+        updateContentTypeHeader();
+    }
+
+    @Override
+    public String getCharacterEncoding() {
+        return this.characterEncoding;
+    }
+
     // Below methods not implement
 
     @Override
@@ -323,16 +334,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     @Override
     public Enumeration<String> getAttributeNames() {
         return null;
-    }
-
-    @Override
-    public String getCharacterEncoding() {
-        return null;
-    }
-
-    @Override
-    public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
-
     }
 
     @Override
