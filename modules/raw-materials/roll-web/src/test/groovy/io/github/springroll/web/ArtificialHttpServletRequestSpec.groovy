@@ -1,5 +1,7 @@
 package io.github.springroll.web
 
+import io.github.springroll.utils.JsonUtil
+import org.springframework.http.MediaType
 import spock.lang.Specification
 
 class ArtificialHttpServletRequestSpec extends Specification {
@@ -19,10 +21,23 @@ class ArtificialHttpServletRequestSpec extends Specification {
         request.getParameter('b') == null
         request.getParameter('c') == null
         request.getMethod() == 'GET'
-        request.setMethod('POST')
-        request.getMethod() == 'POST'
         request.getParameterValues('a') == params.get('a')
         request.getParameterNames().toList() == ['a', 'c']
+    }
+
+    def 'set then get'() {
+        request.setMethod('POST')
+        request.setContentType(MediaType.APPLICATION_JSON_VALUE)
+        def content = JsonUtil.toJsonIgnoreException([a:1, b:2]).getBytes()
+        request.setContent(content)
+
+        expect:
+        request.getMethod() == 'POST'
+        request.getContentType() == MediaType.APPLICATION_JSON_VALUE
+        request.getContentLength() == request.getContentLengthLong()
+        request.getContentLength() == content.length
+        request.getInputStream().getBytes() == content
+        request.getHeaderNames().hasMoreElements()
     }
 
     def 'not support methods'() {
@@ -35,6 +50,17 @@ class ArtificialHttpServletRequestSpec extends Specification {
                 'setMethod',
                 'getParameterValues',
                 'getParameterNames',
+                'setContentType',
+                'updateContentTypeHeader',
+                'doAddHeaderValue',
+                'getContentType',
+                'getContentLength',
+                'getContentLengthLong',
+                'getInputStream',
+                'setContent',
+                'getHeader',
+                'getHeaders',
+                'getHeaderNames',
                 '$jacocoInit'
         ]
 
