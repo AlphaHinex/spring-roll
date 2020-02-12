@@ -12,7 +12,6 @@ import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.*;
@@ -118,24 +117,14 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
             if (StringUtils.hasLength(this.characterEncoding) && !this.contentType.toLowerCase().contains(CHARSET_PREFIX)) {
                 value += ';' + CHARSET_PREFIX + this.characterEncoding;
             }
-            doAddHeaderValue(HttpHeaders.CONTENT_TYPE, value, true);
+            doAddHeaderValue(value);
         }
     }
 
-    private void doAddHeaderValue(String name, Object value, boolean replace) {
-        HeaderValueHolder header = this.headers.get(name);
-        Assert.notNull(value, "Header value must not be null");
-        if (header == null || replace) {
-            header = new HeaderValueHolder();
-            this.headers.put(name, header);
-        }
-        if (value instanceof Collection) {
-            header.addValues((Collection<?>) value);
-        } else if (value.getClass().isArray()) {
-            header.addValueArray(value);
-        } else {
-            header.addValue(value);
-        }
+    private void doAddHeaderValue(Object value) {
+        HeaderValueHolder header = new HeaderValueHolder();
+        header.setValue(value);
+        this.headers.put(HttpHeaders.CONTENT_TYPE, header);
     }
 
     @Override
@@ -154,7 +143,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public ServletInputStream getInputStream() throws IOException {
+    public ServletInputStream getInputStream() {
         if (this.inputStream != null) {
             return this.inputStream;
         }

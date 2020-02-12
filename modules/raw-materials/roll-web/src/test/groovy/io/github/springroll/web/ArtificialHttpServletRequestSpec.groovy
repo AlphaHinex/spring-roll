@@ -25,6 +25,8 @@ class ArtificialHttpServletRequestSpec extends Specification {
         request.getMethod() == 'GET'
         request.getParameterValues('a') == params.get('a')
         request.getParameterNames().toList() == ['a', 'c']
+        request.getContentLength() == -1
+        request.getInputStream().available() == 0
     }
 
     def 'set then get'() {
@@ -39,6 +41,7 @@ class ArtificialHttpServletRequestSpec extends Specification {
         request.getContentType() == MediaType.APPLICATION_JSON_VALUE
         request.getContentLength() == request.getContentLengthLong()
         request.getContentLength() == content.length
+        request.getInputStream().available() == content.length
         request.getInputStream().getBytes() == content
         request.getHeaderNames().hasMoreElements()
         request.getHeader('Content-Type') != null
