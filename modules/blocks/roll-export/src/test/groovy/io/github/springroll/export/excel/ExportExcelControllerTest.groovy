@@ -1,14 +1,12 @@
 package io.github.springroll.export.excel
 
+import com.alibaba.excel.EasyExcel
 import io.github.springroll.export.excel.handler.PaginationHandler
 import io.github.springroll.test.AbstractSpringTest
 import io.github.springroll.test.TestResource
 import io.github.springroll.utils.JsonUtil
 import io.github.springroll.web.controller.BaseController
 import io.github.springroll.web.model.DataTrunk
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.ss.usermodel.Workbook
 import org.junit.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -54,14 +52,10 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         xlsFile.withOutputStream { os ->
             os.write(bytes)
         }
-        assert filename == "${title}.xls"
+        assert filename == "${title}.xlsx"
 
-        xlsFile.withInputStream { is ->
-            Workbook wb = new HSSFWorkbook(is)
-            Sheet sheet = wb.getSheetAt(0)
-            assert sheet.getRow(0).getCell(0).getStringCellValue() == '名称'
-            assert sheet.getLastRowNum() == rowCount
-        }
+        def data = EasyExcel.read(xlsFile).sheet().doReadSync()
+        assert data.size() == rowCount
         xlsFile.delete()
     }
 

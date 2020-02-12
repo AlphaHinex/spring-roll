@@ -80,6 +80,8 @@ libraries.commons_lang3 = 'org.apache.commons:commons-lang3:3.9'
 
 libraries.druid_spring_boot_starter = 'com.alibaba:druid-spring-boot-starter:1.1.10'
 
+libraries.easyexcel = 'com.alibaba:easyexcel:2.1.6'
+
 libraries.el_api="javax.el:el-api:3.0"
 
 // groovy-all include all below modules, used by code quality
@@ -141,8 +143,6 @@ libraries.okhttp = 'com.squareup.okhttp3:okhttp:3.14.2'
 libraries.p3c_pmd = 'com.alibaba.p3c:p3c-pmd:2.0.0'
 
 libraries.pinyin4j = 'com.belerweb:pinyin4j:2.5.0'
-
-libraries.poi = 'org.apache.poi:poi:4.1.1'
 
 libraries.quartz = "org.quartz-scheduler:quartz:${versions.quartz}"
 
