@@ -12,7 +12,12 @@ class ArtificialHttpServletRequestSpec extends Specification {
     def servletPath = '/servlet/foo/bar'
     def uri = "$contextPath$servletPath"
     def params = [a: ['1'] as String[], c: [] as String[]]
-    def request = new ArtificialHttpServletRequest(contextPath, servletPath, uri, params)
+    def request = new ArtificialHttpServletRequest(contextPath, servletPath, uri)
+
+
+    def setup() {
+        request.setParams(params)
+    }
 
     def 'check useful getters'() {
         expect:
@@ -89,6 +94,7 @@ class ArtificialHttpServletRequestSpec extends Specification {
                 'getHeaders',
                 'getHeaderNames',
                 'getCharacterEncoding',
+                'setParams',
                 '$jacocoInit'
         ]
 

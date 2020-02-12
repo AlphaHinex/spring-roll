@@ -42,11 +42,10 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     private static final ServletInputStream EMPTY_SERVLET_INPUT_STREAM =
             new DelegatingServletInputStream(StreamUtils.emptyInput());
 
-    public ArtificialHttpServletRequest(String contextPath, String servletPath, String uri, Map<String, String[]> params) {
+    public ArtificialHttpServletRequest(String contextPath, String servletPath, String uri) {
         this.contextPath = contextPath;
         this.servletPath = servletPath;
         this.uri = uri;
-        this.params = params;
     }
 
     @Override
@@ -185,6 +184,10 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     @Override
     public String getCharacterEncoding() {
         return this.characterEncoding;
+    }
+
+    public void setParams(Map<String, String[]> params) {
+        this.params = params;
     }
 
     // Below methods not implement
