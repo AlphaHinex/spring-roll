@@ -72,13 +72,9 @@ public class ExportExcelController {
         exportAll(title, model.getCols(), model.getTomcatUriEncoding(), response, bizRequest);
     }
 
-    private void exportAll(String title, String cols, String tomcatUriEncoding,
+    private void exportAll(String title, List<ColumnDef> columnDefs, String tomcatUriEncoding,
                            HttpServletResponse response, HttpServletRequest bizReq) throws Exception {
         String decodedTitle = decode(title, tomcatUriEncoding);
-        String decodedCols = decode(cols, tomcatUriEncoding);
-        LOGGER.debug("Cols string after encoding is {}", decodedCols);
-
-        List<ColumnDef> columnDefs = JsonUtil.parse(decodedCols, new TypeReference<List<ColumnDef>>() {});
         List<List<String>> head = toHead(columnDefs);
         List<List<String>> data = toData(columnDefs, bizReq);
         outputToResponse(decodedTitle, response, head, data);
@@ -114,7 +110,11 @@ public class ExportExcelController {
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
         bizRequest.setParams(params);
 
-        exportAll(title, cols, tomcatUriEncoding, response, bizRequest);
+        String decodedCols = decode(cols, tomcatUriEncoding);
+        LOGGER.debug("Cols string after encoding is {}", decodedCols);
+
+        List<ColumnDef> columnDefs = JsonUtil.parse(decodedCols, new TypeReference<List<ColumnDef>>() {});
+        exportAll(title, columnDefs, tomcatUriEncoding, response, bizRequest);
     }
 
     private String decode(String str, String encoding) throws UnsupportedEncodingException {

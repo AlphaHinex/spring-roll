@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.util.NestedServletException
@@ -69,6 +71,20 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         checkExportData('list', '/test/query/list?name=pn', 0)
     }
 
+    @Test
+    void testPostExportAll() {
+        def title = URLEncoder.encode('中文','utf-8')
+        def model = [
+                cols: [["name":"userName","display":"员工姓名"],["name":"userId","display":"员工编号"]],
+                url: '/test/query/post',
+                bizReqBody: [
+                    name: "body name",
+                    des: "body des"
+                ]
+        ]
+        post("/export/excel/all/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.CREATED)
+    }
+
 }
 
 @RestController
@@ -109,6 +125,11 @@ class Controller extends BaseController {
 
     @GetMapping('/list')
     List<Planet> listQuery(Planet planet) {
+        [planet]
+    }
+
+    @PostMapping('/post')
+    List<Planet> post(@RequestBody Planet planet) {
         [planet]
     }
 
