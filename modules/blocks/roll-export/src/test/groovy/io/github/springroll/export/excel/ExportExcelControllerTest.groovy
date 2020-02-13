@@ -75,7 +75,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     void testPostExportAll() {
         def title = URLEncoder.encode('中文','utf-8')
         def model = [
-                cols: [["name":"userName","display":"员工姓名"],["name":"userId","display":"员工编号"]],
+                cols: [["name":"name","display":"名称"],["name":"des","display":"描述"]],
                 url: '/test/query/post',
                 bizReqBody: [
                     name: "body name",
@@ -129,8 +129,8 @@ class Controller extends BaseController {
     }
 
     @PostMapping('/post')
-    List<Planet> post(@RequestBody Planet planet) {
-        [planet]
+    Map<String, List<Planet>> post(@RequestBody Planet planet) {
+        ['rows': [planet]]
     }
 
 }
@@ -138,6 +138,8 @@ class Controller extends BaseController {
 class Planet {
     String name
     String des
+
+    Planet() { }
 
     Planet(String name) {
         this. name = name
