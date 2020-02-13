@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.util.NestedServletException
@@ -21,15 +23,14 @@ import javax.servlet.http.HttpServletRequest
 class ExportExcelControllerTest extends AbstractSpringTest {
 
     @Test
-    void testExportAll() {
+    void testExport() {
         checkExportData('中文', '/test/query', 3)
 
         def colDef = [new ColumnDef("名称", "name")]
         def col = new ColumnDef('描述', 'des')
         col.setHidden(true)
         colDef << col
-        // Add 2 params in ExportExcelController.getPageData
-        checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2 + 2, '', colDef)
+        checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2, '', colDef)
 
         col.setShowTitle(true)
         checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球&des=', 3, 'ISO_8859_1', colDef)
@@ -39,8 +40,11 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def title = URLEncoder.encode(fileTitle,'utf-8')
         def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'UTF-8')
         def url = URLEncoder.encode(queryUrl, 'UTF-8')
-        def response = get("/export/excel/all/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
+        def response = get("/export/excel/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
+        checkResponse(response, title, rowCount)
+    }
 
+    void checkResponse(response, title, rowCount) {
         def disposition = response.getHeader('Content-Disposition')
         assert disposition.contains('filename=')
         def filename = disposition.substring(disposition.indexOf('filename=') + 9)
@@ -67,6 +71,23 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     @Test(expected = NestedServletException)
     void noSuitableHandler() {
         checkExportData('list', '/test/query/list?name=pn', 0)
+    }
+
+    @Test
+    void testPostExport() {
+        def title = URLEncoder.encode('中文post','utf-8')
+        def model = [
+                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述"],["label":"无prop","other": "props"]],
+                url: '/test/query/post',
+                bizReqBody: [
+                    name: "body name",
+                    des: "body des"
+                ],
+                total: '0',
+                tomcatUriEncoding: 'utf-8'
+        ]
+        def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
+        checkResponse(response, title, 1)
     }
 
 }
@@ -112,11 +133,18 @@ class Controller extends BaseController {
         [planet]
     }
 
+    @PostMapping('/post')
+    Map<String, List<Planet>> post(@RequestBody Planet planet) {
+        ['rows': [planet]]
+    }
+
 }
 
 class Planet {
     String name
     String des
+
+    Planet() { }
 
     Planet(String name) {
         this. name = name

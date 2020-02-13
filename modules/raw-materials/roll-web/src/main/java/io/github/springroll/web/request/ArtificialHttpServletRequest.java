@@ -1,12 +1,18 @@
-package io.github.springroll.web;
+package io.github.springroll.web.request;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedCaseInsensitiveMap;
+import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.*;
 
@@ -20,17 +26,26 @@ import java.util.*;
  */
 public class ArtificialHttpServletRequest implements HttpServletRequest {
 
+    private static final String CHARSET_PREFIX = "charset=";
+
     private transient String contextPath;
     private transient String servletPath;
     private transient String uri;
     private transient Map<String, String[]> params;
     private transient String method = "GET";
+    private transient String contentType;
+    private transient String characterEncoding;
+    private transient byte[] content;
+    private transient ServletInputStream inputStream;
 
-    public ArtificialHttpServletRequest(String contextPath, String servletPath, String uri, Map<String, String[]> params) {
+    private final Map<String, HeaderValueHolder> headers = new LinkedCaseInsensitiveMap<>();
+    private static final ServletInputStream EMPTY_SERVLET_INPUT_STREAM =
+            new DelegatingServletInputStream(StreamUtils.emptyInput());
+
+    public ArtificialHttpServletRequest(String contextPath, String servletPath, String uri) {
         this.contextPath = contextPath;
         this.servletPath = servletPath;
         this.uri = uri;
-        this.params = params;
     }
 
     @Override
@@ -52,7 +67,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     public String getParameter(String name) {
         Assert.notNull(name, "Parameter name must not be null");
         String[] arr = this.params.get(name);
-        return (arr != null && arr.length > 0 ? arr[0] : null);
+        return arr != null && arr.length > 0 ? arr[0] : null;
     }
 
     public void setMethod(String method) {
@@ -75,6 +90,106 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         return Collections.enumeration(this.params.keySet());
     }
 
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+        if (contentType != null) {
+            try {
+                MediaType mediaType = MediaType.parseMediaType(contentType);
+                Charset charset = mediaType.getCharset();
+                if (charset != null) {
+                    this.characterEncoding = charset.name();
+                }
+            } catch (IllegalArgumentException ex) {
+                // Try to get charset value anyway
+                int charsetIndex = contentType.toLowerCase().indexOf(CHARSET_PREFIX);
+                if (charsetIndex != -1) {
+                    this.characterEncoding = contentType.substring(charsetIndex + CHARSET_PREFIX.length());
+                }
+            }
+            updateContentTypeHeader();
+        }
+    }
+
+    private void updateContentTypeHeader() {
+        if (StringUtils.hasLength(this.contentType)) {
+            String value = this.contentType;
+            if (StringUtils.hasLength(this.characterEncoding) && !this.contentType.toLowerCase().contains(CHARSET_PREFIX)) {
+                value += ';' + CHARSET_PREFIX + this.characterEncoding;
+            }
+            doAddHeaderValue(value);
+        }
+    }
+
+    private void doAddHeaderValue(Object value) {
+        HeaderValueHolder header = new HeaderValueHolder();
+        header.setValue(value);
+        this.headers.put(HttpHeaders.CONTENT_TYPE, header);
+    }
+
+    @Override
+    public String getContentType() {
+        return this.contentType;
+    }
+
+    @Override
+    public int getContentLength() {
+        return this.content != null ? this.content.length : -1;
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        return getContentLength();
+    }
+
+    @Override
+    public ServletInputStream getInputStream() {
+        if (this.inputStream != null) {
+            return this.inputStream;
+        }
+
+        this.inputStream = this.content != null
+                ? new DelegatingServletInputStream(new ByteArrayInputStream(this.content))
+                : EMPTY_SERVLET_INPUT_STREAM;
+        return this.inputStream;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content.clone();
+        this.inputStream = null;
+    }
+
+    @Override
+    public String getHeader(String name) {
+        HeaderValueHolder header = this.headers.get(name);
+        return header != null ? header.getStringValue() : null;
+    }
+
+    @Override
+    public Enumeration<String> getHeaders(String name) {
+        HeaderValueHolder header = this.headers.get(name);
+        return Collections.enumeration(header != null ? header.getStringValues() : new LinkedList<>());
+    }
+
+    @Override
+    public Enumeration<String> getHeaderNames() {
+        return Collections.enumeration(this.headers.keySet());
+    }
+
+    @Override
+    public void setCharacterEncoding(String characterEncoding) {
+        this.characterEncoding = characterEncoding;
+        updateContentTypeHeader();
+    }
+
+    @Override
+    public String getCharacterEncoding() {
+        return this.characterEncoding;
+    }
+
+    public void setParams(Map<String, String[]> params) {
+        this.params = params;
+    }
+
     // Below methods not implement
 
     @Override
@@ -90,21 +205,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     @Override
     public long getDateHeader(String name) {
         return 0;
-    }
-
-    @Override
-    public String getHeader(String name) {
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> getHeaders(String name) {
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> getHeaderNames() {
-        return null;
     }
 
     @Override
@@ -225,36 +325,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Enumeration<String> getAttributeNames() {
-        return null;
-    }
-
-    @Override
-    public String getCharacterEncoding() {
-        return null;
-    }
-
-    @Override
-    public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
-
-    }
-
-    @Override
-    public int getContentLength() {
-        return 0;
-    }
-
-    @Override
-    public long getContentLengthLong() {
-        return 0;
-    }
-
-    @Override
-    public String getContentType() {
-        return null;
-    }
-
-    @Override
-    public ServletInputStream getInputStream() throws IOException {
         return null;
     }
 
