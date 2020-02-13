@@ -42,7 +42,10 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'UTF-8')
         def url = URLEncoder.encode(queryUrl, 'UTF-8')
         def response = get("/export/excel/all/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
+        checkResponse(response, title, rowCount)
+    }
 
+    void checkResponse(response, title, rowCount) {
         def disposition = response.getHeader('Content-Disposition')
         assert disposition.contains('filename=')
         def filename = disposition.substring(disposition.indexOf('filename=') + 9)
@@ -73,7 +76,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
 
     @Test
     void testPostExportAll() {
-        def title = URLEncoder.encode('中文','utf-8')
+        def title = URLEncoder.encode('中文post','utf-8')
         def model = [
                 cols: [["name":"name","display":"名称"],["name":"des","display":"描述"]],
                 url: '/test/query/post',
@@ -82,7 +85,8 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                     des: "body des"
                 ]
         ]
-        post("/export/excel/all/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.CREATED)
+        def response = post("/export/excel/all/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
+        checkResponse(response, title, 1)
     }
 
 }
