@@ -56,8 +56,8 @@ public class ExportExcelController {
         this.paginationHandlers = paginationHandlers;
     }
 
-    @PostMapping("/all/{title}")
-    public void exportAll(@PathVariable String title, @RequestBody ExportModel model,
+    @PostMapping("/{title}")
+    public void export(@PathVariable String title, @RequestBody ExportModel model,
                           HttpServletRequest request, HttpServletResponse response) throws Exception {
         String decodedUrl = decode(model.getUrl(), model.getTomcatUriEncoding());
         String cleanUrl = cleanUrl(decodedUrl);
@@ -69,11 +69,11 @@ public class ExportExcelController {
         bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes(request.getCharacterEncoding()));
         bizRequest.setContentType(request.getContentType());
 
-        exportAll(title, model.getCols(), model.getTomcatUriEncoding(), response, bizRequest);
+        export(title, model.getCols(), model.getTomcatUriEncoding(), response, bizRequest);
     }
 
-    private void exportAll(String title, List<ColumnDef> columnDefs, String tomcatUriEncoding,
-                           HttpServletResponse response, HttpServletRequest bizReq) throws Exception {
+    private void export(String title, List<ColumnDef> columnDefs, String tomcatUriEncoding,
+                        HttpServletResponse response, HttpServletRequest bizReq) throws Exception {
         String decodedTitle = decode(title, tomcatUriEncoding);
         List<List<String>> head = toHead(columnDefs);
         List<List<String>> data = toData(columnDefs, bizReq);
@@ -87,26 +87,20 @@ public class ExportExcelController {
      * @param  title             导出文件标题
      * @param  cols              列表中对 columns 的定义，JSON 格式表示
      * @param  url               查询数据请求 url
-     * @param  total             导出数据总数
      * @param  tomcatUriEncoding tomcat server.xml 中 Connector 设定的 URIEncoding 值，若未设置，默认为 ISO-8859-1
      * @param  request           请求对象
      * @param  response          响应对象
      * @throws Exception         导出过程中可能会出现的各种异常
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/all/{title}")
-    public void exportAll(@PathVariable String title, @RequestParam String cols, @RequestParam String url,
-                          String total, String tomcatUriEncoding,
+    @RequestMapping(method = RequestMethod.GET, value = "/{title}")
+    public void export(@PathVariable String title, @RequestParam String cols, @RequestParam String url, String tomcatUriEncoding,
                           HttpServletRequest request, HttpServletResponse response) throws Exception {
         String decodedUrl = decode(url, tomcatUriEncoding);
         String cleanUrl = cleanUrl(decodedUrl);
         String contextPath = request.getContextPath();
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
 
-        Map<String, String[]> params = new HashMap<>(16);
-        params.put("page", new String[] {"1"});
-        params.put("rows", new String[] {total});
-        params.putAll(parseParams(decodedUrl));
-
+        Map<String, String[]> params = parseParams(decodedUrl);
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
         bizRequest.setParams(params);
 
@@ -114,7 +108,7 @@ public class ExportExcelController {
         LOGGER.debug("Cols string after encoding is {}", decodedCols);
 
         List<ColumnDef> columnDefs = JsonUtil.parse(decodedCols, new TypeReference<List<ColumnDef>>() {});
-        exportAll(title, columnDefs, tomcatUriEncoding, response, bizRequest);
+        export(title, columnDefs, tomcatUriEncoding, response, bizRequest);
     }
 
     private String decode(String str, String encoding) throws UnsupportedEncodingException {

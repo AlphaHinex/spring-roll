@@ -23,15 +23,14 @@ import javax.servlet.http.HttpServletRequest
 class ExportExcelControllerTest extends AbstractSpringTest {
 
     @Test
-    void testExportAll() {
+    void testExport() {
         checkExportData('中文', '/test/query', 3)
 
         def colDef = [new ColumnDef("名称", "name")]
         def col = new ColumnDef('描述', 'des')
         col.setHidden(true)
         colDef << col
-        // Add 2 params in ExportExcelController.exportAll
-        checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2 + 2, '', colDef)
+        checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2, '', colDef)
 
         col.setShowTitle(true)
         checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球&des=', 3, 'ISO_8859_1', colDef)
@@ -41,7 +40,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def title = URLEncoder.encode(fileTitle,'utf-8')
         def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'UTF-8')
         def url = URLEncoder.encode(queryUrl, 'UTF-8')
-        def response = get("/export/excel/all/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
+        def response = get("/export/excel/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
         checkResponse(response, title, rowCount)
     }
 
@@ -75,7 +74,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     }
 
     @Test
-    void testPostExportAll() {
+    void testPostExport() {
         def title = URLEncoder.encode('中文post','utf-8')
         def model = [
                 cols: [["name":"name","display":"名称"],["name":"des","display":"描述"]],
@@ -87,7 +86,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                 total: '0',
                 tomcatUriEncoding: 'utf-8'
         ]
-        def response = post("/export/excel/all/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
+        def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
         checkResponse(response, title, 1)
     }
 
