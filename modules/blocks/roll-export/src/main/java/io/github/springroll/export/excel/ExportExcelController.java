@@ -127,7 +127,7 @@ public class ExportExcelController {
         List<List<String>> result = new ArrayList<>();
         List<String> head;
         for (ColumnDef columnDef : cols) {
-            if (columnDef.isHidden()) {
+            if (columnDef.isHidden() || StringUtil.isBlank(columnDef.getName())) {
                 continue;
             }
             head = new ArrayList<>(1);
@@ -148,10 +148,9 @@ public class ExportExcelController {
         for (Object rowData : data) {
             row = new ArrayList<>();
             for (ColumnDef columnDef : cols) {
-                if (columnDef.isHidden()) {
+                if (columnDef.isHidden() || StringUtil.isBlank(columnDef.getName())) {
                     continue;
                 }
-                Assert.hasText(columnDef.getName(), "Property 'name' or 'filed' in cols string MUST NOT NULL!");
                 row.add(noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName())));
             }
             result.add(row);
