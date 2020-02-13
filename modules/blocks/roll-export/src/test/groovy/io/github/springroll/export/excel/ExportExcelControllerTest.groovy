@@ -83,7 +83,9 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                 bizReqBody: [
                     name: "body name",
                     des: "body des"
-                ]
+                ],
+                total: '0',
+                tomcatUriEncoding: 'utf-8'
         ]
         def response = post("/export/excel/all/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
         checkResponse(response, title, 1)

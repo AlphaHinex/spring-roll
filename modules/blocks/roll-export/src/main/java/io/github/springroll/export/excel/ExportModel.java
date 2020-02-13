@@ -1,11 +1,13 @@
 package io.github.springroll.export.excel;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
 
-@Data
+@Getter
+@Setter
 public class ExportModel {
 
     private List<ColumnDef> cols;
