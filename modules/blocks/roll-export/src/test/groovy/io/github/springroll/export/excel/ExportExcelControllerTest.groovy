@@ -34,6 +34,9 @@ class ExportExcelControllerTest extends AbstractSpringTest {
 
         col.setShowTitle(true)
         checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球&des=', 3, 'ISO_8859_1', colDef)
+
+        checkExportData('map', '/test/query/map', 2)
+        checkExportData('exception', '/test/query/exception', 2)
     }
 
     void checkExportData(String fileTitle, String queryUrl, int rowCount, encode = 'utf-8', colDef = [new ColumnDef("名称", "name")]) {
@@ -131,6 +134,19 @@ class Controller extends BaseController {
     @GetMapping('/list')
     List<Planet> listQuery(Planet planet) {
         [planet]
+    }
+
+    @GetMapping('/map')
+    Map map() {
+        [rows: [
+                [userName: 'Jordan', age: '23'],
+                [userName: 'Kobe', age: '8']
+        ]]
+    }
+
+    @GetMapping('/exception')
+    Map exception() {
+        [rows: ['Jordan', 'Kobe']]
     }
 
     @PostMapping('/post')
