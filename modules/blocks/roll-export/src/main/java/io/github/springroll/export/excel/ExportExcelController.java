@@ -12,6 +12,7 @@ import io.github.springroll.web.request.ArtificialHttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
@@ -145,13 +146,23 @@ public class ExportExcelController {
         List<List<String>> result = new ArrayList<>();
         Collection data = getPageData(request);
         List<String> row;
+        String value;
         for (Object rowData : data) {
             row = new ArrayList<>();
             for (ColumnDef columnDef : cols) {
                 if (columnDef.isHidden() || StringUtil.isBlank(columnDef.getName())) {
                     continue;
                 }
-                row.add(noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName())));
+                if (rowData instanceof Map) {
+                    value = ((Map) rowData).get(columnDef.getName()) + "";
+                } else {
+                    try {
+                        value = noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName()));
+                    } catch (BeansException e) {
+                        value = "Could NOT get value from " + rowData.getClass().getName();
+                    }
+                }
+                row.add(value);
             }
             result.add(row);
         }
