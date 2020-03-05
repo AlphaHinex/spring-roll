@@ -27,25 +27,34 @@ import java.util.*;
 public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     private static final String CHARSET_PREFIX = "charset=";
-
-    private transient String contextPath;
-    private transient String servletPath;
-    private transient String uri;
-    private transient Map<String, String[]> params;
-    private transient String method = "GET";
-    private transient String contentType;
-    private transient String characterEncoding;
-    private transient byte[] content;
-    private transient ServletInputStream inputStream;
-
-    private final Map<String, HeaderValueHolder> headers = new LinkedCaseInsensitiveMap<>();
     private static final ServletInputStream EMPTY_SERVLET_INPUT_STREAM =
             new DelegatingServletInputStream(StreamUtils.emptyInput());
 
-    public ArtificialHttpServletRequest(String contextPath, String servletPath, String uri) {
+    // ---------------------------------------------------------------------
+    // ServletRequest properties
+    // ---------------------------------------------------------------------
+
+    private final Map<String, Object> attributes = new LinkedHashMap<>();
+    private transient String characterEncoding;
+    private transient String contentType;
+    private transient byte[] content;
+    private transient ServletInputStream inputStream;
+    private transient Map<String, String[]> parameters;
+
+    // ---------------------------------------------------------------------
+    // HttpServletRequest properties
+    // ---------------------------------------------------------------------
+
+    private transient String contextPath;
+    private transient String servletPath;
+    private transient String requestURI;
+    private transient String method = "GET";
+    private final Map<String, HeaderValueHolder> headers = new LinkedCaseInsensitiveMap<>();
+
+    public ArtificialHttpServletRequest(String contextPath, String servletPath, String requestURI) {
         this.contextPath = contextPath;
         this.servletPath = servletPath;
-        this.uri = uri;
+        this.requestURI = requestURI;
     }
 
     @Override
@@ -55,7 +64,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        return uri;
+        return requestURI;
     }
 
     @Override
@@ -66,7 +75,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     @Override
     public String getParameter(String name) {
         Assert.notNull(name, "Parameter name must not be null");
-        String[] arr = this.params.get(name);
+        String[] arr = this.parameters.get(name);
         return arr != null && arr.length > 0 ? arr[0] : null;
     }
 
@@ -82,12 +91,12 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     @Override
     public String[] getParameterValues(String name) {
         Assert.notNull(name, "Parameter name must not be null");
-        return this.params.get(name);
+        return this.parameters.get(name);
     }
 
     @Override
     public Enumeration<String> getParameterNames() {
-        return Collections.enumeration(this.params.keySet());
+        return Collections.enumeration(this.parameters.keySet());
     }
 
     public void setContentType(String contentType) {
@@ -186,8 +195,13 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         return this.characterEncoding;
     }
 
-    public void setParams(Map<String, String[]> params) {
-        this.params = params;
+    public void setParameters(Map<String, String[]> parameters) {
+        this.parameters = parameters;
+    }
+
+    @Override
+    public void removeAttribute(String name) {
+        throw new UnsupportedOperationException();
     }
 
     // Below methods not implement
@@ -370,11 +384,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public void setAttribute(String name, Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeAttribute(String name) {
         throw new UnsupportedOperationException();
     }
 

@@ -103,7 +103,7 @@ public class ExportExcelController {
 
         Map<String, String[]> params = parseParams(decodedUrl);
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
-        bizRequest.setParams(params);
+        bizRequest.setParameters(params);
 
         String decodedCols = decode(cols, tomcatUriEncoding);
         LOGGER.debug("Cols string after encoding is {}", decodedCols);

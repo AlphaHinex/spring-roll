@@ -16,7 +16,7 @@ class ArtificialHttpServletRequestSpec extends Specification {
 
 
     def setup() {
-        request.setParams(params)
+        request.setParameters(params)
     }
 
     def 'check useful getters'() {
