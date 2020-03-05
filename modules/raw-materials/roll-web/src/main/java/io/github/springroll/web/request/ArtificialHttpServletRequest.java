@@ -370,93 +370,93 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public void setAttribute(String name, Object o) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void removeAttribute(String name) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Locale getLocale() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Enumeration<Locale> getLocales() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isSecure() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     @Deprecated
     public String getRealPath(String path) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getRemotePort() {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getLocalName() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getLocalAddr() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getLocalPort() {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ServletContext getServletContext() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public AsyncContext startAsync() throws IllegalStateException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isAsyncStarted() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isAsyncSupported() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public AsyncContext getAsyncContext() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public DispatcherType getDispatcherType() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
 }
