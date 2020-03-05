@@ -201,7 +201,23 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public void removeAttribute(String name) {
-        throw new UnsupportedOperationException();
+        Assert.notNull(name, "Attribute name must not be null");
+        this.attributes.remove(name);
+    }
+
+    @Override
+    public Object getAttribute(String name) {
+        return this.attributes.get(name);
+    }
+
+    @Override
+    public void setAttribute(String name, Object value) {
+        Assert.notNull(name, "Attribute name must not be null");
+        if (value != null) {
+            this.attributes.put(name, value);
+        } else {
+            this.attributes.remove(name);
+        }
     }
 
     // Below methods not implement
@@ -333,11 +349,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public Object getAttribute(String name) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Enumeration<String> getAttributeNames() {
         throw new UnsupportedOperationException();
     }
@@ -379,11 +390,6 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getRemoteHost() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setAttribute(String name, Object o) {
         throw new UnsupportedOperationException();
     }
 
