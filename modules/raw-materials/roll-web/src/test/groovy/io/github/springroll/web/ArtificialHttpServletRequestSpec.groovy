@@ -16,7 +16,7 @@ class ArtificialHttpServletRequestSpec extends Specification {
 
 
     def setup() {
-        request.setParams(params)
+        request.setParameters(params)
     }
 
     def 'check useful getters'() {
@@ -72,6 +72,18 @@ class ArtificialHttpServletRequestSpec extends Specification {
         'application/json'               | 'application/json'               | null
     }
 
+    def 'operate attribute'() {
+        request.setAttribute('a', '1')
+        request.setAttribute('b', '2')
+        request.setAttribute('b', null)
+
+        expect:
+        request.getAttribute('a') == '1'
+        request.getAttribute('b') == null
+        request.removeAttribute('a')
+        request.getAttribute('a') ==  null
+    }
+
     def 'not support methods'() {
         def exclude = [
                 'getContextPath',
@@ -93,8 +105,12 @@ class ArtificialHttpServletRequestSpec extends Specification {
                 'getHeader',
                 'getHeaders',
                 'getHeaderNames',
+                'setCharacterEncoding',
                 'getCharacterEncoding',
-                'setParams',
+                'setParameters',
+                'removeAttribute',
+                'getAttribute',
+                'setAttribute',
                 '$jacocoInit'
         ]
 
@@ -109,16 +125,11 @@ class ArtificialHttpServletRequestSpec extends Specification {
             } else {
                 Arrays.fill(params, null)
             }
-            switch (method.getReturnType().getSimpleName()) {
-                case 'boolean':
-                    method.invoke(request, params) == false
-                    break
-                case 'long':
-                case 'int':
-                    method.invoke(request, params) == 0
-                    break
-                default:
-                    method.invoke(request, params) == null
+
+            try {
+                method.invoke(request, params)
+            } catch (Exception e) {
+                true
             }
         }
     }
