@@ -74,6 +74,8 @@ class ArtificialHttpServletRequestSpec extends Specification {
 
     def 'operate attribute'() {
         request.setAttribute('a', '1')
+        request.setAttribute('b', '2')
+        request.setAttribute('b', null)
 
         expect:
         request.getAttribute('a') == '1'
