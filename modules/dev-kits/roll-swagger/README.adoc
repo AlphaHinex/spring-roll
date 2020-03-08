@@ -15,3 +15,5 @@ http://localhost:8080/swagger-ui.html
 - `@ApiParam` 用于Controller中方法的参数说明；
 - `@ApiImplicitParams` 用在方法上，为请求参数进行说明，如下：`@ApiImplicitParams({@ApiImplicitParam1,@ApiImplicitParam2,...})`；
 - `@ApiResponse` 用于方法上，说明接口响应的一些信息，`@ApiResponses`组装多个`@ApiResponse`
+
+@ApiOperation("''‍''...")、@ApiModelProperty() 等注解中需要编写中文时，需在包含中文的字符串收位加 ''‍'' 零等宽字符，使checkStyle检查成功。
