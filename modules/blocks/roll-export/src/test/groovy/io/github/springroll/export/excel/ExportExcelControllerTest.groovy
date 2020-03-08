@@ -1,21 +1,17 @@
 package io.github.springroll.export.excel
 
+import com.alibaba.excel.EasyExcel
 import io.github.springroll.export.excel.handler.PaginationHandler
 import io.github.springroll.test.AbstractSpringTest
 import io.github.springroll.test.TestResource
 import io.github.springroll.utils.JsonUtil
 import io.github.springroll.web.controller.BaseController
 import io.github.springroll.web.model.DataTrunk
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.ss.usermodel.Workbook
 import org.junit.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.NestedServletException
 
 import javax.servlet.http.HttpServletRequest
@@ -23,26 +19,31 @@ import javax.servlet.http.HttpServletRequest
 class ExportExcelControllerTest extends AbstractSpringTest {
 
     @Test
-    void testExportAll() {
+    void testExport() {
         checkExportData('中文', '/test/query', 3)
 
         def colDef = [new ColumnDef("名称", "name")]
         def col = new ColumnDef('描述', 'des')
         col.setHidden(true)
         colDef << col
-        // Add 2 params in ExportExcelController.getPageData
-        checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2 + 2, '', colDef)
+        checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2, '', colDef)
 
         col.setShowTitle(true)
         checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球&des=', 3, 'ISO_8859_1', colDef)
+
+        checkExportData('map', '/test/query/map', 2)
+        checkExportData('exception', '/test/query/exception', 2)
     }
 
     void checkExportData(String fileTitle, String queryUrl, int rowCount, encode = 'utf-8', colDef = [new ColumnDef("名称", "name")]) {
         def title = URLEncoder.encode(fileTitle,'utf-8')
         def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'UTF-8')
         def url = URLEncoder.encode(queryUrl, 'UTF-8')
-        def response = get("/export/excel/all/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
+        def response = get("/export/excel/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
+        checkResponse(response, title, rowCount)
+    }
 
+    void checkResponse(response, title, rowCount) {
         def disposition = response.getHeader('Content-Disposition')
         assert disposition.contains('filename=')
         def filename = disposition.substring(disposition.indexOf('filename=') + 9)
@@ -54,14 +55,10 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         xlsFile.withOutputStream { os ->
             os.write(bytes)
         }
-        assert filename == "${title}.xls"
+        assert filename == "${title}.xlsx"
 
-        xlsFile.withInputStream { is ->
-            Workbook wb = new HSSFWorkbook(is)
-            Sheet sheet = wb.getSheetAt(0)
-            assert sheet.getRow(0).getCell(0).getStringCellValue() == '名称'
-            assert sheet.getLastRowNum() == rowCount
-        }
+        def data = EasyExcel.read(xlsFile).sheet().doReadSync()
+        assert data.size() == rowCount
         xlsFile.delete()
     }
 
@@ -73,6 +70,23 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     @Test(expected = NestedServletException)
     void noSuitableHandler() {
         checkExportData('list', '/test/query/list?name=pn', 0)
+    }
+
+    @Test
+    void testPostExport() {
+        def title = URLEncoder.encode('中文post','utf-8')
+        def model = [
+                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述"],["label":"无prop","other": "props"]],
+                url: '/test/query/post/plant_name/plant_des',
+                bizReqBody: [
+                    name: "body name",
+                    des: "body des"
+                ],
+                total: '0',
+                tomcatUriEncoding: 'utf-8'
+        ]
+        def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
+        checkResponse(response, title, 2)
     }
 
 }
@@ -118,11 +132,33 @@ class Controller extends BaseController {
         [planet]
     }
 
+    @GetMapping('/map')
+    Map map() {
+        [rows: [
+                [userName: 'Jordan', age: '23'],
+                [userName: 'Kobe', age: '8']
+        ]]
+    }
+
+    @GetMapping('/exception')
+    Map exception() {
+        [rows: ['Jordan', 'Kobe']]
+    }
+
+    @PostMapping('/post/{name}/{des}')
+    Map<String, List<Planet>> post(@PathVariable String name, @PathVariable String des, @RequestBody Planet planet) {
+        def planet2 = new Planet(name)
+        planet2.setDes(des)
+        ['rows': [planet, planet2]]
+    }
+
 }
 
 class Planet {
     String name
     String des
+
+    Planet() { }
 
     Planet(String name) {
         this. name = name

@@ -51,6 +51,7 @@ class ColumnDef {
         this.showTitle = showTitle;
     }
 
+
     public String getField() {
         return name;
     }
@@ -73,6 +74,24 @@ class ColumnDef {
 
     public void setHidden(boolean hidden) {
         this.showTitle = !hidden;
+    }
+
+    // Element UI properties: prop, label
+
+    public String getProp() {
+        return name;
+    }
+
+    public void setProp(String prop) {
+        this.name = prop;
+    }
+
+    public String getLabel() {
+        return display;
+    }
+
+    public void setLabel(String label) {
+        this.display = label;
     }
 
 }

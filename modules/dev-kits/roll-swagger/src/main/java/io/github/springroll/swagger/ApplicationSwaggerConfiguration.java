@@ -1,4 +1,4 @@
-package com.proper.enterprise.platform.swagger;
+package io.github.springroll.swagger;
 
 import org.apache.commons.collections.ListUtils;
 import org.springframework.context.annotation.Bean;
@@ -18,18 +18,6 @@ import java.util.*;
 @Configuration
 @EnableSwagger2WebMvc
 public class ApplicationSwaggerConfiguration implements WebMvcConfigurer {
-
-    @Bean
-    public List<String> ignorePatternsListSwagger() {
-        List<String> list = new ArrayList<>(4);
-        list.add("*:/swagger-ui.html");
-        list.add("*:/webjars/**");
-        list.add("*:/swagger-resources/**");
-        list.add("*:/v2/api-docs/**");
-        // Ignore all for directly invoke from swagger ui
-        list.add("*:/**");
-        return list;
-    }
 
     @Bean
     @SuppressWarnings("unchecked")
