@@ -474,7 +474,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_dev_kits">5. dev-kits</a>
 <ul class="sectlevel2">
 <li><a href="#_roll_dev_configs">5.1. roll-dev-configs</a></li>
-<li><a href="#_roll_test">5.2. roll-test</a></li>
+<li><a href="#_roll_swagger">5.2. roll-swagger</a></li>
+<li><a href="#_roll_test">5.3. roll-test</a></li>
 </ul>
 </li>
 <li><a href="#_incubating">6. incubating</a>
@@ -489,6 +490,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_roll_web">7.3. roll-web</a></li>
 </ul>
 </li>
+<li><a href="#_roll_application">8. roll-application</a></li>
 </ul>
 </div>
 </div>
@@ -1111,7 +1113,49 @@ modules/test-init/README.md</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_roll_test">5.2. roll-test</h3>
+<h3 id="_roll_swagger">5.2. roll-swagger</h3>
+<div class="paragraph">
+<p>Swagger 配置模块，引入后启动应用环境，浏览器输入以下网址即可浏览 API 文档</p>
+</div>
+<div class="paragraph">
+<p><code>
+<a href="http://localhost:8080/swagger-ui.html" class="bare">http://localhost:8080/swagger-ui.html</a>
+</code></p>
+</div>
+<div class="paragraph">
+<p>常用注解如下，如若有具体需要请参考 swagger 的[官方文档]：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@Api</code> 用在类上，说明该类的作用；</p>
+</li>
+<li>
+<p><code>@ApiModel</code> 用在类上，表示对类进行说明，用于实体类中的参数接收说明；</p>
+</li>
+<li>
+<p><code>@ApiModelProperty</code> 用于字段,表示对model属性的说明；</p>
+</li>
+<li>
+<p><code>@ApiOperation</code> 用在 Controller 里的方法上，说明方法的作用，每一个接口的定义；</p>
+</li>
+<li>
+<p><code>@ApiParam</code> 用于Controller中方法的参数说明；</p>
+</li>
+<li>
+<p><code>@ApiImplicitParams</code> 用在方法上，为请求参数进行说明，如下：<code>@ApiImplicitParams({@ApiImplicitParam1,@ApiImplicitParam2,&#8230;&#8203;})</code>；</p>
+</li>
+<li>
+<p><code>@ApiResponse</code> 用于方法上，说明接口响应的一些信息，<code>@ApiResponses`组装多个</code>@ApiResponse`</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>@ApiOperation("''‍''&#8230;&#8203;")、@ApiModelProperty() 等注解中需要编写中文时，需在包含中文的字符串收位加 ''‍'' 零等宽字符，使checkStyle检查成功。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_roll_test">5.3. roll-test</h3>
 <div class="paragraph">
 <p>测试套件，旨在方便各模块开发各类测试用例，提供基础支持。</p>
 </div>
@@ -1176,11 +1220,28 @@ modules/test-init/README.md</code></pre>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_roll_application">8. roll-application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Powered by Spring-roll</p>
+</div>
+<div class="paragraph">
+<p>Web Application Module</p>
+</div>
+<div class="paragraph">
+<p>此模块为所有模块中唯一的一个 web 应用，其他各个模块均以 jar 包的方式被本模块所依赖。</p>
+</div>
+<div class="paragraph">
+<p>在开发及发布时，可根据实际情况调整本模块依赖的模块，以达到定制产品功能的目的。</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.8-SNAPSHOT<br>
-Last updated 2020-03-06 01:23:23 UTC
+Last updated 2020-03-08 06:20:15 UTC
 </div>
 </div>
 </body>
