@@ -1,7 +1,6 @@
-package io.github.springroll.web
+package io.github.springroll.web.request
 
 import io.github.springroll.utils.JsonUtil
-import io.github.springroll.web.request.ArtificialHttpServletRequest
 import org.springframework.http.MediaType
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -128,7 +127,7 @@ class ArtificialHttpServletRequestSpec extends Specification {
 
             try {
                 method.invoke(request, params)
-            } catch (Exception e) {
+            } catch (Exception ignored) {
                 true
             }
         }
