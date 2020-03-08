@@ -1,0 +1,9 @@
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    implementation libraries.spring_boot_starter_web
+
+       // Select on demand
+       runtimeOnly project(':roll-swagger'),
+                   project(':roll-export')
+}
