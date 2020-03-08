@@ -43,7 +43,7 @@ public class ApplicationSwaggerConfiguration implements WebMvcConfigurer {
         );
 
         final Set<String> cap = new HashSet<>(1);
-        cap.add(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        cap.add(MediaType.APPLICATION_JSON_VALUE);
 
         return new Docket(DocumentationType.SWAGGER_2)
             .useDefaultResponseMessages(false)

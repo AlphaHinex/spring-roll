@@ -7,3 +7,8 @@ dependencies {
        runtimeOnly project(':roll-swagger'),
                    project(':roll-export')
 }
+
+generateMetadataFileForGprPublication.enabled = false
+publishGprPublicationToMavenLocal.enabled = false
+publishToMavenLocal.enabled = false
+publish.enabled = false
