@@ -23,7 +23,7 @@
     </module>
 
     <module name="TreeWalker">
-<!--        <module name="SwaggerAnnotation"/>-->
+        <module name="SwaggerAnnotation"/>
         <module name="MethodLimit">
             <property name="max" value="65"/>
         </module>
@@ -36,7 +36,7 @@
         <module name="IllegalTokenText">
             <property name="tokens" value="STRING_LITERAL"/>
             <property name="format" value="^[^\u200d]{2,}.*[\u4e00-\u9fbf\u00B7\u4DAE]+.*$"/>
-            <property name="message" value="Consider using I18NService instead of plain language text. If you need to use Chinese in API doc, start with ''‍'' (zero-width space, could not see, but exists)."/>
+            <property name="message" value="Consider using i18n instead of plain language text. If you need to use Chinese in API doc, start with ''‍'' (zero-width space, could not see, but exists)."/>
         </module>
         <module name="AvoidEscapedUnicodeCharacters">
             <property name="allowEscapesForControlCharacters" value="true"/>

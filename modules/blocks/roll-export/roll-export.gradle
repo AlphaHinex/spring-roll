@@ -1,4 +1,6 @@
 dependencies {
+           compileOnly libraries.springfox
+
         implementation libraries.easyexcel
 
         implementation project(':roll-web')

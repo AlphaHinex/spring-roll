@@ -9,6 +9,9 @@ import io.github.springroll.utils.StringUtil;
 import io.github.springroll.web.ApplicationContextHolder;
 import io.github.springroll.web.HandlerHolder;
 import io.github.springroll.web.request.ArtificialHttpServletRequest;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
@@ -37,6 +40,7 @@ import java.net.URLEncoder;
 import java.util.*;
 
 @Controller
+@Api(value = "/export/excel", tags = {"‍通用导出 excel"})
 @RequestMapping("/export/excel")
 public class ExportExcelController {
 
@@ -57,9 +61,11 @@ public class ExportExcelController {
         this.paginationHandlers = paginationHandlers;
     }
 
+    @ApiOperation("‍导出文件名为 title 参数值的 excel 文件")
     @PostMapping("/{title}")
-    public void export(@PathVariable String title, @RequestBody ExportModel model,
-                          HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void export(@ApiParam(value = "‍导出文件标题", required = true) @PathVariable String title,
+                       @RequestBody ExportModel model,
+                       HttpServletRequest request, HttpServletResponse response) throws Exception {
         String decodedUrl = decode(model.getUrl(), model.getTomcatUriEncoding());
         String cleanUrl = cleanUrl(decodedUrl);
         String contextPath = request.getContextPath();
@@ -81,21 +87,14 @@ public class ExportExcelController {
         outputToResponse(decodedTitle, response, head, data);
     }
 
-    /**
-     * 根据查询请求 url，找到对应方法，查询出全部数据，导出到 excel 中
-     * 注意必填参数均需进行 URL encode
-     *
-     * @param  title             导出文件标题
-     * @param  cols              列表中对 columns 的定义，JSON 格式表示
-     * @param  url               查询数据请求 url
-     * @param  tomcatUriEncoding tomcat server.xml 中 Connector 设定的 URIEncoding 值，若未设置，默认为 ISO-8859-1
-     * @param  request           请求对象
-     * @param  response          响应对象
-     * @throws Exception         导出过程中可能会出现的各种异常
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/{title}")
-    public void export(@PathVariable String title, @RequestParam String cols, @RequestParam String url, String tomcatUriEncoding,
-                          HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @ApiOperation(value = "‍导出文件名为 title 参数值的 excel 文件",
+            notes = "‍根据查询请求 url，找到对应方法，查询出全部数据，导出到 excel 中。注意必填参数均需进行 URL encode。")
+    @GetMapping("/{title}")
+    public void export(@ApiParam(value = "‍导出文件标题", required = true) @PathVariable String title,
+                       @ApiParam(value = "‍列表中对 columns 的定义，JSON 格式表示", required = true) @RequestParam String cols,
+                       @ApiParam(value = "‍查询数据请求 url", required = true) @RequestParam String url,
+                       @ApiParam(value = "‍tomcat server.xml 中 Connector 设定的 URIEncoding 值，若未设置，默认为 ISO-8859-1") String tomcatUriEncoding,
+                       HttpServletRequest request, HttpServletResponse response) throws Exception {
         String decodedUrl = decode(url, tomcatUriEncoding);
         String cleanUrl = cleanUrl(decodedUrl);
         String contextPath = request.getContextPath();
