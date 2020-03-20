@@ -45,7 +45,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     // HttpServletRequest properties
     // ---------------------------------------------------------------------
 
-    private String contextPath = "";
+    private transient String contextPath;
     private transient String servletPath;
     private transient String requestURI;
     private transient String method = "GET";
