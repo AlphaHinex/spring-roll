@@ -1,4 +1,4 @@
-package io.github.springroll.web
+package io.github.springroll.web.request
 
 import io.github.springroll.test.AbstractSpringTest
 import org.junit.Test

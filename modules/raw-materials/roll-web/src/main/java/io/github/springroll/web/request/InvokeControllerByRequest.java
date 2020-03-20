@@ -1,7 +1,6 @@
 package io.github.springroll.web.request;
 
 import io.github.springroll.web.ApplicationContextHolder;
-import io.github.springroll.web.HandlerHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
