@@ -6,9 +6,8 @@ import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.export.excel.handler.PaginationHandler;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
-import io.github.springroll.web.ApplicationContextHolder;
-import io.github.springroll.web.HandlerHolder;
 import io.github.springroll.web.request.ArtificialHttpServletRequest;
+import io.github.springroll.web.request.InvokeControllerByRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -21,15 +20,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.method.support.HandlerMethodArgumentResolverComposite;
-import org.springframework.web.method.support.InvocableHandlerMethod;
-import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-import org.springframework.web.servlet.mvc.method.annotation.ServletRequestDataBinderFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,13 +42,13 @@ public class ExportExcelController {
     private static final String PARAMS_TOKEN_EQUATION = "=";
     private static final int PARAMS_PAIR_LEN = 2;
 
-    private transient HandlerHolder handlerHolder;
     private transient Collection<PaginationHandler> paginationHandlers;
+    private transient InvokeControllerByRequest invokeControllerByRequest;
 
     @Autowired
-    public ExportExcelController(HandlerHolder handlerHolder, Collection<PaginationHandler> paginationHandlers) {
-        this.handlerHolder = handlerHolder;
+    public ExportExcelController(Collection<PaginationHandler> paginationHandlers, InvokeControllerByRequest invokeControllerByRequest) {
         this.paginationHandlers = paginationHandlers;
+        this.invokeControllerByRequest = invokeControllerByRequest;
     }
 
     @ApiOperation("‍导出文件名为 title 参数值的 excel 文件")
@@ -184,19 +174,7 @@ public class ExportExcelController {
     }
 
     private Collection getPageData(HttpServletRequest request) throws Exception {
-        HandlerMethod handlerMethod = handlerHolder.getHandler(request);
-        InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(handlerMethod);
-
-        HandlerMethodArgumentResolverComposite composite = new HandlerMethodArgumentResolverComposite();
-        RequestMappingHandlerAdapter handlerAdapter = ApplicationContextHolder.getBean(RequestMappingHandlerAdapter.class);
-        composite.addResolvers(handlerAdapter.getArgumentResolvers());
-        invocableHandlerMethod.setHandlerMethodArgumentResolvers(composite);
-
-        invocableHandlerMethod.setDataBinderFactory(
-                new ServletRequestDataBinderFactory(new ArrayList<>(), new ConfigurableWebBindingInitializer()));
-
-        NativeWebRequest nativeWebRequest = new DispatcherServletWebRequest(request);
-        Object rawObject = invocableHandlerMethod.invokeForRequest(nativeWebRequest, new ModelAndViewContainer());
+        Object rawObject = invokeControllerByRequest.invoke(request);
         Assert.notNull(rawObject, "Could not get return value from " + request.getRequestURI());
 
         Optional<Collection> optional;
@@ -206,8 +184,7 @@ public class ExportExcelController {
                 return optional.get();
             }
         }
-        String resultType = rawObject.getClass().getName();
-        throw new RuntimeException("Could not find property PaginationHandler for " + resultType);
+        throw new RuntimeException("Could not find property PaginationHandler for " + rawObject.getClass().getName());
     }
 
     /**
