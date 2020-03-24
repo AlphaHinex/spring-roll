@@ -4,7 +4,6 @@ import com.alibaba.excel.EasyExcel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.export.excel.handler.PaginationHandler;
-import io.github.springroll.utils.CollectionUtil;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
 import io.github.springroll.web.request.ArtificialHttpServletRequest;
@@ -154,9 +153,9 @@ public class ExportExcelController {
                     }
                 }
                 if (CollectionUtils.isNotEmpty(columnDef.getDecoder())) {
-                    for (DecodeBean decodeBean : columnDef.getDecoder()) {
-                        if (value.equals(decodeBean.getValue())) {
-                            value = decodeBean.getName();
+                    for (ColumnDecoder colDecoder : columnDef.getDecoder()) {
+                        if (value.equals(colDecoder.getValue())) {
+                            value = colDecoder.getName();
                             break;
                         }
                     }

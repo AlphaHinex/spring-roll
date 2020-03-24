@@ -1,7 +1,5 @@
 package io.github.springroll.export.excel;
 
-import lombok.Data;
-
 import java.util.List;
 
 class ColumnDef {
@@ -24,7 +22,7 @@ class ColumnDef {
     /**
      * 字段解码器，根据 value 翻译 name
      */
-    private List<DecodeBean> decoder;
+    private List<ColumnDecoder> decoder;
 
     /**
      * 默认无参构造器，供 Jackson 使用
@@ -60,11 +58,11 @@ class ColumnDef {
         this.showTitle = showTitle;
     }
 
-    public List<DecodeBean> getDecoder() {
+    public List<ColumnDecoder> getDecoder() {
         return decoder;
     }
 
-    public void setDecoder(List<DecodeBean> decoder) {
+    public void setDecoder(List<ColumnDecoder> decoder) {
         this.decoder = decoder;
     }
 
@@ -110,16 +108,4 @@ class ColumnDef {
         this.display = label;
     }
 
-}
-
-@Data
-class DecodeBean {
-    /**
-     * Value in data
-     */
-    private String value;
-    /**
-     * Name of value to display
-     */
-    private String name;
 }
