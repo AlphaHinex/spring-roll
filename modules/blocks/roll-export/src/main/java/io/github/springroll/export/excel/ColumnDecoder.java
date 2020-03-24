@@ -1,8 +1,10 @@
 package io.github.springroll.export.excel;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 class ColumnDecoder {
     /**
      * Value in data
