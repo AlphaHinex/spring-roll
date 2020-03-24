@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.export.excel.handler.PaginationHandler;
+import io.github.springroll.utils.CollectionUtil;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
 import io.github.springroll.web.request.ArtificialHttpServletRequest;
@@ -11,6 +12,7 @@ import io.github.springroll.web.request.InvokeControllerByRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
@@ -56,7 +58,7 @@ public class ExportExcelController {
     public void export(@ApiParam(value = "‍导出文件标题", required = true) @PathVariable String title,
                        @RequestBody ExportModel model,
                        HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String decodedUrl = decode(model.getUrl(), model.getTomcatUriEncoding());
+        String decodedUrl = urlDecode(model.getUrl(), model.getTomcatUriEncoding());
         String cleanUrl = cleanUrl(decodedUrl);
         String contextPath = request.getContextPath();
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
@@ -71,7 +73,7 @@ public class ExportExcelController {
 
     private void export(String title, List<ColumnDef> columnDefs, String tomcatUriEncoding,
                         HttpServletResponse response, HttpServletRequest bizReq) throws Exception {
-        String decodedTitle = decode(title, tomcatUriEncoding);
+        String decodedTitle = urlDecode(title, tomcatUriEncoding);
         List<List<String>> head = toHead(columnDefs);
         List<List<String>> data = toData(columnDefs, bizReq);
         outputToResponse(decodedTitle, response, head, data);
@@ -85,7 +87,7 @@ public class ExportExcelController {
                        @ApiParam(value = "‍查询数据请求 url", required = true) @RequestParam String url,
                        @ApiParam(value = "‍tomcat server.xml 中 Connector 设定的 URIEncoding 值，若未设置，默认为 ISO-8859-1") String tomcatUriEncoding,
                        HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String decodedUrl = decode(url, tomcatUriEncoding);
+        String decodedUrl = urlDecode(url, tomcatUriEncoding);
         String cleanUrl = cleanUrl(decodedUrl);
         String contextPath = request.getContextPath();
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
@@ -94,14 +96,14 @@ public class ExportExcelController {
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
         bizRequest.setParameters(params);
 
-        String decodedCols = decode(cols, tomcatUriEncoding);
+        String decodedCols = urlDecode(cols, tomcatUriEncoding);
         LOGGER.debug("Cols string after encoding is {}", decodedCols);
 
         List<ColumnDef> columnDefs = JsonUtil.parse(decodedCols, new TypeReference<List<ColumnDef>>() {});
         export(title, columnDefs, tomcatUriEncoding, response, bizRequest);
     }
 
-    private String decode(String str, String encoding) throws UnsupportedEncodingException {
+    private String urlDecode(String str, String encoding) throws UnsupportedEncodingException {
         String decodedStr = StringUtil.isBlank(encoding) ? URLDecoder.decode(str, CharacterEncoding.DEFAULT_ENCODE_NAME)
                 : URLDecoder.decode(str, encoding);
         return isDefaultEncoding(encoding) || StringUtil.isBlank(encoding)
@@ -149,6 +151,14 @@ public class ExportExcelController {
                         value = noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName()));
                     } catch (BeansException e) {
                         value = "Could NOT get value from " + rowData.getClass().getName();
+                    }
+                }
+                if (CollectionUtils.isNotEmpty(columnDef.getDecoder())) {
+                    for (DecodeBean decodeBean : columnDef.getDecoder()) {
+                        if (value.equals(decodeBean.getValue())) {
+                            value = decodeBean.getName();
+                            break;
+                        }
                     }
                 }
                 row.add(value);
