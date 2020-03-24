@@ -1,4 +1,4 @@
-package io.github.springroll.web;
+package io.github.springroll.web.request;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

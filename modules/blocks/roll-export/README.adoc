@@ -2,6 +2,8 @@
 
 通用导出功能
 
-使用一个通用 url（`GET:/export/excel/all/{title}`），传入表头定义、业务查询数据 url 及导出数据数量，直接导出一个统一格式的 Excel 文件。
+面向前端提供一个通用 url（`GET:/export/excel/{title}`），传入表头定义、业务查询数据 url 及导出数据数量，直接导出一个统一格式的 Excel 文件。
+
+具体用法可参见 swagger 文档或单元测试 `ExportExcelControllerTest`。
 
 暂不支持特殊格式的表格导出。

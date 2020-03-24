@@ -1,5 +1,7 @@
 package io.github.springroll.export.excel;
 
+import java.util.List;
+
 class ColumnDef {
 
     /**
@@ -16,6 +18,11 @@ class ColumnDef {
      * 是否需要显示（输出），默认为是
      */
     private boolean showTitle = true;
+
+    /**
+     * 字段解码器，根据 value 翻译 name
+     */
+    private List<ColumnDecoder> decoder;
 
     /**
      * 默认无参构造器，供 Jackson 使用
@@ -51,6 +58,13 @@ class ColumnDef {
         this.showTitle = showTitle;
     }
 
+    public List<ColumnDecoder> getDecoder() {
+        return decoder;
+    }
+
+    public void setDecoder(List<ColumnDecoder> decoder) {
+        this.decoder = decoder;
+    }
 
     public String getField() {
         return name;

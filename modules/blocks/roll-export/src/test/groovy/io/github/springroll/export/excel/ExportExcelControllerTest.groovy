@@ -76,7 +76,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     void testPostExport() {
         def title = URLEncoder.encode('中文post','utf-8')
         def model = [
-                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述"],["label":"无prop","other": "props"]],
+                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述","decoder":[[value: 'plant_des', name: '翻译后的描述']]],["label":"无prop","other": "props"]],
                 url: '/test/query/post/plant_name/plant_des',
                 bizReqBody: [
                     name: "body name",
