@@ -11,11 +11,7 @@ import org.junit.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.NestedServletException
 
 import javax.servlet.http.HttpServletRequest
@@ -81,7 +77,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def title = URLEncoder.encode('中文post','utf-8')
         def model = [
                 cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述"],["label":"无prop","other": "props"]],
-                url: '/test/query/post',
+                url: '/test/query/post/plant_name/plant_des',
                 bizReqBody: [
                     name: "body name",
                     des: "body des"
@@ -90,7 +86,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                 tomcatUriEncoding: 'utf-8'
         ]
         def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
-        checkResponse(response, title, 1)
+        checkResponse(response, title, 2)
     }
 
 }
@@ -149,9 +145,11 @@ class Controller extends BaseController {
         [rows: ['Jordan', 'Kobe']]
     }
 
-    @PostMapping('/post')
-    Map<String, List<Planet>> post(@RequestBody Planet planet) {
-        ['rows': [planet]]
+    @PostMapping('/post/{name}/{des}')
+    Map<String, List<Planet>> post(@PathVariable String name, @PathVariable String des, @RequestBody Planet planet) {
+        def planet2 = new Planet(name)
+        planet2.setDes(des)
+        ['rows': [planet, planet2]]
     }
 
 }

@@ -116,6 +116,7 @@ subprojects {
 
 }""")
             }
+            println "Generated a new project at $projectRoot"
         }
     }
 }

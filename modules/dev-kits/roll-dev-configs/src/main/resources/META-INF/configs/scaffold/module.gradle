@@ -22,6 +22,7 @@ tasks.addRule('Pattern: init-<moduleName>') { String initModule ->
 
 Powered by Spring-roll""")
             }
+            println "Generated $moduleName at $moduleRoot successfully."
         }
     }
 }

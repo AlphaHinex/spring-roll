@@ -1,0 +1,7 @@
+dependencies {
+
+     implementation libraries.commons_collections,
+                    libraries.spring_webmvc,
+                    libraries.springfox
+
+}

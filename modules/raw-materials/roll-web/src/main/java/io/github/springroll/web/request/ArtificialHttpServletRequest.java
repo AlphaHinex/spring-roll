@@ -27,25 +27,34 @@ import java.util.*;
 public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     private static final String CHARSET_PREFIX = "charset=";
-
-    private transient String contextPath;
-    private transient String servletPath;
-    private transient String uri;
-    private transient Map<String, String[]> params;
-    private transient String method = "GET";
-    private transient String contentType;
-    private transient String characterEncoding;
-    private transient byte[] content;
-    private transient ServletInputStream inputStream;
-
-    private final Map<String, HeaderValueHolder> headers = new LinkedCaseInsensitiveMap<>();
     private static final ServletInputStream EMPTY_SERVLET_INPUT_STREAM =
             new DelegatingServletInputStream(StreamUtils.emptyInput());
 
-    public ArtificialHttpServletRequest(String contextPath, String servletPath, String uri) {
+    // ---------------------------------------------------------------------
+    // ServletRequest properties
+    // ---------------------------------------------------------------------
+
+    private final Map<String, Object> attributes = new LinkedHashMap<>();
+    private transient String characterEncoding;
+    private transient String contentType;
+    private transient byte[] content;
+    private transient ServletInputStream inputStream;
+    private transient Map<String, String[]> parameters;
+
+    // ---------------------------------------------------------------------
+    // HttpServletRequest properties
+    // ---------------------------------------------------------------------
+
+    private transient String contextPath;
+    private transient String servletPath;
+    private transient String requestURI;
+    private transient String method = "GET";
+    private final Map<String, HeaderValueHolder> headers = new LinkedCaseInsensitiveMap<>();
+
+    public ArtificialHttpServletRequest(String contextPath, String servletPath, String requestURI) {
         this.contextPath = contextPath;
         this.servletPath = servletPath;
-        this.uri = uri;
+        this.requestURI = requestURI;
     }
 
     @Override
@@ -55,7 +64,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        return uri;
+        return requestURI;
     }
 
     @Override
@@ -66,7 +75,7 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     @Override
     public String getParameter(String name) {
         Assert.notNull(name, "Parameter name must not be null");
-        String[] arr = this.params.get(name);
+        String[] arr = this.parameters.get(name);
         return arr != null && arr.length > 0 ? arr[0] : null;
     }
 
@@ -82,12 +91,12 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
     @Override
     public String[] getParameterValues(String name) {
         Assert.notNull(name, "Parameter name must not be null");
-        return this.params.get(name);
+        return this.parameters.get(name);
     }
 
     @Override
     public Enumeration<String> getParameterNames() {
-        return Collections.enumeration(this.params.keySet());
+        return Collections.enumeration(this.parameters.keySet());
     }
 
     public void setContentType(String contentType) {
@@ -186,277 +195,283 @@ public class ArtificialHttpServletRequest implements HttpServletRequest {
         return this.characterEncoding;
     }
 
-    public void setParams(Map<String, String[]> params) {
-        this.params = params;
+    public void setParameters(Map<String, String[]> parameters) {
+        this.parameters = parameters;
+    }
+
+    @Override
+    public void removeAttribute(String name) {
+        Assert.notNull(name, "Attribute name must not be null");
+        this.attributes.remove(name);
+    }
+
+    @Override
+    public Object getAttribute(String name) {
+        return this.attributes.get(name);
+    }
+
+    @Override
+    public void setAttribute(String name, Object value) {
+        Assert.notNull(name, "Attribute name must not be null");
+        if (value != null) {
+            this.attributes.put(name, value);
+        } else {
+            this.attributes.remove(name);
+        }
     }
 
     // Below methods not implement
 
     @Override
     public String getAuthType() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Cookie[] getCookies() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long getDateHeader(String name) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getIntHeader(String name) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getPathInfo() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getPathTranslated() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getQueryString() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getRemoteUser() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isUserInRole(String role) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Principal getUserPrincipal() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getRequestedSessionId() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public StringBuffer getRequestURL() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public HttpSession getSession(boolean create) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public HttpSession getSession() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String changeSessionId() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isRequestedSessionIdValid() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isRequestedSessionIdFromCookie() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isRequestedSessionIdFromURL() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     @Deprecated
     public boolean isRequestedSessionIdFromUrl() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void login(String username, String password) throws ServletException {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void logout() throws ServletException {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Part getPart(String name) throws IOException, ServletException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> httpUpgradeHandlerClass) throws IOException, ServletException {
-        return null;
-    }
-
-    @Override
-    public Object getAttribute(String name) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Enumeration<String> getAttributeNames() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getProtocol() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getScheme() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getServerName() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getServerPort() {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public BufferedReader getReader() throws IOException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getRemoteAddr() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getRemoteHost() {
-        return null;
-    }
-
-    @Override
-    public void setAttribute(String name, Object o) {
-
-    }
-
-    @Override
-    public void removeAttribute(String name) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Locale getLocale() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Enumeration<Locale> getLocales() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isSecure() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     @Deprecated
     public String getRealPath(String path) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getRemotePort() {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getLocalName() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getLocalAddr() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getLocalPort() {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ServletContext getServletContext() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public AsyncContext startAsync() throws IllegalStateException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isAsyncStarted() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isAsyncSupported() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public AsyncContext getAsyncContext() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public DispatcherType getDispatcherType() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
 }
