@@ -1,6 +1,13 @@
 package io.github.springroll.export.excel;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 class ColumnDef {
 
@@ -22,6 +29,8 @@ class ColumnDef {
     /**
      * 字段解码器，根据 value 翻译 name
      */
+    @Getter
+    @Setter
     private List<ColumnDecoder> decoder;
 
     /**
@@ -56,14 +65,6 @@ class ColumnDef {
 
     public void setShowTitle(boolean showTitle) {
         this.showTitle = showTitle;
-    }
-
-    public List<ColumnDecoder> getDecoder() {
-        return decoder;
-    }
-
-    public void setDecoder(List<ColumnDecoder> decoder) {
-        this.decoder = decoder;
     }
 
     public String getField() {
@@ -106,6 +107,18 @@ class ColumnDef {
 
     public void setLabel(String label) {
         this.display = label;
+    }
+
+    public Map<String, String> getDecoderMap() {
+        if (CollectionUtils.isEmpty(decoder)) {
+            return Collections.emptyMap();
+        } else {
+            Map<String, String> map = new HashMap<>(decoder.size());
+            for (ColumnDecoder de : decoder) {
+                map.put(de.getValue(), de.getName());
+            }
+            return map;
+        }
     }
 
 }

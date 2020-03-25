@@ -137,6 +137,8 @@ public class ExportExcelController {
         Collection data = getPageData(request);
         List<String> row;
         String value;
+        // Local cache decoder map cause decoder data list of each column may huge
+        Map<String, Map<String, String>> decoderMap = new HashMap<>(cols.size());
         for (Object rowData : data) {
             row = new ArrayList<>();
             for (ColumnDef columnDef : cols) {
@@ -153,12 +155,10 @@ public class ExportExcelController {
                     }
                 }
                 if (CollectionUtils.isNotEmpty(columnDef.getDecoder())) {
-                    for (ColumnDecoder colDecoder : columnDef.getDecoder()) {
-                        if (value.equals(colDecoder.getValue())) {
-                            value = colDecoder.getName();
-                            break;
-                        }
+                    if (!decoderMap.containsKey(columnDef.getName())) {
+                        decoderMap.put(columnDef.getName(), columnDef.getDecoderMap());
                     }
+                    value = decoderMap.get(columnDef.getName()).getOrDefault(value, value);
                 }
                 row.add(value);
             }
