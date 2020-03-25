@@ -1,5 +1,14 @@
 package io.github.springroll.export.excel;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 class ColumnDef {
 
     /**
@@ -16,6 +25,13 @@ class ColumnDef {
      * 是否需要显示（输出），默认为是
      */
     private boolean showTitle = true;
+
+    /**
+     * 字段解码器，根据 value 翻译 name
+     */
+    @Getter
+    @Setter
+    private List<ColumnDecoder> decoder;
 
     /**
      * 默认无参构造器，供 Jackson 使用
@@ -50,7 +66,6 @@ class ColumnDef {
     public void setShowTitle(boolean showTitle) {
         this.showTitle = showTitle;
     }
-
 
     public String getField() {
         return name;
@@ -92,6 +107,18 @@ class ColumnDef {
 
     public void setLabel(String label) {
         this.display = label;
+    }
+
+    public Map<String, String> getDecoderMap() {
+        if (CollectionUtils.isEmpty(decoder)) {
+            return Collections.emptyMap();
+        } else {
+            Map<String, String> map = new HashMap<>(decoder.size());
+            for (ColumnDecoder de : decoder) {
+                map.put(de.getValue(), de.getName());
+            }
+            return map;
+        }
     }
 
 }

@@ -43,7 +43,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         checkResponse(response, title, rowCount)
     }
 
-    void checkResponse(response, title, rowCount) {
+    def checkResponse(response, title, rowCount) {
         def disposition = response.getHeader('Content-Disposition')
         assert disposition.contains('filename=')
         def filename = disposition.substring(disposition.indexOf('filename=') + 9)
@@ -60,6 +60,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def data = EasyExcel.read(xlsFile).sheet().doReadSync()
         assert data.size() == rowCount
         xlsFile.delete()
+        data
     }
 
     @Test(expected = NestedServletException)
@@ -76,7 +77,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     void testPostExport() {
         def title = URLEncoder.encode('中文post','utf-8')
         def model = [
-                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述"],["label":"无prop","other": "props"]],
+                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述","decoder":[[value: 'plant_des', name: '翻译后的描述']]],["label":"无prop","other": "props"]],
                 url: '/test/query/post/plant_name/plant_des',
                 bizReqBody: [
                     name: "body name",
@@ -86,7 +87,9 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                 tomcatUriEncoding: 'utf-8'
         ]
         def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
-        checkResponse(response, title, 2)
+        def data = checkResponse(response, title, 2)
+        assert data[0][1] == 'body des'
+        assert data[1][1] == '翻译后的描述'
     }
 
 }
