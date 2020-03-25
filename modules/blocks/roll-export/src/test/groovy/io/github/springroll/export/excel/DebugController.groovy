@@ -31,9 +31,16 @@ class DebugController {
     Map queryUserByPageQuery(@RequestBody Map pageQuery) {
         println JsonUtil.toJsonIgnoreException(pageQuery)
         [rows: [
-                [userName: 'Jordan', age: '23'],
-                [userName: 'Kobe', age: '8']
+                [userId: '110000', userName: 'R', type: 'XD06A', age: '290125', regn: 'YEM', chgrea: '2203', traf: '1207', dept: '5104'],
+                [userId: '110106', userName: '04', type: 'XG03A', age: '290125', regn: 'TUV', chgrea: '80', traf: '2100', dept: '5014'],
+                [userId: '130000', userName: '71', type: 'XG03A', age: '290117', regn: 'CHE', chgrea: '6310', traf: '4300', dept: '3202'],
+                [admdvs: 'admdvs', indu: 'indu', pham: 'pham', dosform: 'dosform', regn: 'regn', chgrea: 'chgrea', traf: 'traf', dept: 'dept']
         ]]
+    }
+
+    @GetMapping('/user/queryUserListByPage')
+    Map test() {
+        queryUserByPageQuery(null)
     }
 
 }
