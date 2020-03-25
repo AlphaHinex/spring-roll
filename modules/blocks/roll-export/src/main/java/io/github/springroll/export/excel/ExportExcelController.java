@@ -137,6 +137,7 @@ public class ExportExcelController {
         Collection data = getPageData(request);
         List<String> row;
         String value;
+        // Local cache decoder map cause decoder data list of each column may huge
         Map<String, Map<String, String>> decoderMap = new HashMap<>(cols.size());
         for (Object rowData : data) {
             row = new ArrayList<>();
