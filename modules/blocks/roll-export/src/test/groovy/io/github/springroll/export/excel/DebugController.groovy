@@ -2,6 +2,7 @@ package io.github.springroll.export.excel
 
 import com.alibaba.excel.EasyExcel
 import io.github.springroll.utils.JsonUtil
+import org.apache.commons.lang3.RandomUtils
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -30,12 +31,35 @@ class DebugController {
     @PostMapping("/user/queryUserListByPage")
     Map queryUserByPageQuery(@RequestBody Map pageQuery) {
         println JsonUtil.toJsonIgnoreException(pageQuery)
-        [rows: [
-                [userId: '110000', userName: 'R', type: 'XD06A', age: '290125', regn: 'YEM', chgrea: '2203', traf: '1207', dept: '5104'],
-                [userId: '110106', userName: '04', type: 'XG03A', age: '290125', regn: 'TUV', chgrea: '80', traf: '2100', dept: '5014'],
-                [userId: '130000', userName: '71', type: 'XG03A', age: '290117', regn: 'CHE', chgrea: '6310', traf: '4300', dept: '3202'],
-                [admdvs: 'admdvs', indu: 'indu', pham: 'pham', dosform: 'dosform', regn: 'regn', chgrea: 'chgrea', traf: 'traf', dept: 'dept']
-        ]]
+        def admdvs = ['110000', '110106', '130000']
+        def indu = ['R', '04', '71']
+        def pham = ['XD06A', 'XG03A', 'XG03A']
+        def dosform = ['290125', '290125', '290117']
+        def regn = ['YEM', 'TUV', 'CHE']
+        def chgrea = ['2203', '80', '6310']
+        def traf = ['1207', '2100', '4300']
+        def dept = ['5104', '5014', '3202']
+
+        def rows = []
+        1000000.times {
+            rows << [
+                    userId: admdvs.get(RandomUtils.nextInt(0, 3)),
+                    userName: indu.get(RandomUtils.nextInt(0, 3)),
+                    type: pham.get(RandomUtils.nextInt(0, 3)),
+                    age: dosform.get(RandomUtils.nextInt(0, 3)),
+                    col01: admdvs.get(RandomUtils.nextInt(0, 3)),
+                    col02: indu.get(RandomUtils.nextInt(0, 3)),
+                    col03: pham.get(RandomUtils.nextInt(0, 3)),
+                    col04: dosform.get(RandomUtils.nextInt(0, 3)),
+                    col05: admdvs.get(RandomUtils.nextInt(0, 3)),
+                    col06: indu.get(RandomUtils.nextInt(0, 3)),
+                    col07: pham.get(RandomUtils.nextInt(0, 3)),
+                    col08: dosform.get(RandomUtils.nextInt(0, 3)),
+                    col09: admdvs.get(RandomUtils.nextInt(0, 3)),
+                    col10: indu.get(RandomUtils.nextInt(0, 3)),
+            ]
+        }
+        [rows: rows]
     }
 
     @GetMapping('/user/queryUserListByPage')
