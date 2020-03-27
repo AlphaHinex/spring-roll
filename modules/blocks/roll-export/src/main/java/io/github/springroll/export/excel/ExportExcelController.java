@@ -63,7 +63,11 @@ public class ExportExcelController {
 
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
         bizRequest.setMethod(HttpMethod.POST.name());
-        bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes(request.getCharacterEncoding()));
+        String reqEncoding = request.getCharacterEncoding();
+        if (StringUtil.isBlank(reqEncoding)) {
+            reqEncoding = DEFAULT_ENCODING;
+        }
+        bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes(reqEncoding));
         bizRequest.setContentType(request.getContentType());
 
         export(title, model.getCols(), model.getTomcatUriEncoding(), response, bizRequest);
