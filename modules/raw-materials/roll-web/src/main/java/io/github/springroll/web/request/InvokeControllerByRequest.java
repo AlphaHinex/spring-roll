@@ -1,10 +1,10 @@
 package io.github.springroll.web.request;
 
 import io.github.springroll.web.ApplicationContextHolder;
-import io.github.springroll.web.exception.ErrMsgException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.HandlerMethod;
@@ -42,9 +42,7 @@ public class InvokeControllerByRequest {
     public Object invoke(HttpServletRequest request) throws Exception {
         // Find the handler method by request
         Optional<HandlerMethod> handlerMethod = handlerMethodHolder.getHandlerMethod(request);
-        if (!handlerMethod.isPresent()) {
-            throw new ErrMsgException("Could NOT find handler method for request " + request.getRequestURI());
-        }
+        Assert.isTrue(handlerMethod.isPresent(), "Could NOT find handler method for request " + request.getRequestURI());
         InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(handlerMethod.get());
 
         // Set resolvers
