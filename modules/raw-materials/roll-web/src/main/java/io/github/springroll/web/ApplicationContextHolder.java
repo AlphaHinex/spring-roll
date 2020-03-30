@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 @Lazy(false)
 public class ApplicationContextHolder implements ApplicationContextAware {
@@ -33,6 +35,10 @@ public class ApplicationContextHolder implements ApplicationContextAware {
 
     public static <T> T getBean(String name, Class<T> requiredType) throws BeansException {
         return HOLDER.applicationContext.getBean(name, requiredType);
+    }
+
+    public static <T> Map<String, T> getBeansOfType(Class<T> type) {
+        return HOLDER.applicationContext.getBeansOfType(type);
     }
 
 }

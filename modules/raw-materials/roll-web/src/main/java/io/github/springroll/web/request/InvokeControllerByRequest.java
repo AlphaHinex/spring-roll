@@ -2,6 +2,7 @@ package io.github.springroll.web.request;
 
 import io.github.springroll.web.ApplicationContextHolder;
 import io.github.springroll.web.exception.ErrMsgException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
@@ -14,8 +15,10 @@ import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.ServletRequestDataBinderFactory;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 @Component
@@ -46,8 +49,7 @@ public class InvokeControllerByRequest {
 
         // Set resolvers
         HandlerMethodArgumentResolverComposite composite = new HandlerMethodArgumentResolverComposite();
-        // TODO handlerAdapters
-        RequestMappingHandlerAdapter handlerAdapter = ApplicationContextHolder.getBean(RequestMappingHandlerAdapter.class);
+        RequestMappingHandlerAdapter handlerAdapter = getHandlerAdapter(invocableHandlerMethod);
         composite.addResolvers(handlerAdapter.getArgumentResolvers());
         invocableHandlerMethod.setHandlerMethodArgumentResolvers(composite);
 
@@ -57,6 +59,20 @@ public class InvokeControllerByRequest {
 
         NativeWebRequest nativeWebRequest = new DispatcherServletWebRequest(request);
         return invocableHandlerMethod.invokeForRequest(nativeWebRequest, new ModelAndViewContainer());
+    }
+
+    private RequestMappingHandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
+        Collection<RequestMappingHandlerAdapter> handlerAdapters =
+                ApplicationContextHolder.getBeansOfType(RequestMappingHandlerAdapter.class).values();
+        if (CollectionUtils.isNotEmpty(handlerAdapters)) {
+            for (RequestMappingHandlerAdapter adapter : handlerAdapters) {
+                if (adapter.supports(handler)) {
+                    return adapter;
+                }
+            }
+        }
+        throw new ServletException("No adapter for handler [" + handler +
+                "]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler");
     }
 
 }

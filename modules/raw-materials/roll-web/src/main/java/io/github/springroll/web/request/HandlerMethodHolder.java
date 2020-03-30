@@ -30,7 +30,8 @@ public class HandlerMethodHolder {
      * @throws Exception if there is an internal error
      */
     private Optional<HandlerExecutionChain> getHandler(HttpServletRequest request) throws Exception {
-        Collection<RequestMappingHandlerMapping> handlerMappings = ApplicationContextHolder.getApplicationContext().getBeansOfType(RequestMappingHandlerMapping.class).values();
+        Collection<RequestMappingHandlerMapping> handlerMappings =
+                ApplicationContextHolder.getBeansOfType(RequestMappingHandlerMapping.class).values();
         if (CollectionUtils.isNotEmpty(handlerMappings)) {
             for (HandlerMapping mapping : handlerMappings) {
                 HandlerExecutionChain handler = mapping.getHandler(request);
