@@ -9,18 +9,18 @@ import org.springframework.web.method.HandlerMethod
 
 import javax.servlet.http.HttpServletRequest
 
-class HandlerHolderTest extends AbstractSpringTest {
+class HandlerMethodHolderTest extends AbstractSpringTest {
 
     @Autowired
-    private HandlerHolder holder
+    private HandlerMethodHolder holder
 
     @Test
     void test() {
         HttpServletRequest request = new MockHttpServletRequest('GET', '/web/test-ctrl/emptylist')
-        HandlerMethod method = holder.getHandler(request)
+        HandlerMethod method = holder.getHandlerMethod(request).get()
         assert method.hasMethodAnnotation(GetMapping)
 
-        assert holder.getHandler(new MockHttpServletRequest('GET','/not-exist')) == null
+        assert holder.getHandlerMethod(new MockHttpServletRequest('GET','/not-exist')) == Optional.empty()
     }
 
 }
