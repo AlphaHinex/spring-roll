@@ -9,6 +9,7 @@ import io.github.springroll.web.controller.BaseController
 import io.github.springroll.web.model.DataTrunk
 import org.junit.Test
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.*
@@ -90,6 +91,19 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def data = checkResponse(response, title, 2)
         assert data[0][1] == 'body des'
         assert data[1][1] == '翻译后的描述'
+    }
+
+    @Test
+    void testReqWithoutCharset() {
+        def model = [
+                cols: [["prop":"name","label":"名称"]],
+                url: '/test/query/post/plant_name/plant_des',
+                bizReqBody: [
+                        name: "body name",
+                        des: "body des"
+                ]
+        ]
+        post("/export/excel/testReqWithoutCharset", MediaType.APPLICATION_JSON, null, JsonUtil.toJsonIgnoreException(model), HttpStatus.OK)
     }
 
 }
