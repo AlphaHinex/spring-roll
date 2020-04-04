@@ -4,6 +4,9 @@ import io.github.springroll.test.AbstractSpringTest
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Component
+import org.springframework.web.method.HandlerMethod
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
 
 class InvokeControllerByRequestTest extends AbstractSpringTest {
 
@@ -23,4 +26,12 @@ class InvokeControllerByRequestTest extends AbstractSpringTest {
         assert res instanceof ResponseEntity
     }
 
+}
+
+@Component
+class AlwaysFalseRequestMappingHandlerAdapter extends RequestMappingHandlerAdapter {
+    @Override
+    protected boolean supportsInternal(HandlerMethod handlerMethod) {
+        super.supportsInternal(handlerMethod) && false
+    }
 }
