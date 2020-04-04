@@ -62,11 +62,9 @@ public class InvokeControllerByRequest {
     private RequestMappingHandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
         Collection<RequestMappingHandlerAdapter> handlerAdapters =
                 ApplicationContextHolder.getBeansOfType(RequestMappingHandlerAdapter.class).values();
-        if (CollectionUtils.isNotEmpty(handlerAdapters)) {
-            for (RequestMappingHandlerAdapter adapter : handlerAdapters) {
-                if (adapter.supports(handler)) {
-                    return adapter;
-                }
+        for (RequestMappingHandlerAdapter adapter : handlerAdapters) {
+            if (adapter.supports(handler)) {
+                return adapter;
             }
         }
         throw new ServletException("No adapter for handler [" + handler +

@@ -32,12 +32,10 @@ public class HandlerMethodHolder {
     private Optional<HandlerExecutionChain> getHandler(HttpServletRequest request) throws Exception {
         Collection<RequestMappingHandlerMapping> handlerMappings =
                 ApplicationContextHolder.getBeansOfType(RequestMappingHandlerMapping.class).values();
-        if (CollectionUtils.isNotEmpty(handlerMappings)) {
-            for (HandlerMapping mapping : handlerMappings) {
-                HandlerExecutionChain handler = mapping.getHandler(request);
-                if (handler != null) {
-                    return Optional.of(handler);
-                }
+        for (HandlerMapping mapping : handlerMappings) {
+            HandlerExecutionChain handler = mapping.getHandler(request);
+            if (handler != null) {
+                return Optional.of(handler);
             }
         }
         return Optional.empty();
