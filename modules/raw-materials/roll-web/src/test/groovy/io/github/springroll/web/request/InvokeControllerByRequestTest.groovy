@@ -1,7 +1,6 @@
 package io.github.springroll.web.request
 
 import io.github.springroll.test.AbstractSpringTest
-import io.github.springroll.web.exception.ErrMsgException
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -11,7 +10,7 @@ class InvokeControllerByRequestTest extends AbstractSpringTest {
     @Autowired
     InvokeControllerByRequest invokeControllerByRequest
 
-    @Test(expected = ErrMsgException)
+    @Test(expected = IllegalArgumentException)
     void testRequestCouldNotMappingController() {
         def request = new ArtificialHttpServletRequest('', '', '/path/without/controller')
         invokeControllerByRequest.invoke(request)
