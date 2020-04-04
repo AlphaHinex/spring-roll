@@ -4,6 +4,11 @@
 
 面向前端提供一个通用 url（`GET:/export/excel/{title}`），传入表头定义、业务查询数据 url 及导出数据数量，直接导出一个统一格式的 Excel 文件。
 
+基本原理为：根据传入的业务接口 url，找到对应的 controller 方法进行调用，并对返回值进行解封和解码两步操作：
+
+1. 解封：根据业务接口返回值结构，找到合适的 `PaginationHandler` 接口实现类，进行解封。默认提供了一个 `MapPaginationHandler`，可按此新增其他实现。
+2. 解码：根据列定义中的 decoder 属性，将单元格中可匹配到 decoder value 的值解码为 decoder name。
+
 具体用法可参见 swagger 文档或单元测试 `ExportExcelControllerTest`。
 
 暂不支持特殊格式的表格导出。
