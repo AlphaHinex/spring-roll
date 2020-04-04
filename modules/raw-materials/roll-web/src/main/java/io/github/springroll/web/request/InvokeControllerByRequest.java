@@ -3,6 +3,7 @@ package io.github.springroll.web.request;
 import io.github.springroll.web.ApplicationContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.HandlerMethod;
@@ -13,17 +14,20 @@ import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.ServletRequestDataBinderFactory;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
 @Component
 public class InvokeControllerByRequest {
 
-    private transient HandlerHolder handlerHolder;
+    private transient HandlerMethodHolder handlerMethodHolder;
 
     @Autowired
-    public InvokeControllerByRequest(HandlerHolder handlerHolder) {
-        this.handlerHolder = handlerHolder;
+    public InvokeControllerByRequest(HandlerMethodHolder handlerMethodHolder) {
+        this.handlerMethodHolder = handlerMethodHolder;
     }
 
     /**
@@ -36,12 +40,13 @@ public class InvokeControllerByRequest {
      */
     public Object invoke(HttpServletRequest request) throws Exception {
         // Find the handler method by request
-        HandlerMethod handlerMethod = handlerHolder.getHandler(request);
-        InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(handlerMethod);
+        Optional<HandlerMethod> handlerMethod = handlerMethodHolder.getHandlerMethod(request);
+        Assert.isTrue(handlerMethod.isPresent(), "Could NOT find handler method for request " + request.getRequestURI());
+        InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(handlerMethod.get());
 
         // Set resolvers
         HandlerMethodArgumentResolverComposite composite = new HandlerMethodArgumentResolverComposite();
-        RequestMappingHandlerAdapter handlerAdapter = ApplicationContextHolder.getBean(RequestMappingHandlerAdapter.class);
+        RequestMappingHandlerAdapter handlerAdapter = getHandlerAdapter(invocableHandlerMethod);
         composite.addResolvers(handlerAdapter.getArgumentResolvers());
         invocableHandlerMethod.setHandlerMethodArgumentResolvers(composite);
 
@@ -51,6 +56,18 @@ public class InvokeControllerByRequest {
 
         NativeWebRequest nativeWebRequest = new DispatcherServletWebRequest(request);
         return invocableHandlerMethod.invokeForRequest(nativeWebRequest, new ModelAndViewContainer());
+    }
+
+    private RequestMappingHandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
+        Collection<RequestMappingHandlerAdapter> handlerAdapters =
+                ApplicationContextHolder.getBeansOfType(RequestMappingHandlerAdapter.class).values();
+        for (RequestMappingHandlerAdapter adapter : handlerAdapters) {
+            if (adapter.supports(handler)) {
+                return adapter;
+            }
+        }
+        throw new ServletException("No adapter for handler [" + handler +
+                "]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler");
     }
 
 }
