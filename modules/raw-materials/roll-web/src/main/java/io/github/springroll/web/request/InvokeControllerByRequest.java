@@ -1,7 +1,6 @@
 package io.github.springroll.web.request;
 
 import io.github.springroll.web.ApplicationContextHolder;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
