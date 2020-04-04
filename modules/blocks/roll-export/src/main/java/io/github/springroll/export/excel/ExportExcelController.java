@@ -66,6 +66,7 @@ public class ExportExcelController {
         bizRequest.setMethod(HttpMethod.POST.name());
         bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes(request.getCharacterEncoding()));
         bizRequest.setContentType(request.getContentType());
+        bizRequest.setParameters(parseParams(decodedUrl));
 
         export(title, model.getCols(), model.getTomcatUriEncoding(), response, bizRequest);
     }
@@ -91,9 +92,8 @@ public class ExportExcelController {
         String contextPath = request.getContextPath();
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
 
-        Map<String, String[]> params = parseParams(decodedUrl);
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
-        bizRequest.setParameters(params);
+        bizRequest.setParameters(parseParams(decodedUrl));
 
         String decodedCols = urlDecode(cols, tomcatUriEncoding);
         LOGGER.debug("Cols string after encoding is {}", decodedCols);
@@ -168,17 +168,17 @@ public class ExportExcelController {
     }
 
     private Map<String, String[]> parseParams(String url) {
-        if (!url.contains(PARAMS_TOKEN_START)) {
-            return Collections.emptyMap();
+        Map<String, String[]> map = new HashMap<>(url.split(PARAMS_TOKEN_INTERVAL).length + 2);
+        if (url.contains(PARAMS_TOKEN_START)) {
+            String[] params = url.substring(url.indexOf(PARAMS_TOKEN_START) + 1).split(PARAMS_TOKEN_INTERVAL);
+            String[] keyValue;
+            for (String param : params) {
+                keyValue = param.split(PARAMS_TOKEN_EQUATION);
+                map.put(keyValue[0], keyValue.length == PARAMS_PAIR_LEN ? new String[]{keyValue[1]} : null);
+            }
         }
-
-        String[] params = url.substring(url.indexOf(PARAMS_TOKEN_START) + 1).split(PARAMS_TOKEN_INTERVAL);
-        Map<String, String[]> map = new HashMap<>(params.length);
-        String[] keyValue;
-        for (String param : params) {
-            keyValue = param.split(PARAMS_TOKEN_EQUATION);
-            map.put(keyValue[0], keyValue.length == PARAMS_PAIR_LEN ? new String[] {keyValue[1]} : null);
-        }
+        map.putIfAbsent("pageNumber", new String[]{"1"});
+        map.putIfAbsent("pageSize", new String[]{Integer.MAX_VALUE + ""});
         return map;
     }
 
