@@ -2,7 +2,6 @@ package io.github.springroll.export.excel;
 
 import com.alibaba.excel.EasyExcel;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.github.springroll.base.CharacterEncoding;
 import io.github.springroll.export.excel.handler.PaginationHandler;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
@@ -64,7 +63,11 @@ public class ExportExcelController {
 
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
         bizRequest.setMethod(HttpMethod.POST.name());
-        bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes(request.getCharacterEncoding()));
+        String reqEncoding = request.getCharacterEncoding();
+        if (StringUtil.isBlank(reqEncoding)) {
+            reqEncoding = DEFAULT_ENCODING;
+        }
+        bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes(reqEncoding));
         bizRequest.setContentType(request.getContentType());
         bizRequest.setParameters(parseParams(decodedUrl));
 
@@ -103,7 +106,7 @@ public class ExportExcelController {
     }
 
     private String urlDecode(String str, String encoding) throws UnsupportedEncodingException {
-        String decodedStr = StringUtil.isBlank(encoding) ? URLDecoder.decode(str, CharacterEncoding.DEFAULT_ENCODE_NAME)
+        String decodedStr = StringUtil.isBlank(encoding) ? URLDecoder.decode(str, DEFAULT_ENCODING)
                 : URLDecoder.decode(str, encoding);
         return isDefaultEncoding(encoding) || StringUtil.isBlank(encoding)
                 ? decodedStr : new String(decodedStr.getBytes(encoding), DEFAULT_ENCODING);
@@ -218,7 +221,7 @@ public class ExportExcelController {
     private void outputToResponse(String fileName, HttpServletResponse response, List<List<String>> head, List data) throws IOException {
         String exportFileName = URLEncoder.encode(fileName, DEFAULT_ENCODING);
         response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding("utf-8");
+        response.setCharacterEncoding(DEFAULT_ENCODING);
         response.setHeader("Content-Disposition", "attachment;filename=" + exportFileName + ".xlsx");
 
         EasyExcel.write(response.getOutputStream()).head(head).sheet(fileName).doWrite(data);
