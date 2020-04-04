@@ -99,8 +99,6 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def data = checkResponse(response, title, 3)
         assert data[0][1] == 'body des'
         assert data[1][1] == '翻译后的描述'
-//        assert data[2][0] == '1'
-//        assert data[2][1] == Integer.MAX_VALUE + ''
         assert data[2][0] == '2'
         assert data[2][1] == '10'
     }
