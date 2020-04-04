@@ -44,11 +44,14 @@ public class ExportExcelController {
 
     private transient Collection<PaginationHandler> paginationHandlers;
     private transient InvokeControllerByRequest invokeControllerByRequest;
+    private transient ExportExcelProperties properties;
 
     @Autowired
-    public ExportExcelController(Collection<PaginationHandler> paginationHandlers, InvokeControllerByRequest invokeControllerByRequest) {
+    public ExportExcelController(Collection<PaginationHandler> paginationHandlers,
+                                 InvokeControllerByRequest invokeControllerByRequest, ExportExcelProperties properties) {
         this.paginationHandlers = paginationHandlers;
         this.invokeControllerByRequest = invokeControllerByRequest;
+        this.properties = properties;
     }
 
     @ApiOperation("‍导出文件名为 title 参数值的 excel 文件")
@@ -180,8 +183,8 @@ public class ExportExcelController {
                 map.put(keyValue[0], keyValue.length == PARAMS_PAIR_LEN ? new String[]{keyValue[1]} : null);
             }
         }
-        map.putIfAbsent("pageNumber", new String[]{"1"});
-        map.putIfAbsent("pageSize", new String[]{Integer.MAX_VALUE + ""});
+        map.putIfAbsent(properties.getPageNumber(), new String[]{"1"});
+        map.putIfAbsent(properties.getPageSize(), new String[]{Integer.MAX_VALUE + ""});
         return map;
     }
 

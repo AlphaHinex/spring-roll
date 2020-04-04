@@ -8,6 +8,7 @@ import io.github.springroll.utils.JsonUtil
 import io.github.springroll.web.controller.BaseController
 import io.github.springroll.web.model.DataTrunk
 import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -18,6 +19,9 @@ import org.springframework.web.util.NestedServletException
 import javax.servlet.http.HttpServletRequest
 
 class ExportExcelControllerTest extends AbstractSpringTest {
+
+    @Autowired
+    ExportExcelProperties properties
 
     @Test
     void test() {
@@ -87,7 +91,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def title = URLEncoder.encode('中文post','utf-8')
         def model = [
                 cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述","decoder":[[value: 'plant_des', name: '翻译后的描述']]],["label":"无prop","other": "props","width":"40"]],
-                url: '/test/query/post/plant_name/plant_des?pageNumber=2&pageSize=10',
+                url: "/test/query/post/plant_name/plant_des?${properties.getPageNumber()}=2&${properties.getPageSize()}=10".toString(),
                 bizReqBody: [
                     name: "body name",
                     des: "body des"
@@ -173,11 +177,11 @@ class Controller extends BaseController {
     }
 
     @PostMapping('/post/{name}/{des}')
-    Map<String, List<Planet>> post(@PathVariable String name, @PathVariable String des, @RequestBody Planet planet, Integer pageNumber, Integer pageSize) {
+    Map<String, List<Planet>> post(@PathVariable String name, @PathVariable String des, @RequestBody Planet planet, Integer pNo, Integer pSize) {
         def planet2 = new Planet(name)
         planet2.setDes(des)
-        def planet3 = new Planet(pageNumber + '')
-        planet3.setDes(pageSize + '')
+        def planet3 = new Planet(pNo + '')
+        planet3.setDes(pSize + '')
         ['rows': [planet, planet2, planet3]]
     }
 
