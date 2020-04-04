@@ -3,6 +3,7 @@ package io.github.springroll.export.excel;
 import com.alibaba.excel.EasyExcel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.springroll.export.excel.handler.PaginationHandler;
+import io.github.springroll.utils.DateUtil;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
 import io.github.springroll.web.request.ArtificialHttpServletRequest;
@@ -27,6 +28,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Controller
@@ -142,9 +145,10 @@ public class ExportExcelController {
         List<List<String>> result = new ArrayList<>();
         Collection data = getPageData(request);
         List<String> row;
-        String value;
-        // Local cache decoder map cause decoder data list of each column may huge
+        Object value;
+        // Local cache decoder map cause decoder data list of each column may be huge
         Map<String, Map<String, String>> decoderMap = new HashMap<>(cols.size());
+        Map<String, String> decoders;
         for (Object rowData : data) {
             row = new ArrayList<>();
             for (ColumnDef columnDef : cols) {
@@ -152,10 +156,10 @@ public class ExportExcelController {
                     continue;
                 }
                 if (rowData instanceof Map) {
-                    value = ((Map) rowData).get(columnDef.getName()) + "";
+                    value = ((Map) rowData).get(columnDef.getName());
                 } else {
                     try {
-                        value = noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName()));
+                        value = new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName());
                     } catch (BeansException e) {
                         value = "Could NOT get value from " + rowData.getClass().getName();
                     }
@@ -164,9 +168,16 @@ public class ExportExcelController {
                     if (!decoderMap.containsKey(columnDef.getName())) {
                         decoderMap.put(columnDef.getName(), columnDef.getDecoderMap());
                     }
-                    value = decoderMap.get(columnDef.getName()).getOrDefault(value, value);
+                    decoders = decoderMap.get(columnDef.getName());
+                    if (decoders.size() == 1 && decoders.containsKey(properties.getDateDecoder())
+                            && value instanceof Date && value != null) {
+                        value = DateUtil.toString(LocalDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault()),
+                                decoders.get(properties.getDateDecoder()));
+                    } else {
+                        value = decoders.getOrDefault(noNull(value), noNull(value));
+                    }
                 }
-                row.add(value);
+                row.add(noNull(value));
             }
             result.add(row);
         }
