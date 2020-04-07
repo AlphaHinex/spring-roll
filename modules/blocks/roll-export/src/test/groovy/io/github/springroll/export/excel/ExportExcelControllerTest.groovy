@@ -111,6 +111,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         assert data[1][1] == '翻译后的描述'
         assert data[2][0] == '2'
         assert data[2][1] == '10'
+        assert data[2][2].toString().matches(/\d\d-\d\d-\d\d \d\d:\d\d:\d\d/)
     }
 
     @Test
