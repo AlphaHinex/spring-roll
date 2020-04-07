@@ -1,6 +1,7 @@
 package io.github.springroll.export.excel
 
 import com.alibaba.excel.EasyExcel
+import io.github.springroll.export.excel.handler.DecodeHandler
 import io.github.springroll.export.excel.handler.PaginationHandler
 import io.github.springroll.test.AbstractSpringTest
 import io.github.springroll.test.TestResource
@@ -90,7 +91,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     void testPostExport() {
         def title = URLEncoder.encode('中文post','utf-8')
         def model = [
-                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述","decoder":[[value: 'plant_des', name: '翻译后的描述']]],["label":"无prop","other": "props","width":"40"]],
+                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述","decoder":[key: 'plant_des', value: '翻译后的描述']],["label":"无prop","other": "props","width":"40"]],
                 url: "/test/query/post/plant_name/plant_des?${properties.getPageNumber()}=2&${properties.getPageSize()}=10".toString(),
                 bizReqBody: [
                     name: "body name",
@@ -213,4 +214,18 @@ class DataTrunkPaginationHandler implements PaginationHandler {
         return Optional.empty()
     }
 
+}
+
+@Component
+class PlantDesDecodeHandler implements DecodeHandler {
+
+    @Override
+    String getDecoderKey() {
+        return 'plant_des'
+    }
+
+    @Override
+    String decode(Object obj, String decoderValue) {
+        getDecoderKey() == obj ? decoderValue : obj.toString()
+    }
 }

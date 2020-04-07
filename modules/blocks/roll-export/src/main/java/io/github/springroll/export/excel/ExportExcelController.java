@@ -2,8 +2,9 @@ package io.github.springroll.export.excel;
 
 import com.alibaba.excel.EasyExcel;
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.springroll.export.excel.handler.DecodeHandler;
+import io.github.springroll.export.excel.handler.DefaultToStringDecodeHandler;
 import io.github.springroll.export.excel.handler.PaginationHandler;
-import io.github.springroll.utils.DateUtil;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
 import io.github.springroll.web.request.ArtificialHttpServletRequest;
@@ -11,7 +12,6 @@ import io.github.springroll.web.request.InvokeControllerByRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
@@ -28,8 +28,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 @Controller
@@ -46,13 +44,18 @@ public class ExportExcelController {
     private static final int PARAMS_PAIR_LEN = 2;
 
     private transient Collection<PaginationHandler> paginationHandlers;
+    private transient Collection<DecodeHandler> decodeHandlers;
+    private transient DefaultToStringDecodeHandler defaultToStringDecodeHandler;
     private transient InvokeControllerByRequest invokeControllerByRequest;
     private transient ExportExcelProperties properties;
 
     @Autowired
-    public ExportExcelController(Collection<PaginationHandler> paginationHandlers,
+    public ExportExcelController(Collection<PaginationHandler> paginationHandlers, Collection<DecodeHandler> decodeHandlers,
+                                 DefaultToStringDecodeHandler defaultToStringDecodeHandler,
                                  InvokeControllerByRequest invokeControllerByRequest, ExportExcelProperties properties) {
         this.paginationHandlers = paginationHandlers;
+        this.decodeHandlers = decodeHandlers;
+        this.defaultToStringDecodeHandler = defaultToStringDecodeHandler;
         this.invokeControllerByRequest = invokeControllerByRequest;
         this.properties = properties;
     }
@@ -146,9 +149,7 @@ public class ExportExcelController {
         Collection data = getPageData(request);
         List<String> row;
         Object value;
-        // Local cache decoder map cause decoder data list of each column may be huge
-        Map<String, Map<String, String>> decoderMap = new HashMap<>(cols.size());
-        Map<String, String> decoders;
+        Map<String, DecodeHandler> decodeHandlerMap = new HashMap<>(cols.size());
         for (Object rowData : data) {
             row = new ArrayList<>();
             for (ColumnDef columnDef : cols) {
@@ -164,24 +165,28 @@ public class ExportExcelController {
                         value = "Could NOT get value from " + rowData.getClass().getName();
                     }
                 }
-                if (CollectionUtils.isNotEmpty(columnDef.getDecoder())) {
-                    if (!decoderMap.containsKey(columnDef.getName())) {
-                        decoderMap.put(columnDef.getName(), columnDef.getDecoderMap());
+                if (columnDef.getDecoder() != null) {
+                    String decoderKey = columnDef.getDecoder().getKey();
+                    if (!decodeHandlerMap.containsKey(decoderKey)) {
+                        decodeHandlerMap.put(decoderKey, findDecodeHandlerOrDefault(decoderKey));
                     }
-                    decoders = decoderMap.get(columnDef.getName());
-                    if (decoders.size() == 1 && decoders.containsKey(properties.getDateDecoder())
-                            && value instanceof Date && value != null) {
-                        value = DateUtil.toString(LocalDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault()),
-                                decoders.get(properties.getDateDecoder()));
-                    } else {
-                        value = decoders.getOrDefault(noNull(value), noNull(value));
-                    }
+                    DecodeHandler decodeHandler = decodeHandlerMap.get(decoderKey);
+                    value = decodeHandler.decode(value, columnDef.getDecoder().getValue());
                 }
                 row.add(noNull(value));
             }
             result.add(row);
         }
         return result;
+    }
+
+    private DecodeHandler findDecodeHandlerOrDefault(String key) {
+        for (DecodeHandler decodeHandler : decodeHandlers) {
+            if (StringUtil.equals(key, decodeHandler.getDecoderKey())) {
+                return decodeHandler;
+            }
+        }
+        return defaultToStringDecodeHandler;
     }
 
     private Map<String, String[]> parseParams(String url) {

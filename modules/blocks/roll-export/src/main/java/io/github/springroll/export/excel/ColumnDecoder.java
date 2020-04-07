@@ -6,12 +6,15 @@ import lombok.Setter;
 @Getter
 @Setter
 class ColumnDecoder {
+
     /**
-     * Value in data
+     * Unique key of the decoder.
+     */
+    private String key;
+    /**
+     * Concrete value of the decoder,
+     * maybe code type or date format etc.
      */
     private String value;
-    /**
-     * Name of value to display
-     */
-    private String name;
+
 }
