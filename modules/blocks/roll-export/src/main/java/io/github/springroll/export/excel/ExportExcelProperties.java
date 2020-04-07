@@ -24,6 +24,6 @@ public class ExportExcelProperties {
     /**
      * 日期类型解码器标识，默认为 date
      */
-    private String dateDecoder = "date";
+    private String dateDecoderKey = "date";
 
 }

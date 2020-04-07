@@ -91,7 +91,11 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     void testPostExport() {
         def title = URLEncoder.encode('中文post','utf-8')
         def model = [
-                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述","decoder":[key: 'plant_des', value: '翻译后的描述']],["label":"无prop","other": "props","width":"40"]],
+                cols: [
+                        ["prop":"name","label":"名称","decoder":[key: 'not_exist', value: '不会出现这个值']],
+                        ["prop":"des","label":"描述","decoder":[key: 'plant_des', value: '翻译后的描述']],
+                        ["label":"无prop","other": "props","width":"40"]
+                ],
                 url: "/test/query/post/plant_name/plant_des?${properties.getPageNumber()}=2&${properties.getPageSize()}=10".toString(),
                 bizReqBody: [
                     name: "body name",
@@ -228,4 +232,5 @@ class PlantDesDecodeHandler implements DecodeHandler {
     String decode(Object obj, String decoderValue) {
         getDecoderKey() == obj ? decoderValue : obj.toString()
     }
+
 }
