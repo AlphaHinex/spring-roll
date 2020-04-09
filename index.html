@@ -1021,6 +1021,19 @@ $ git push upstream v0.4.0</pre>
 <p>面向前端提供一个通用 url（<code>GET:/export/excel/{title}</code>），传入表头定义、业务查询数据 url 及导出数据数量，直接导出一个统一格式的 Excel 文件。</p>
 </div>
 <div class="paragraph">
+<p>基本原理为：根据传入的业务接口 url，找到对应的 controller 方法进行调用，并对返回值进行解封和解码两步操作：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>解封：根据业务接口返回值结构，找到合适的 <code>PaginationHandler</code> 接口实现类，进行解封。默认提供了一个 <code>MapPaginationHandler</code>，可按此新增其他实现。</p>
+</li>
+<li>
+<p>解码：根据列定义中的 decoder 属性，将单元格中可匹配到 decoder value 的值解码为 decoder name。</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
 <p>具体用法可参见 swagger 文档或单元测试 <code>ExportExcelControllerTest</code>。</p>
 </div>
 <div class="paragraph">
@@ -1244,7 +1257,7 @@ modules/test-init/README.md</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.8-SNAPSHOT<br>
-Last updated 2020-04-04 07:18:18 UTC
+Last updated 2020-04-09 00:56:27 UTC
 </div>
 </div>
 </body>
