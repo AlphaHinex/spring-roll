@@ -1,5 +1,6 @@
 package io.github.springroll.export.excel;
 
+import io.github.springroll.export.excel.handler.DecodeHandler;
 import io.github.springroll.export.excel.handler.PaginationHandler;
 import io.github.springroll.web.ApplicationContextHolder;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,11 @@ public class ExportExcelConfiguration {
     @Bean
     public Collection<PaginationHandler> paginationHandlers() {
         return ApplicationContextHolder.getApplicationContext().getBeansOfType(PaginationHandler.class).values();
+    }
+
+    @Bean
+    public Collection<DecodeHandler> decodeHandlers() {
+        return ApplicationContextHolder.getApplicationContext().getBeansOfType(DecodeHandler.class).values();
     }
 
 }

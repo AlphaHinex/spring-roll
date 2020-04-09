@@ -2,6 +2,8 @@ package io.github.springroll.export.excel;
 
 import com.alibaba.excel.EasyExcel;
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.springroll.export.excel.handler.DecodeHandler;
+import io.github.springroll.export.excel.handler.DefaultToStringDecodeHandler;
 import io.github.springroll.export.excel.handler.PaginationHandler;
 import io.github.springroll.utils.JsonUtil;
 import io.github.springroll.utils.StringUtil;
@@ -10,7 +12,6 @@ import io.github.springroll.web.request.InvokeControllerByRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
@@ -43,12 +44,20 @@ public class ExportExcelController {
     private static final int PARAMS_PAIR_LEN = 2;
 
     private transient Collection<PaginationHandler> paginationHandlers;
+    private transient Collection<DecodeHandler> decodeHandlers;
+    private transient DefaultToStringDecodeHandler defaultToStringDecodeHandler;
     private transient InvokeControllerByRequest invokeControllerByRequest;
+    private transient ExportExcelProperties properties;
 
     @Autowired
-    public ExportExcelController(Collection<PaginationHandler> paginationHandlers, InvokeControllerByRequest invokeControllerByRequest) {
+    public ExportExcelController(Collection<PaginationHandler> paginationHandlers, Collection<DecodeHandler> decodeHandlers,
+                                 DefaultToStringDecodeHandler defaultToStringDecodeHandler,
+                                 InvokeControllerByRequest invokeControllerByRequest, ExportExcelProperties properties) {
         this.paginationHandlers = paginationHandlers;
+        this.decodeHandlers = decodeHandlers;
+        this.defaultToStringDecodeHandler = defaultToStringDecodeHandler;
         this.invokeControllerByRequest = invokeControllerByRequest;
+        this.properties = properties;
     }
 
     @ApiOperation("‍导出文件名为 title 参数值的 excel 文件")
@@ -69,6 +78,7 @@ public class ExportExcelController {
         }
         bizRequest.setContent(JsonUtil.toJsonIgnoreException(model.getBizReqBody()).getBytes(reqEncoding));
         bizRequest.setContentType(request.getContentType());
+        bizRequest.setParameters(parseParams(decodedUrl));
 
         export(title, model.getCols(), model.getTomcatUriEncoding(), response, bizRequest);
     }
@@ -94,9 +104,8 @@ public class ExportExcelController {
         String contextPath = request.getContextPath();
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
 
-        Map<String, String[]> params = parseParams(decodedUrl);
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
-        bizRequest.setParameters(params);
+        bizRequest.setParameters(parseParams(decodedUrl));
 
         String decodedCols = urlDecode(cols, tomcatUriEncoding);
         LOGGER.debug("Cols string after encoding is {}", decodedCols);
@@ -139,9 +148,8 @@ public class ExportExcelController {
         List<List<String>> result = new ArrayList<>();
         Collection data = getPageData(request);
         List<String> row;
-        String value;
-        // Local cache decoder map cause decoder data list of each column may huge
-        Map<String, Map<String, String>> decoderMap = new HashMap<>(cols.size());
+        Object value;
+        Map<String, DecodeHandler> decodeHandlerMap = new HashMap<>(cols.size());
         for (Object rowData : data) {
             row = new ArrayList<>();
             for (ColumnDef columnDef : cols) {
@@ -149,39 +157,50 @@ public class ExportExcelController {
                     continue;
                 }
                 if (rowData instanceof Map) {
-                    value = ((Map) rowData).get(columnDef.getName()) + "";
+                    value = ((Map) rowData).get(columnDef.getName());
                 } else {
                     try {
-                        value = noNull(new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName()));
+                        value = new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName());
                     } catch (BeansException e) {
                         value = "Could NOT get value from " + rowData.getClass().getName();
                     }
                 }
-                if (CollectionUtils.isNotEmpty(columnDef.getDecoder())) {
-                    if (!decoderMap.containsKey(columnDef.getName())) {
-                        decoderMap.put(columnDef.getName(), columnDef.getDecoderMap());
+                if (columnDef.getDecoder() != null) {
+                    String decoderKey = columnDef.getDecoder().getKey();
+                    if (!decodeHandlerMap.containsKey(decoderKey)) {
+                        decodeHandlerMap.put(decoderKey, findDecodeHandlerOrDefault(decoderKey));
                     }
-                    value = decoderMap.get(columnDef.getName()).getOrDefault(value, value);
+                    DecodeHandler decodeHandler = decodeHandlerMap.get(decoderKey);
+                    value = decodeHandler.decode(value, columnDef.getDecoder().getValue());
                 }
-                row.add(value);
+                row.add(noNull(value));
             }
             result.add(row);
         }
         return result;
     }
 
-    private Map<String, String[]> parseParams(String url) {
-        if (!url.contains(PARAMS_TOKEN_START)) {
-            return Collections.emptyMap();
+    private DecodeHandler findDecodeHandlerOrDefault(String key) {
+        for (DecodeHandler decodeHandler : decodeHandlers) {
+            if (StringUtil.equals(key, decodeHandler.getDecoderKey())) {
+                return decodeHandler;
+            }
         }
+        return defaultToStringDecodeHandler;
+    }
 
-        String[] params = url.substring(url.indexOf(PARAMS_TOKEN_START) + 1).split(PARAMS_TOKEN_INTERVAL);
-        Map<String, String[]> map = new HashMap<>(params.length);
-        String[] keyValue;
-        for (String param : params) {
-            keyValue = param.split(PARAMS_TOKEN_EQUATION);
-            map.put(keyValue[0], keyValue.length == PARAMS_PAIR_LEN ? new String[] {keyValue[1]} : null);
+    private Map<String, String[]> parseParams(String url) {
+        Map<String, String[]> map = new HashMap<>(url.split(PARAMS_TOKEN_INTERVAL).length + 2);
+        if (url.contains(PARAMS_TOKEN_START)) {
+            String[] params = url.substring(url.indexOf(PARAMS_TOKEN_START) + 1).split(PARAMS_TOKEN_INTERVAL);
+            String[] keyValue;
+            for (String param : params) {
+                keyValue = param.split(PARAMS_TOKEN_EQUATION);
+                map.put(keyValue[0], keyValue.length == PARAMS_PAIR_LEN ? new String[]{keyValue[1]} : null);
+            }
         }
+        map.putIfAbsent(properties.getPageNumber(), new String[]{"1"});
+        map.putIfAbsent(properties.getPageSize(), new String[]{Integer.MAX_VALUE + ""});
         return map;
     }
 

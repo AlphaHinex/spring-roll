@@ -67,6 +67,20 @@ spotbugs {
     excludeFilter = file("$configDir/spotbugs/excludeFilter.xml")
 }
 
+spotbugsMain {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+spotbugsTest {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
 jacoco {
     toolVersion = "0.8.4"
 }

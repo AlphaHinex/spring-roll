@@ -1,6 +1,7 @@
 package io.github.springroll.export.excel
 
 import com.alibaba.excel.EasyExcel
+import io.github.springroll.export.excel.handler.DecodeHandler
 import io.github.springroll.export.excel.handler.PaginationHandler
 import io.github.springroll.test.AbstractSpringTest
 import io.github.springroll.test.TestResource
@@ -8,6 +9,7 @@ import io.github.springroll.utils.JsonUtil
 import io.github.springroll.web.controller.BaseController
 import io.github.springroll.web.model.DataTrunk
 import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -19,6 +21,17 @@ import javax.servlet.http.HttpServletRequest
 
 class ExportExcelControllerTest extends AbstractSpringTest {
 
+    @Autowired
+    ExportExcelProperties properties
+
+    @Test
+    void test() {
+        def cols = '[{"display":"名称","name":"name","showTitle":true,"field":"name","hidden":false,"label":"名称","prop":"name","title":"名称"},{"label":"名称","prop":"name","width":"40"}]'
+        cols = URLEncoder.encode(cols, 'UTF-8')
+        def url = URLEncoder.encode('/test/query', 'UTF-8')
+        get("/export/excel/abc?cols=$cols&url=$url", HttpStatus.OK)
+    }
+
     @Test
     void testExport() {
         checkExportData('中文', '/test/query', 3)
@@ -27,7 +40,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def col = new ColumnDef('描述', 'des')
         col.setHidden(true)
         colDef << col
-        checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2, '', colDef)
+        checkExportData('from request', 'http://localhost:8080/test/query/req?a=1&b=2', 2 + 2, '', colDef)
 
         col.setShowTitle(true)
         checkExportData('multi', '/test/query/multi?integer=1&str=abc&name=星球&des=', 3, 'ISO_8859_1', colDef)
@@ -78,8 +91,13 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     void testPostExport() {
         def title = URLEncoder.encode('中文post','utf-8')
         def model = [
-                cols: [["prop":"name","label":"名称"],["prop":"des","label":"描述","decoder":[[value: 'plant_des', name: '翻译后的描述']]],["label":"无prop","other": "props"]],
-                url: '/test/query/post/plant_name/plant_des',
+                cols: [
+                        ["prop":"name","label":"名称","decoder":[key: 'not_exist', value: '不会出现这个值']],
+                        ["prop":"des","label":"描述","decoder":[key: 'plant_des', value: '翻译后的描述']],
+                        ["label":"无prop","other": "props","width":"40"],
+                        ["prop":"timestamp","label":"时间戳","decoder":[key: properties.getDateDecoderKey(), value: 'yy-MM-dd HH:mm:ss']]
+                ],
+                url: "/test/query/post/plant_name/plant_des?${properties.getPageNumber()}=2&${properties.getPageSize()}=10".toString(),
                 bizReqBody: [
                     name: "body name",
                     des: "body des"
@@ -88,9 +106,12 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                 tomcatUriEncoding: 'utf-8'
         ]
         def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
-        def data = checkResponse(response, title, 2)
+        def data = checkResponse(response, title, 3)
         assert data[0][1] == 'body des'
         assert data[1][1] == '翻译后的描述'
+        assert data[2][0] == '2'
+        assert data[2][1] == '10'
+        assert data[2][2].toString().matches(/\d\d-\d\d-\d\d \d\d:\d\d:\d\d/)
     }
 
     @Test
@@ -163,10 +184,12 @@ class Controller extends BaseController {
     }
 
     @PostMapping('/post/{name}/{des}')
-    Map<String, List<Planet>> post(@PathVariable String name, @PathVariable String des, @RequestBody Planet planet) {
+    Map<String, List<Planet>> post(@PathVariable String name, @PathVariable String des, @RequestBody Planet planet, Integer pNo, Integer pSize) {
         def planet2 = new Planet(name)
         planet2.setDes(des)
-        ['rows': [planet, planet2]]
+        def planet3 = new Planet(pNo + '')
+        planet3.setDes(pSize + '')
+        ['rows': [planet, planet2, planet3]]
     }
 
 }
@@ -174,12 +197,25 @@ class Controller extends BaseController {
 class Planet {
     String name
     String des
+    Date timestamp
 
-    Planet() { }
+    void setTimestamp(Date timestamp) {
+        this.timestamp = (Date) timestamp.clone()
+    }
+
+    Date getTimestamp() {
+        return (Date) timestamp.clone()
+    }
+
+    Planet() {
+        this.timestamp = new Date()
+    }
 
     Planet(String name) {
-        this. name = name
+        this()
+        this.name = name
     }
+
 }
 
 @Component
@@ -195,6 +231,21 @@ class DataTrunkPaginationHandler implements PaginationHandler {
             }
         }
         return Optional.empty()
+    }
+
+}
+
+@Component
+class PlantDesDecodeHandler implements DecodeHandler {
+
+    @Override
+    String getDecoderKey() {
+        return 'plant_des'
+    }
+
+    @Override
+    String decode(Object obj, String decoderValue) {
+        getDecoderKey() == obj ? decoderValue : obj.toString()
     }
 
 }

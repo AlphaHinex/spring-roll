@@ -1,14 +1,10 @@
 package io.github.springroll.export.excel;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 class ColumnDef {
 
     /**
@@ -27,11 +23,11 @@ class ColumnDef {
     private boolean showTitle = true;
 
     /**
-     * 字段解码器，根据 value 翻译 name
+     * 字段解码器，根据 key 找到对应的 DecodeHandler 进行解码处理
      */
     @Getter
     @Setter
-    private List<ColumnDecoder> decoder;
+    private ColumnDecoder decoder;
 
     /**
      * 默认无参构造器，供 Jackson 使用
@@ -107,18 +103,6 @@ class ColumnDef {
 
     public void setLabel(String label) {
         this.display = label;
-    }
-
-    public Map<String, String> getDecoderMap() {
-        if (CollectionUtils.isEmpty(decoder)) {
-            return Collections.emptyMap();
-        } else {
-            Map<String, String> map = new HashMap<>(decoder.size());
-            for (ColumnDecoder de : decoder) {
-                map.put(de.getValue(), de.getName());
-            }
-            return map;
-        }
     }
 
 }
