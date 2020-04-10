@@ -97,15 +97,18 @@ public class ExportExcelController {
     public void export(@ApiParam(value = "‍导出文件标题", required = true) @PathVariable String title,
                        @ApiParam(value = "‍列表中对 columns 的定义，JSON 格式表示", required = true) @RequestParam String cols,
                        @ApiParam(value = "‍查询数据请求 url", required = true) @RequestParam String url,
+                       @ApiParam(value = "‍HTTP Method，默认为 GET，不区分大小写") String method,
                        @ApiParam(value = "‍tomcat server.xml 中 Connector 设定的 URIEncoding 值，若未设置，默认为 ISO-8859-1") String tomcatUriEncoding,
                        HttpServletRequest request, HttpServletResponse response) throws Exception {
         String decodedUrl = urlDecode(url, tomcatUriEncoding);
         String cleanUrl = cleanUrl(decodedUrl);
         String contextPath = request.getContextPath();
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
+        method = StringUtil.isBlank(method) ? "GET" : method.toUpperCase();
 
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
         bizRequest.setParameters(parseParams(decodedUrl));
+        bizRequest.setMethod(method);
 
         String decodedCols = urlDecode(cols, tomcatUriEncoding);
         LOGGER.debug("Cols string after encoding is {}", decodedCols);
