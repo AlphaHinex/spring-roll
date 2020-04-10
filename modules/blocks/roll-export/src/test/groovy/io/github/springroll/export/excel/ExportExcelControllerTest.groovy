@@ -106,7 +106,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                 tomcatUriEncoding: 'utf-8'
         ]
         def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
-        def data = checkResponse(response, title, 3)
+        def data = checkResponse(response, title, 4)
         assert data[0][1] == 'body des'
         assert data[1][1] == '翻译后的描述'
         assert data[2][0] == '2'
@@ -189,7 +189,8 @@ class Controller extends BaseController {
         planet2.setDes(des)
         def planet3 = new Planet(pNo + '')
         planet3.setDes(pSize + '')
-        ['rows': [planet, planet2, planet3]]
+        def planet4 = new Planet()
+        ['rows': [planet, planet2, planet3, planet4]]
     }
 
 }
@@ -245,7 +246,7 @@ class PlantDesDecodeHandler implements DecodeHandler {
 
     @Override
     String decode(Object obj, String decoderValue) {
-        getDecoderKey() == obj ? decoderValue : obj.toString()
+        getDecoderKey() == obj ? decoderValue : (obj == null ? '' : obj.toString())
     }
 
 }
