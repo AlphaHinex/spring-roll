@@ -115,6 +115,22 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     }
 
     @Test
+    void testPostExportGetBiz() {
+        def title = 'post2get'
+        def model = [
+                cols: [
+                        ["prop":"name","label":"名称","decoder":[key: 'not_exist', value: '不会出现这个值']],
+                        ["prop":"des","label":"描述","decoder":[key: 'plant_des', value: '翻译后的描述']],
+                        ["label":"无prop","other": "props","width":"40"],
+                        ["prop":"timestamp","label":"时间戳","decoder":[key: properties.getDateDecoderKey(), value: 'yy-MM-dd HH:mm:ss']]
+                ],
+                url: '/test/query'
+        ]
+        def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
+        checkResponse(response, title, 3)
+    }
+
+    @Test
     void testReqWithoutCharset() {
         def model = [
                 cols: [["prop":"name","label":"名称"]],
