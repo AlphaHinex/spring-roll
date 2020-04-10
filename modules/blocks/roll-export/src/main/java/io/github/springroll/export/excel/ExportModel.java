@@ -1,15 +1,17 @@
 package io.github.springroll.export.excel;
 
+import io.github.springroll.utils.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Getter
 @Setter
-public class ExportModel {
+class ExportModel {
 
     /**
      * 列表中对 columns 的定义
@@ -36,5 +38,9 @@ public class ExportModel {
      */
     @ApiModelProperty(value = "‍业务请求的请求体")
     private Map bizReqBody;
+
+    String getMethod() {
+        return StringUtil.isBlank(method) ? "GET" : method.toUpperCase(Locale.ENGLISH);
+    }
 
 }

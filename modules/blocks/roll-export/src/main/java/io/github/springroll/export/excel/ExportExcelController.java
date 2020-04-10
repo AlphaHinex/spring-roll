@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -71,7 +70,7 @@ public class ExportExcelController {
         String servletPath = cleanUrl.replaceFirst(contextPath, "");
 
         ArtificialHttpServletRequest bizRequest = new ArtificialHttpServletRequest(contextPath, servletPath, cleanUrl);
-        bizRequest.setMethod(HttpMethod.POST.name());
+        bizRequest.setMethod(model.getMethod());
         String reqEncoding = request.getCharacterEncoding();
         if (StringUtil.isBlank(reqEncoding)) {
             reqEncoding = DEFAULT_ENCODING;
