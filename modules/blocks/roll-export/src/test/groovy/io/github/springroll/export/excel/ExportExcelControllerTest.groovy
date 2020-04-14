@@ -102,16 +102,32 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                     name: "body name",
                     des: "body des"
                 ],
-                total: '0',
+                method: 'post',
                 tomcatUriEncoding: 'utf-8'
         ]
         def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
-        def data = checkResponse(response, title, 3)
+        def data = checkResponse(response, title, 4)
         assert data[0][1] == 'body des'
         assert data[1][1] == '翻译后的描述'
         assert data[2][0] == '2'
         assert data[2][1] == '10'
         assert data[2][2].toString().matches(/\d\d-\d\d-\d\d \d\d:\d\d:\d\d/)
+    }
+
+    @Test
+    void testPostExportGetBiz() {
+        def title = 'post2get'
+        def model = [
+                cols: [
+                        ["prop":"name","label":"名称","decoder":[key: 'not_exist', value: '不会出现这个值']],
+                        ["prop":"des","label":"描述","decoder":[key: 'plant_des', value: '翻译后的描述']],
+                        ["label":"无prop","other": "props","width":"40"],
+                        ["prop":"timestamp","label":"时间戳","decoder":[key: properties.getDateDecoderKey(), value: 'yy-MM-dd HH:mm:ss']]
+                ],
+                url: '/test/query'
+        ]
+        def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
+        checkResponse(response, title, 3)
     }
 
     @Test
@@ -122,7 +138,8 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                 bizReqBody: [
                         name: "body name",
                         des: "body des"
-                ]
+                ],
+                method: 'POST'
         ]
         post("/export/excel/testReqWithoutCharset", MediaType.APPLICATION_JSON, null, JsonUtil.toJsonIgnoreException(model), HttpStatus.OK)
     }
@@ -189,7 +206,8 @@ class Controller extends BaseController {
         planet2.setDes(des)
         def planet3 = new Planet(pNo + '')
         planet3.setDes(pSize + '')
-        ['rows': [planet, planet2, planet3]]
+        def planet4 = new Planet()
+        ['rows': [planet, planet2, planet3, planet4]]
     }
 
 }
@@ -245,7 +263,7 @@ class PlantDesDecodeHandler implements DecodeHandler {
 
     @Override
     String decode(Object obj, String decoderValue) {
-        getDecoderKey() == obj ? decoderValue : obj.toString()
+        getDecoderKey() == obj ? decoderValue : (obj == null ? '' : obj.toString())
     }
 
 }
