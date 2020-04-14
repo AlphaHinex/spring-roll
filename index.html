@@ -1015,29 +1015,243 @@ $ git push upstream v0.4.0</pre>
 <div class="sect2">
 <h3 id="_roll_export">4.1. roll-export</h3>
 <div class="paragraph">
-<p>通用导出功能</p>
+<p>通用导出功能，面向前端提供一个导出 URL，传入表头定义、业务查询数据接口及请求参数等信息，
+可自动调用业务查询接口 RestController 中的方法，并将返回对象输出成一个统一格式的 Excel 文件，写入到 Response 里。</p>
+</div>
+<div class="sect3">
+<h4 id="_导出接口">4.1.1. 导出接口</h4>
+<div class="paragraph">
+<p><code>/export/excel/{title}</code></p>
 </div>
 <div class="paragraph">
-<p>面向前端提供一个通用 url（<code>GET:/export/excel/{title}</code>），传入表头定义、业务查询数据 url 及导出数据数量，直接导出一个统一格式的 Excel 文件。</p>
+<p>提供 <code>GET</code> 和 <code>POST</code> 两种格式。</p>
 </div>
 <div class="paragraph">
-<p>基本原理为：根据传入的业务接口 url，找到对应的 controller 方法进行调用，并对返回值进行解封和解码两步操作：</p>
+<p><code>GET</code> 接口不支持 <code>method</code> 和 <code>bizReqBody</code> 参数，通过 Request Parameter 传入。</p>
+</div>
+<div class="paragraph">
+<p><code>POST</code> 接口通过 Request Body 传递入参。</p>
+</div>
+<div class="paragraph">
+<p>详细接口信息可参见 swagger 文档：http://localhost:8080/swagger-ui.html</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_参数表">4.1.2. 参数表</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">参数名</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Method</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">是否必填</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">描述</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">示例</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">title</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST、GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">是</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">路径变量，指定导出 Excel 文件的文件名（不包含扩展名，扩展名固定为 xlsx）。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TestExport</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">cols</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST、GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">是</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">列表中对表头的列定义，具体结构参见 ColumnDef。GET 时按 JSON 格式表示，需进行 URL Encode。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[{"label":"名称","prop":"name","showTitle":true}]</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST、GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">是</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">查询数据请求 url。GET 时需进行 URL Encode。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/test/query?a=1&amp;b=2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tomcatUriEncoding</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST、GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">否</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">‍需匹配 Tomcat 中的 URIEncoding，以免乱码。缺省值为 UTF-8。独立运行的 Tomcat 默认 URIEncoding 为 ISO-8859-1，可在 server.xml 的 Connector 中进行设定。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UTF-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">method</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">否</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">‍HTTP Method，默认为 GET，不区分大小写。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bizReqBody</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">否</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">‍业务请求的请求体。当查询数据请求为 POST 等，需要通过 Request Body 传递内容时，可以将数据对象放入此属性中传递给导出接口。格式不限。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">{"name":"body name","des":"body des"}</p></td>
+</tr>
+</tbody>
+</table>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>GET 示例：</p>
+</div>
+<div class="paragraph">
+<p>可以按此格式组装：</p>
+</div>
+<div class="paragraph">
+<p><code>"/export/excel/" + title + "?cols=" + cols + "&amp;url=" + url + "&amp;tomcatUriEncoding=" + encode</code></p>
+</div>
+<div class="paragraph">
+<p>URL Encode 之后如下：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>/export/excel/%E4%B8%AD%E6%96%87?cols=%5B%7B%22display%22%3A%22%E5%90%8D%E7%A7%B0%22%2C%22name%22%3A%22name%22%2C%22showTitle%22%3Atrue%2C%22field%22%3A%22name%22%2C%22hidden%22%3Afalse%2C%22label%22%3A%22%E5%90%8D%E7%A7%B0%22%2C%22prop%22%3A%22name%22%2C%22title%22%3A%22%E5%90%8D%E7%A7%B0%22%7D%5D&amp;url=%2Ftest%2Fquery&amp;tomcatUriEncoding=utf-8</code></pre>
+</div>
+</div>
+</blockquote>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>POST Request Body 示例：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>{
+   "cols":[
+     {"prop":"name","label":"名称"},
+     {"prop":"des","label":"描述"},
+     {"label":"无prop","other":"props"}],
+   "url":"/test/query/post/plant_name/plant_des",
+   "bizReqBody":{"name":"body name","des":"body des"},
+   "method":"POST",
+   "tomcatUriEncoding":"utf-8"
+}</code></pre>
+</div>
+</div>
+</blockquote>
+</div>
+<div class="sect4">
+<h5 id="_columndef_结构">ColumnDef 结构</h5>
+<div class="paragraph">
+<p>ColumnDef 作为前端表格组件的结构体，支持了 EasyUI、QUI 和 ElementUI 的基本表头定义格式，主要包含三个表头属性及一个附加属性（内容解码器）。</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">含义</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">可用属性</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">类型</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">示例</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">显示名</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">display, title, label</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">表头属性</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">性别</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">属性名</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">name, field, prop</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">表头属性</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gender</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">显示/隐藏，注意两个属性的含义是相反的</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">showTitle, hidden</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">表头属性</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true, false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">解码器定义，key/value 对</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">decoder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">附加属性</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">{key: 'date', value: 'yy-MM-dd HH:mm:ss'}</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_基本原理">4.1.3. 基本原理</h4>
+<div class="paragraph">
+<p>根据传入的业务接口 url，找到对应的 RestController 方法进行调用，并对返回值进行 <code>拆封</code> 和 <code>解码</code> 两步操作：</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>解封：根据业务接口返回值结构，找到合适的 <code>PaginationHandler</code> 接口实现类，进行解封。默认提供了一个 <code>MapPaginationHandler</code>，可按此新增其他实现。</p>
+<p>拆封：根据业务接口返回值结构，找到合适的 <code>PaginationHandler</code> 接口实现类，进行拆封。默认提供了一个 <code>MapPaginationHandler</code>，可按此新增其他实现。</p>
 </li>
 <li>
-<p>解码：根据列定义中的 decoder 属性，将单元格中可匹配到 decoder value 的值解码为 decoder name。</p>
+<p>解码：根据入参列定义中 decoder 属性的 <code>key</code>，找到合适的 <code>DecodeHandler</code> 接口的实现类，进行解码。默认提供了日期解码器（<code>DateDecodeHandler</code>）和默认的 toString 解码器（<code>DefaultToStringDecodeHandler</code>）。</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>具体用法可参见 swagger 文档或单元测试 <code>ExportExcelControllerTest</code>。</p>
+<p>具体用法可参见单元测试 <code>ExportExcelControllerTest</code>。</p>
 </div>
+<div class="quoteblock">
+<blockquote>
 <div class="paragraph">
-<p>暂不支持特殊格式的表格导出。</p>
+<p>暂不支持特殊表头格式的表格导出。</p>
+</div>
+</blockquote>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_配置项">4.1.4. 配置项</h4>
+<div class="paragraph">
+<p>提供了如下配置项，可以在 <code>properties</code> 及 <code>yml</code> 中进行配置：</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">描述</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">默认值</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">roll.export.excel.page-number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">默认在请求中添加一个代表当前页的参数，供分页查询使用，参数名默认为 pageNumber</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pageNumber</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">roll.export.excel.page-size</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">默认在请求中添加一个代表每页数据总数的参数，供分页查询使用，参数名默认为 pageSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pageSize</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">roll.export.excel.date-decoder-key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">日期类型解码器标识，默认为 date</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">date</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">roll.export.excel.max-rows</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">通用导出功能导出的 Excel 最大行数，默认 5000，设置过大可能会导致导出时间过长或无响应</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5000</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect2">
@@ -1257,7 +1471,7 @@ modules/test-init/README.md</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.8-SNAPSHOT<br>
-Last updated 2020-04-14 03:02:07 UTC
+Last updated 2020-04-14 07:40:48 UTC
 </div>
 </div>
 </body>
