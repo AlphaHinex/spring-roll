@@ -26,4 +26,9 @@ public class ExportExcelProperties {
      */
     private String dateDecoderKey = "date";
 
+    /**
+     * 通用导出功能导出的 Excel 最大行数，默认 5000，设置过大可能会导致导出时间过长或无响应
+     */
+    private int maxRows = 5000;
+
 }
