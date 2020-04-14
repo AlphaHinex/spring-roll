@@ -136,4 +136,27 @@ ColumnDef 作为前端表格组件的结构体，支持了 EasyUI、QUI 和 Elem
 
 == 配置项
 
-// TODO
+提供了如下配置项，可以在 `properties` 及 `yml` 中进行配置：
+
+[cols=3]
+|===
+|key
+|描述
+|默认值
+
+|roll.export.excel.page-number
+|默认在请求中添加一个代表当前页的参数，供分页查询使用，参数名默认为 pageNumber
+|pageNumber
+
+|roll.export.excel.page-size
+|默认在请求中添加一个代表每页数据总数的参数，供分页查询使用，参数名默认为 pageSize
+|pageSize
+
+|roll.export.excel.date-decoder-key
+|日期类型解码器标识，默认为 date
+|date
+
+|roll.export.excel.max-rows
+|通用导出功能导出的 Excel 最大行数，默认 5000，设置过大可能会导致导出时间过长或无响应
+|5000
+|===
