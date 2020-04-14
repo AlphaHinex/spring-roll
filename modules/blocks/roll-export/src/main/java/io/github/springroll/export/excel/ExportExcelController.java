@@ -199,7 +199,7 @@ public class ExportExcelController {
             }
         }
         map.putIfAbsent(properties.getPageNumber(), new String[]{"1"});
-        map.putIfAbsent(properties.getPageSize(), new String[]{properties.getMaxRows()+ ""});
+        map.putIfAbsent(properties.getPageSize(), new String[]{properties.getMaxRows() + ""});
         return map;
     }
 
