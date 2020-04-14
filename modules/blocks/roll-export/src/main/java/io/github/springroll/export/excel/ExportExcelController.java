@@ -91,12 +91,13 @@ public class ExportExcelController {
     }
 
     @ApiOperation(value = "‍导出文件名为 title 参数值的 excel 文件",
-            notes = "‍根据查询请求 url，找到对应方法，查询出全部数据，导出到 excel 中。注意必填参数均需进行 URL encode。")
+            notes = "‍根据查询请求 url，找到对应方法，查询出全部数据，导出到 excel 中。注意必填参数均需进行 URL Encode。")
     @GetMapping("/{title}")
     public void export(@ApiParam(value = "‍导出文件标题", required = true) @PathVariable String title,
-                       @ApiParam(value = "‍列表中对 columns 的定义，JSON 格式表示", required = true) @RequestParam String cols,
-                       @ApiParam(value = "‍查询数据请求 url", required = true) @RequestParam String url,
-                       @ApiParam(value = "‍tomcat server.xml 中 Connector 设定的 URIEncoding 值，若未设置，默认为 ISO-8859-1") String tomcatUriEncoding,
+                       @ApiParam(value = "‍列表中对 columns 的定义，JSON 格式表示，需进行 URL Encode", required = true) @RequestParam String cols,
+                       @ApiParam(value = "‍查询数据请求 url，需进行 URL Encode", required = true) @RequestParam String url,
+                       @ApiParam(value = "‍需匹配 Tomcat 中的 URIEncoding，以免乱码。缺省值为 UTF-8。"
+                               + "‍独立运行的 Tomcat 默认 URIEncoding 为 ISO-8859-1，可在 server.xml 的 Connector 中进行设定。") String tomcatUriEncoding,
                        HttpServletRequest request, HttpServletResponse response) throws Exception {
         String decodedUrl = urlDecode(url, tomcatUriEncoding);
         String cleanUrl = cleanUrl(decodedUrl);
@@ -199,7 +200,7 @@ public class ExportExcelController {
             }
         }
         map.putIfAbsent(properties.getPageNumber(), new String[]{"1"});
-        map.putIfAbsent(properties.getPageSize(), new String[]{Integer.MAX_VALUE + ""});
+        map.putIfAbsent(properties.getPageSize(), new String[]{properties.getMaxRows() + ""});
         return map;
     }
 
@@ -222,7 +223,7 @@ public class ExportExcelController {
      * 传入：http://localhost:8080/demo/foo/bar?v=2000
      * 返回：/demo/foo/bar
      *
-     * @param  url         URL
+     * @param  url URL
      * @return 处理之后的 url
      */
     private String cleanUrl(String url) {

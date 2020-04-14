@@ -8,6 +8,7 @@ import io.github.springroll.test.TestResource
 import io.github.springroll.utils.JsonUtil
 import io.github.springroll.web.controller.BaseController
 import io.github.springroll.web.model.DataTrunk
+import org.apache.commons.lang3.RandomUtils
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -131,6 +132,23 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     }
 
     @Test
+    void checkMaxRows() {
+        def maxRows = 10
+        properties.setMaxRows(maxRows)
+        def title = 'maxRowsCheck'
+        def model = [
+                cols: [
+                        ["prop":"name","label":"名称","decoder":[key: 'not_exist', value: '不会出现这个值']],
+                        ["prop":"des","label":"描述","decoder":[key: 'plant_des', value: '翻译后的描述']],
+                        ["label":"无prop","other": "props","width":"40"]
+                ],
+                url: '/test/query/page'
+        ]
+        def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
+        checkResponse(response, title, maxRows)
+    }
+
+    @Test
     void testReqWithoutCharset() {
         def model = [
                 cols: [["prop":"name","label":"名称"]],
@@ -149,6 +167,9 @@ class ExportExcelControllerTest extends AbstractSpringTest {
 @RestController
 @RequestMapping('/test/query')
 class Controller extends BaseController {
+
+    @Autowired
+    ExportExcelProperties properties
 
     @GetMapping
     ResponseEntity<DataTrunk<Planet>> query() {
@@ -208,6 +229,43 @@ class Controller extends BaseController {
         planet3.setDes(pSize + '')
         def planet4 = new Planet()
         ['rows': [planet, planet2, planet3, planet4]]
+    }
+
+    @GetMapping('/page')
+    Map max(HttpServletRequest request) {
+        [rows: genRows(Integer.parseInt(request.getParameter(properties.getPageSize())))]
+    }
+
+    static def genRows(int rows) {
+        def admdvs = ['110000', '110106', '130000']
+        def indu = ['R', '04', '71']
+        def pham = ['XD06A', 'XG03A', 'XG03A']
+        def dosform = ['290125', '290125', '290117']
+        def regn = ['YEM', 'TUV', 'CHE']
+        def chgrea = ['2203', '80', '6310']
+        def traf = ['1207', '2100', '4300']
+        def dept = ['5104', '5014', '3202']
+
+        def result = []
+        rows.times {
+            result << [
+                    userId: admdvs.get(RandomUtils.nextInt(0, admdvs.size())),
+                    userName: indu.get(RandomUtils.nextInt(0, indu.size())),
+                    type: pham.get(RandomUtils.nextInt(0, pham.size())),
+                    age: dosform.get(RandomUtils.nextInt(0, dosform.size())),
+                    col01: admdvs.get(RandomUtils.nextInt(0, admdvs.size())),
+                    col02: indu.get(RandomUtils.nextInt(0, indu.size())),
+                    col03: pham.get(RandomUtils.nextInt(0, pham.size())),
+                    col04: dosform.get(RandomUtils.nextInt(0, dosform.size())),
+                    col05: admdvs.get(RandomUtils.nextInt(0, admdvs.size())),
+                    col06: indu.get(RandomUtils.nextInt(0, indu.size())),
+                    col07: regn.get(RandomUtils.nextInt(0, regn.size())),
+                    col08: chgrea.get(RandomUtils.nextInt(0, chgrea.size())),
+                    col09: traf.get(RandomUtils.nextInt(0, traf.size())),
+                    col10: dept.get(RandomUtils.nextInt(0, dept.size())),
+            ]
+        }
+        result
     }
 
 }
