@@ -125,7 +125,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
                         ["label":"无prop","other": "props","width":"40"],
                         ["prop":"timestamp","label":"时间戳","decoder":[key: properties.getDateDecoderKey(), value: 'yy-MM-dd HH:mm:ss']]
                 ],
-                url: '/test/query/'
+                url: '/test/query'
         ]
         def response = post("/export/excel/$title", JsonUtil.toJsonIgnoreException(model), HttpStatus.OK).getResponse()
         checkResponse(response, title, 3)

@@ -42,7 +42,7 @@
 |url
 |POST、GET
 |是
-|查询数据请求 url。GET 时需进行 URL Encode。
+|查询数据请求 url。可包含请求参数。GET 时需进行 URL Encode。
 |/test/query?a=1&b=2
 
 |tomcatUriEncoding
