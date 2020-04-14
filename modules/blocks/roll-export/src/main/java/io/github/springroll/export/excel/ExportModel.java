@@ -13,7 +13,7 @@ import java.util.Map;
 @Setter
 class ExportModel {
 
-    @ApiModelProperty(value = "‍列表中对 columns 的定义，JSON 格式表示", required = true)
+    @ApiModelProperty(value = "‍列表中对 columns 的定义", required = true)
     private List<ColumnDef> cols;
 
     @ApiModelProperty(value = "‍查询数据请求 url", required = true)

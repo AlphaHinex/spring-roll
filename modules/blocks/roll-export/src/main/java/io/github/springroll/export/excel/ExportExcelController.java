@@ -94,8 +94,8 @@ public class ExportExcelController {
             notes = "‍根据查询请求 url，找到对应方法，查询出全部数据，导出到 excel 中。注意必填参数均需进行 URL encode。")
     @GetMapping("/{title}")
     public void export(@ApiParam(value = "‍导出文件标题", required = true) @PathVariable String title,
-                       @ApiParam(value = "‍列表中对 columns 的定义，JSON 格式表示", required = true) @RequestParam String cols,
-                       @ApiParam(value = "‍查询数据请求 url", required = true) @RequestParam String url,
+                       @ApiParam(value = "‍列表中对 columns 的定义，JSON 格式表示，需进行 URL Encode", required = true) @RequestParam String cols,
+                       @ApiParam(value = "‍查询数据请求 url，需进行 URL Encode", required = true) @RequestParam String url,
                        @ApiParam(value = "‍tomcat server.xml 中 Connector 设定的 URIEncoding 值，若未设置，默认为 ISO-8859-1") String tomcatUriEncoding,
                        HttpServletRequest request, HttpServletResponse response) throws Exception {
         String decodedUrl = urlDecode(url, tomcatUriEncoding);

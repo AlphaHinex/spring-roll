@@ -1,14 +1,139 @@
 = roll-export
 
-通用导出功能
+通用导出功能，面向前端提供一个导出 URL，传入表头定义、业务查询数据接口及请求参数等信息，
+可自动调用业务查询接口 RestController 中的方法，并将返回对象输出成一个统一格式的 Excel 文件，写入到 Response 里。
 
-面向前端提供一个通用 url（`GET:/export/excel/{title}`），传入表头定义、业务查询数据 url 及导出数据数量，直接导出一个统一格式的 Excel 文件。
 
-基本原理为：根据传入的业务接口 url，找到对应的 controller 方法进行调用，并对返回值进行解封和解码两步操作：
+== 导出接口
 
-1. 解封：根据业务接口返回值结构，找到合适的 `PaginationHandler` 接口实现类，进行解封。默认提供了一个 `MapPaginationHandler`，可按此新增其他实现。
-2. 解码：根据列定义中的 decoder 属性，将单元格中可匹配到 decoder value 的值解码为 decoder name。
+`/export/excel/{title}`
 
-具体用法可参见 swagger 文档或单元测试 `ExportExcelControllerTest`。
+提供 `GET` 和 `POST` 两种格式。
 
-暂不支持特殊格式的表格导出。
+`GET` 接口不支持 `method` 和 `bizReqBody` 参数，通过 Request Parameter 传入。
+
+`POST` 接口通过 Request Body 传递入参。
+
+详细接口信息可参见 swagger 文档：http://localhost:8080/swagger-ui.html
+
+
+== 参数表
+
+[cols=5]
+|===
+|参数名
+|Method
+|是否必填
+|描述
+|示例
+
+|title
+|POST、GET
+|是
+|路径变量，指定导出 Excel 文件的文件名（不包含扩展名，扩展名固定为 xlsx）。
+|TestExport
+
+|cols
+|POST、GET
+|是
+|列表中对表头的列定义，具体结构参见 ColumnDef。GET 时按 JSON 格式表示，需进行 URL Encode。
+|[{"label":"名称","prop":"name","showTitle":true}]
+
+|url
+|POST、GET
+|是
+|查询数据请求 url。GET 时需进行 URL Encode。
+|/test/query?a=1&b=2
+
+|tomcatUriEncoding
+|POST、GET
+|否
+|‍需匹配 Tomcat 中的 URIEncoding，以免乱码。缺省值为 UTF-8。独立运行的 Tomcat 默认 URIEncoding 为 ISO-8859-1，可在 server.xml 的 Connector 中进行设定。
+|UTF-8
+
+|method
+|POST
+|否
+|‍HTTP Method，默认为 GET，不区分大小写。
+|POST
+
+|bizReqBody
+|POST
+|否
+|‍业务请求的请求体。当查询数据请求为 POST 等，需要通过 Request Body 传递内容时，可以将数据对象放入此属性中传递给导出接口。格式不限。
+|{"name":"body name","des":"body des"}
+|===
+
+> GET 示例：
+>
+> 可以按此格式组装：
+>
+> `"/export/excel/" + title + "?cols=" + cols + "&url=" + url + "&tomcatUriEncoding=" + encode`
+>
+> URL Encode 之后如下：
+> ```
+> /export/excel/%E4%B8%AD%E6%96%87?cols=%5B%7B%22display%22%3A%22%E5%90%8D%E7%A7%B0%22%2C%22name%22%3A%22name%22%2C%22showTitle%22%3Atrue%2C%22field%22%3A%22name%22%2C%22hidden%22%3Afalse%2C%22label%22%3A%22%E5%90%8D%E7%A7%B0%22%2C%22prop%22%3A%22name%22%2C%22title%22%3A%22%E5%90%8D%E7%A7%B0%22%7D%5D&url=%2Ftest%2Fquery&tomcatUriEncoding=utf-8
+> ```
+
+> POST Request Body 示例：
+> ```
+> {
+>    "cols":[
+>      {"prop":"name","label":"名称"},
+>      {"prop":"des","label":"描述"},
+>      {"label":"无prop","other":"props"}],
+>    "url":"/test/query/post/plant_name/plant_des",
+>    "bizReqBody":{"name":"body name","des":"body des"},
+>    "method":"POST",
+>    "tomcatUriEncoding":"utf-8"
+> }
+> ```
+
+=== ColumnDef 结构
+
+ColumnDef 作为前端表格组件的结构体，支持了 EasyUI、QUI 和 ElementUI 的基本表头定义格式，主要包含三个表头属性及一个附加属性（内容解码器）。
+
+[cols=4]
+|===
+|含义
+|可用属性
+|类型
+|示例
+
+|显示名
+|display, title, label
+|表头属性
+|性别
+
+|属性名
+|name, field, prop
+|表头属性
+|gender
+
+|显示/隐藏，注意两个属性的含义是相反的
+|showTitle, hidden
+|表头属性
+|true, false
+
+|解码器定义，key/value 对
+|decoder
+|附加属性
+|{key: 'date', value: 'yy-MM-dd HH:mm:ss'}
+|===
+
+
+== 基本原理
+
+根据传入的业务接口 url，找到对应的 RestController 方法进行调用，并对返回值进行 `拆封` 和 `解码` 两步操作：
+
+1. 拆封：根据业务接口返回值结构，找到合适的 `PaginationHandler` 接口实现类，进行拆封。默认提供了一个 `MapPaginationHandler`，可按此新增其他实现。
+2. 解码：根据入参列定义中 decoder 属性的 `key`，找到合适的 `DecodeHandler` 接口的实现类，进行解码。默认提供了日期解码器（`DateDecodeHandler`）和默认的 toString 解码器（`DefaultToStringDecodeHandler`）。
+
+具体用法可参见单元测试 `ExportExcelControllerTest`。
+
+> 暂不支持特殊表头格式的表格导出。
+
+
+== 配置项
+
+// TODO
