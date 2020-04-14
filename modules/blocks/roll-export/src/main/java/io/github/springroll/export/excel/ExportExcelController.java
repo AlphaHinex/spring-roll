@@ -96,7 +96,8 @@ public class ExportExcelController {
     public void export(@ApiParam(value = "‍导出文件标题", required = true) @PathVariable String title,
                        @ApiParam(value = "‍列表中对 columns 的定义，JSON 格式表示，需进行 URL Encode", required = true) @RequestParam String cols,
                        @ApiParam(value = "‍查询数据请求 url，需进行 URL Encode", required = true) @RequestParam String url,
-                       @ApiParam(value = "‍tomcat server.xml 中 Connector 设定的 URIEncoding 值，若未设置，默认为 ISO-8859-1") String tomcatUriEncoding,
+                       @ApiParam(value = "‍需匹配 Tomcat 中的 URIEncoding，以免乱码。缺省值为 UTF-8。"
+                               + "‍独立运行的 Tomcat 默认 URIEncoding 为 ISO-8859-1，可在 server.xml 的 Connector 中进行设定。") String tomcatUriEncoding,
                        HttpServletRequest request, HttpServletResponse response) throws Exception {
         String decodedUrl = urlDecode(url, tomcatUriEncoding);
         String cleanUrl = cleanUrl(decodedUrl);
@@ -222,7 +223,7 @@ public class ExportExcelController {
      * 传入：http://localhost:8080/demo/foo/bar?v=2000
      * 返回：/demo/foo/bar
      *
-     * @param  url         URL
+     * @param  url URL
      * @return 处理之后的 url
      */
     private String cleanUrl(String url) {
