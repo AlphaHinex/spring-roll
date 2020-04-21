@@ -3,11 +3,6 @@ apply plugin: 'codenarc'
 apply plugin: "com.github.spotbugs"
 apply plugin: 'jacoco'
 apply plugin: 'pmd'
-apply plugin: 'java'
-
-java {
-    withSourcesJar()
-}
 
 tasks.withType(JavaCompile) {
     options.encoding = 'utf-8'
