@@ -83,6 +83,10 @@ subprojects {
     }
     compileJava.finalizedBy cpMetaToSrc
 
+    java {
+        withSourcesJar()
+    }
+
     publishing {
         repositories {
             maven {
