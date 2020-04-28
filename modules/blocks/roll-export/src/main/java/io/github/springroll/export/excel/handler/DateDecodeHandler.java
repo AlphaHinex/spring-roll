@@ -25,6 +25,9 @@ public class DateDecodeHandler implements DecodeHandler {
 
     @Override
     public String decode(Object obj, String dateTimePattern) {
+        if (obj == null) {
+            return "";
+        }
         Assert.isInstanceOf(Date.class, obj, "DateDecodeHandler COULD ONLY decode java.util.Date type value!");
         return DateFormatUtils.format((Date) obj, dateTimePattern);
     }

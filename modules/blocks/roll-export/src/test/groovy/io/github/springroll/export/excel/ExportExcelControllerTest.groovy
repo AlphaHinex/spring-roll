@@ -173,10 +173,12 @@ class Controller extends BaseController {
 
     @GetMapping
     ResponseEntity<DataTrunk<Planet>> query() {
+        def planet = new Planet()
+        planet.setName('地球')
         responseOfGet(new DataTrunk<>([
                 new Planet('水星'),
                 new Planet('金星'),
-                new Planet('地球')
+                planet
         ]))
     }
 
@@ -280,16 +282,15 @@ class Planet {
     }
 
     Date getTimestamp() {
-        return (Date) timestamp.clone()
+        timestamp == null ? null : (Date) timestamp.clone()
     }
 
-    Planet() {
-        this.timestamp = new Date()
-    }
+    Planet() {}
 
     Planet(String name) {
         this()
         this.name = name
+        this.timestamp = new Date()
     }
 
 }
