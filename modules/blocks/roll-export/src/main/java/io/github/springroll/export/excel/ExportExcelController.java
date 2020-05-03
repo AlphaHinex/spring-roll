@@ -12,6 +12,7 @@ import io.github.springroll.web.request.InvokeControllerByRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
@@ -32,6 +33,7 @@ import java.util.*;
 @Controller
 @Api(value = "/export/excel", tags = {"‍通用导出 excel"})
 @RequestMapping("/export/excel")
+@Slf4j
 public class ExportExcelController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExportExcelController.class);
@@ -162,6 +164,7 @@ public class ExportExcelController {
                     try {
                         value = new BeanWrapperImpl(rowData).getPropertyValue(columnDef.getName());
                     } catch (BeansException e) {
+                        log.debug("Error occurs when get {} from {}", columnDef.getName(), rowData, e);
                         value = "Could NOT get value from " + rowData.getClass().getName();
                     }
                 }
