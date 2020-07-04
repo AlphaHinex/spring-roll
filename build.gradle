@@ -18,16 +18,8 @@ allprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven {
-            url 'https://repo.gradle.org/gradle/libs/'
-        }
-        maven {
-            url 'https://maven.pkg.github.com/AlphaHinex/checkstyle-checkers'
-            credentials(PasswordCredentials) {
-                username = project.findProperty("gpr.user") ?: System.getenv("GH_OWNER")
-                password = project.findProperty("gpr.reader") ?: System.getenv("GH_PKG_READER")
-            }
-        }
+        maven { url 'https://repo.gradle.org/gradle/libs/' }
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -43,7 +35,7 @@ apply from: "$devConfRoot/configs/scaffold/project.gradle"
 apply from: "$devConfRoot/configs/scaffold/module.gradle"
 
 // Need to define group and verion at root project for module scaffold use
-group = 'io.github.spring-roll'
+group = 'com.github.alphahinex.spring-roll'
 // Needs to change version in io/github/springroll/base/Version.java:13:17 TOGETHER!!
 // And keep them SAME!!
 // Use .RELEASE or -SNAPSHOT suffix after version code
