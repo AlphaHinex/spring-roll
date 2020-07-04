@@ -446,10 +446,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_spring_roll">1. Spring Roll</a>
 <ul class="sectlevel2">
-<li><a href="#_主要设计目标">1.1. 主要设计目标</a></li>
-<li><a href="#_项目构建">1.2. 项目构建</a></li>
-<li><a href="#_发布">1.3. 发布</a></li>
-<li><a href="#_部署及运行">1.4. 部署及运行</a></li>
+<li><a href="#_how_to_use">1.1. How to use?</a></li>
+<li><a href="#_主要设计目标">1.2. 主要设计目标</a></li>
+<li><a href="#_项目构建">1.3. 项目构建</a></li>
+<li><a href="#_发布">1.4. 发布</a></li>
+<li><a href="#_部署及运行">1.5. 部署及运行</a></li>
 </ul>
 </li>
 <li><a href="#_developer_guidelines">2. Developer Guidelines</a>
@@ -509,10 +510,43 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sectionbody">
 <div class="paragraph">
 <p><span class="image"><a class="image" href="https://travis-ci.org/AlphaHinex/spring-roll"><img src="https://travis-ci.org/AlphaHinex/spring-roll.svg?branch=master" alt="Build Status"></a></span>
-<span class="image"><a class="image" href="https://codecov.io/gh/AlphaHinex/spring-roll"><img src="https://codecov.io/gh/AlphaHinex/spring-roll/branch/master/graph/badge.svg" alt="codecov"></a></span></p>
+<span class="image"><a class="image" href="https://codecov.io/gh/AlphaHinex/spring-roll"><img src="https://codecov.io/gh/AlphaHinex/spring-roll/branch/master/graph/badge.svg" alt="codecov"></a></span>
+<span class="image"><a class="image" href="https://jitpack.io/#AlphaHinex/spring-roll"><img src="https://jitpack.io/v/AlphaHinex/spring-roll.svg" alt="JitPack"></a></span></p>
 </div>
 <div class="sect2">
-<h3 id="_主要设计目标">1.1. 主要设计目标</h3>
+<h3 id="_how_to_use">1.1. How to use?</h3>
+<div class="sect3">
+<h4 id="_gradle">1.1.1. gradle</h4>
+<div class="paragraph">
+<p>在 <code>build.gradle</code> 文件的 <code>repositories</code> 末尾添加 <a href="https://jitpack.io">JitPack</a> 仓库：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>然后即可添加依赖，以 <code>roll-test</code> 模块为例：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
+    implementation 'com.github.alphahinex.spring-roll:roll-test:0.0.8.RELEASE'
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>其他构建工具配置情况，可参考 <a href="https://jitpack.io/#AlphaHinex/spring-roll" class="bare">https://jitpack.io/#AlphaHinex/spring-roll</a></p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_主要设计目标">1.2. 主要设计目标</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -537,13 +571,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_项目构建">1.2. 项目构建</h3>
+<h3 id="_项目构建">1.3. 项目构建</h3>
 <div class="paragraph">
 <p>项目构建依托 <a href="http://www.gradle.org">gradle</a> 构建工具，<code>gradlew</code> 是 <code>gradle wrapper</code>，作用是使不同的开发环境能够使用统一版本的构建工具进行构建，
 避免版本不同带来的兼容性等问题。<code>wrapper</code> 中使用的 <code>gradle</code> 版本参见 <code>gradle-wrapper.properties</code>。</p>
 </div>
 <div class="sect3">
-<h4 id="_整体构建">1.2.1. 整体构建</h4>
+<h4 id="_整体构建">1.3.1. 整体构建</h4>
 <div class="literalblock">
 <div class="content">
 <pre>$ ./gradlew build</pre>
@@ -551,7 +585,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_子项目独立构建">1.2.2. 子项目独立构建</h4>
+<h4 id="_子项目独立构建">1.3.2. 子项目独立构建</h4>
 <div class="paragraph">
 <p><code>&lt;module_name&gt;:build</code>，以 <code>roll-utils</code> 子项目为例</p>
 </div>
@@ -573,9 +607,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_发布">1.3. 发布</h3>
+<h3 id="_发布">1.4. 发布</h3>
 <div class="sect3">
-<h4 id="_发布到_github_packages">1.3.1. 发布到 GitHub Packages</h4>
+<h4 id="_发布到_github_packages">1.4.1. 发布到 GitHub Packages</h4>
 <div class="literalblock">
 <div class="content">
 <pre>$ ./gradlew publish</pre>
@@ -590,7 +624,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_发布到本地_maven_库">1.3.2. 发布到本地 Maven 库</h4>
+<h4 id="_发布到本地_maven_库">1.4.2. 发布到本地 Maven 库</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">$ ./gradlew publishToMavenLocal</code></pre>
@@ -599,7 +633,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_部署及运行">1.4. 部署及运行</h3>
+<h3 id="_部署及运行">1.5. 部署及运行</h3>
 <div class="paragraph">
 <p>Spring boot 默认配置 tomcat 使用的字符集为 <code>UTF-8</code>（org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory#DEFAULT_CHARSET），
 使用的 connector 为 <code>Http11NioProtocol</code>（org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory#DEFAULT_PROTOCOL）。</p>
@@ -1471,7 +1505,7 @@ modules/test-init/README.md</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.8.RELEASE<br>
-Last updated 2020-07-04 05:07:12 UTC
+Last updated 2020-07-04 05:38:26 UTC
 </div>
 </div>
 </body>
