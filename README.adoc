@@ -2,6 +2,30 @@
 
 image:https://travis-ci.org/AlphaHinex/spring-roll.svg?branch=master["Build Status", link="https://travis-ci.org/AlphaHinex/spring-roll"]
 image:https://codecov.io/gh/AlphaHinex/spring-roll/branch/master/graph/badge.svg["codecov", link="https://codecov.io/gh/AlphaHinex/spring-roll"]
+image:https://jitpack.io/v/AlphaHinex/spring-roll.svg["JitPack", link="https://jitpack.io/#AlphaHinex/spring-roll"]
+
+== How to use?
+
+=== gradle
+
+在 `build.gradle` 文件的 `repositories` 末尾添加 https://jitpack.io[JitPack] 仓库：
+
+[source,groovy]
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+然后即可添加依赖，以 `roll-test` 模块为例：
+
+[source,groovy]
+dependencies {
+    implementation 'com.github.alphahinex.spring-roll:roll-test:0.0.8.RELEASE'
+}
+
+其他构建工具配置情况，可参考 https://jitpack.io/#AlphaHinex/spring-roll
 
 
 == 主要设计目标

@@ -9,6 +9,7 @@ dependencies {
 }
 
 generateMetadataFileForGprPublication.enabled = false
+publishGprPublicationToGitHubPackagesRepository.enabled = false
 publishGprPublicationToMavenLocal.enabled = false
 publishToMavenLocal.enabled = false
 publish.enabled = false
