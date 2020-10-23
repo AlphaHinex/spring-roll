@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.NestedServletException
+import org.springframework.web.util.UriComponentsBuilder
 
 import javax.servlet.http.HttpServletRequest
 
@@ -28,9 +29,13 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     @Test
     void test() {
         def cols = '[{"display":"名称","name":"name","showTitle":true,"field":"name","hidden":false,"label":"名称","prop":"name","title":"名称"},{"label":"名称","prop":"name","width":"40"}]'
-        cols = URLEncoder.encode(cols, 'UTF-8')
-        def url = URLEncoder.encode('/test/query', 'UTF-8')
+        cols = URLEncoder.encode(cols, 'utf-8')
+        def url = encodeURIComponent('/test/query')
         get("/export/excel/abc?cols=$cols&url=$url", HttpStatus.OK)
+    }
+
+    private static def encodeURIComponent(str) {
+        UriComponentsBuilder.fromUriString(str).buildAndExpand().encode().toUri().toString()
     }
 
     @Test
@@ -51,9 +56,9 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     }
 
     void checkExportData(String fileTitle, String queryUrl, int rowCount, encode = 'utf-8', colDef = [new ColumnDef("名称", "name")]) {
-        def title = URLEncoder.encode(fileTitle,'utf-8')
-        def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'UTF-8')
-        def url = URLEncoder.encode(queryUrl, 'UTF-8')
+        def title = encodeURIComponent(fileTitle)
+        def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'utf-8')
+        def url = URLEncoder.encode(queryUrl, 'utf-8')
         def response = get("/export/excel/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
         checkResponse(response, title, rowCount)
     }
@@ -90,7 +95,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
 
     @Test
     void testPostExport() {
-        def title = URLEncoder.encode('中文post','utf-8')
+        def title = encodeURIComponent('中文post')
         def model = [
                 cols: [
                         ["prop":"name","label":"名称","decoder":[key: 'not_exist', value: '不会出现这个值']],
