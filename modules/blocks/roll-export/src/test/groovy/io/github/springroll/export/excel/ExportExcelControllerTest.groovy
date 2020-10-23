@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.NestedServletException
-import org.springframework.web.util.UriComponentsBuilder
 
 import javax.servlet.http.HttpServletRequest
 
@@ -57,10 +56,6 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         def url = URLEncoder.encode(queryUrl, 'UTF-8')
         def response = get("/export/excel/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
         checkResponse(response, title, rowCount)
-    }
-
-    private static def encodeURIComponent(str) {
-        UriComponentsBuilder.fromUriString(str).buildAndExpand().encode().toUri().toString()
     }
 
     def checkResponse(response, title, rowCount) {

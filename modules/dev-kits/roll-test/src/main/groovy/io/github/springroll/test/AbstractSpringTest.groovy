@@ -83,8 +83,11 @@ abstract class AbstractSpringTest {
     }
 
     private static String getServletPath(String url) {
-        def encodedUrl = url.contains('?') ? url.substring(0, url.indexOf("?")) : url
-        UriComponentsBuilder.fromUriString(encodedUrl).buildAndExpand().encode().toUri().toString()
+        encodeURIComponent(url.contains('?') ? url.substring(0, url.indexOf("?")) : url)
+    }
+
+    protected static String encodeURIComponent(String str) {
+        UriComponentsBuilder.fromUriString(str).buildAndExpand().encode().toUri().toString()
     }
 
     protected MvcResult get(String url, HttpStatus statusCode) {
