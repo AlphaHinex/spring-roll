@@ -51,7 +51,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     }
 
     void checkExportData(String fileTitle, String queryUrl, int rowCount, encode = 'utf-8', colDef = [new ColumnDef("名称", "name")]) {
-        def title = URLEncoder.encode(fileTitle,'utf-8')
+        def title = encodeURIComponent(fileTitle)
         def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'UTF-8')
         def url = URLEncoder.encode(queryUrl, 'UTF-8')
         def response = get("/export/excel/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
@@ -70,7 +70,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         xlsFile.withOutputStream { os ->
             os.write(bytes)
         }
-        assert filename == "${title}.xlsx"
+        assert xlsFile.getName() == "${title}.xlsx"
 
         def data = EasyExcel.read(xlsFile).sheet().doReadSync()
         assert data.size() == rowCount
@@ -90,7 +90,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
 
     @Test
     void testPostExport() {
-        def title = URLEncoder.encode('中文post','utf-8')
+        def title = encodeURIComponent('中文post')
         def model = [
                 cols: [
                         ["prop":"name","label":"名称","decoder":[key: 'not_exist', value: '不会出现这个值']],
