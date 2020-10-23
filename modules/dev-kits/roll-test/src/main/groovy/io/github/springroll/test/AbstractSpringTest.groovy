@@ -70,7 +70,7 @@ abstract class AbstractSpringTest {
     }
 
     protected MvcResult post(String url, MediaType consumes, MediaType produces, String data, HttpStatus statusCode) {
-        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.post(url).servletPath(url)
+        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.post(url).servletPath(cleanReqParam(url))
         if (consumes != null) {
             req = req.contentType(consumes)
         }
@@ -81,8 +81,12 @@ abstract class AbstractSpringTest {
         return perform(req, statusCode)
     }
 
+    private String cleanReqParam(String url) {
+        url.contains('?') ? url.substring(0, url.indexOf("?")) : url
+    }
+
     protected MvcResult get(String url, HttpStatus statusCode) {
-        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.get(url).servletPath(url)
+        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.get(url).servletPath(cleanReqParam(url))
         return perform(req, statusCode)
     }
 
@@ -95,7 +99,7 @@ abstract class AbstractSpringTest {
     }
 
     protected MvcResult put(String url, MediaType consumes, MediaType produces, String data, HttpStatus statusCode) {
-        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.put(url).servletPath(url)
+        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.put(url).servletPath(cleanReqParam(url))
         if (consumes != null) {
             req = req.contentType(consumes)
         }
@@ -107,12 +111,12 @@ abstract class AbstractSpringTest {
     }
 
     protected MvcResult delete(String url, HttpStatus statusCode) {
-        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.delete(url).servletPath(url)
+        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.delete(url).servletPath(cleanReqParam(url))
         return perform(req, statusCode)
     }
 
     protected MvcResult options(String url, HttpStatus statusCode) {
-        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.options(url).servletPath(url)
+        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.options(url).servletPath(cleanReqParam(url))
         return perform(req, statusCode)
     }
 
