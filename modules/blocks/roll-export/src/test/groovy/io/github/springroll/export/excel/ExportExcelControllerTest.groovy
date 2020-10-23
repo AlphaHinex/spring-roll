@@ -70,7 +70,7 @@ class ExportExcelControllerTest extends AbstractSpringTest {
         xlsFile.withOutputStream { os ->
             os.write(bytes)
         }
-        assert filename == "${title}.xlsx"
+        assert xlsFile.getName() == "${title}.xlsx"
 
         def data = EasyExcel.read(xlsFile).sheet().doReadSync()
         assert data.size() == rowCount
