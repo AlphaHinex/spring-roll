@@ -29,13 +29,9 @@ class ExportExcelControllerTest extends AbstractSpringTest {
     @Test
     void test() {
         def cols = '[{"display":"名称","name":"name","showTitle":true,"field":"name","hidden":false,"label":"名称","prop":"name","title":"名称"},{"label":"名称","prop":"name","width":"40"}]'
-        cols = URLEncoder.encode(cols, 'utf-8')
-        def url = encodeURIComponent('/test/query')
+        cols = URLEncoder.encode(cols, 'UTF-8')
+        def url = URLEncoder.encode('/test/query', 'UTF-8')
         get("/export/excel/abc?cols=$cols&url=$url", HttpStatus.OK)
-    }
-
-    private static def encodeURIComponent(str) {
-        UriComponentsBuilder.fromUriString(str).buildAndExpand().encode().toUri().toString()
     }
 
     @Test
@@ -57,10 +53,14 @@ class ExportExcelControllerTest extends AbstractSpringTest {
 
     void checkExportData(String fileTitle, String queryUrl, int rowCount, encode = 'utf-8', colDef = [new ColumnDef("名称", "name")]) {
         def title = encodeURIComponent(fileTitle)
-        def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'utf-8')
-        def url = URLEncoder.encode(queryUrl, 'utf-8')
+        def cols = URLEncoder.encode(JsonUtil.toJsonIgnoreException(colDef), 'UTF-8')
+        def url = URLEncoder.encode(queryUrl, 'UTF-8')
         def response = get("/export/excel/$title?cols=$cols&url=$url&tomcatUriEncoding=$encode", HttpStatus.OK).getResponse()
         checkResponse(response, title, rowCount)
+    }
+
+    private static def encodeURIComponent(str) {
+        UriComponentsBuilder.fromUriString(str).buildAndExpand().encode().toUri().toString()
     }
 
     def checkResponse(response, title, rowCount) {
