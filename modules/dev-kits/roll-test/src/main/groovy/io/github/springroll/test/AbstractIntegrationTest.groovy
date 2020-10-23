@@ -19,13 +19,22 @@ abstract class AbstractIntegrationTest {
     }
 
     protected def get(String url, HttpStatus status) {
-        perform('GET', url, null, status)
+        get(url, null, status)
+    }
+
+    protected def get(String url, Map<String, List<String>> headers, HttpStatus status) {
+        perform('GET', url, headers, null, status)
     }
 
     // https://stackoverflow.com/questions/25692515/groovy-built-in-rest-http-client
-    private def perform(String method, String url, String data, HttpStatus status) {
+    private def perform(String method, String url, Map<String, List<String>> headers, String data, HttpStatus status) {
         def connection = openConnection(url)
         connection.setRequestMethod(method.toUpperCase())
+        headers?.each {entry ->
+            entry.value.each {
+                connection.setRequestProperty(entry.key, it)
+            }
+        }
         if (data > '') {
             connection.setDoOutput(true)
             connection.setRequestProperty('Content-Type', 'application/json')
@@ -68,39 +77,61 @@ abstract class AbstractIntegrationTest {
      * @return response body
      */
     protected def resOfGet(String url, HttpStatus status) {
-        def connection = get(url, status)
+        resOfGet(url, null, status)
+    }
+
+    protected def resOfGet(String url, Map<String, List<String>> headers, HttpStatus status) {
+        def connection = perform('GET', url, headers, null, status)
         def str = isSuccess('GET', connection.getResponseCode()) ? connection.getInputStream().getText() : ''
         try {
             str = new JsonSlurper().parseText(str)
-        } catch (ignored) {
-        }
+        } catch (ignored) { }
         str
     }
 
     protected def resOfPost(String url, String data, HttpStatus status) {
-        def connection = post(url, data, status)
+        resOfPost(url, null, data, status)
+    }
+
+    protected def resOfPost(String url, Map<String, List<String>> headers, String data, HttpStatus status) {
+        def connection = post(url, headers, data, status)
         def str = isSuccess('GET', connection.getResponseCode()) ? connection.getInputStream().getText() : ''
         try {
             str = new JsonSlurper().parseText(str)
-        } catch (ignored) {
-        }
+        } catch (ignored) { }
         str
     }
 
     protected def post(String url, String data, HttpStatus status) {
-        perform('POST', url, data, status)
+        post(url, null, data, status)
+    }
+
+    protected def post(String url, Map<String, List<String>> headers, String data, HttpStatus status) {
+        perform('POST', url, headers, data, status)
     }
 
     protected def put(String url, String data, HttpStatus status) {
-        perform('PUT', url, data, status)
+        put(url, null, data, status)
+    }
+
+    protected def put(String url, Map<String, List<String>> headers, String data, HttpStatus status) {
+        perform('PUT', url, headers, data, status)
     }
 
     protected def delete(String url, HttpStatus status) {
-        perform('DELETE', url, null, status)
+        delete(url, null, status)
+    }
+
+    protected def delete(String url, Map<String, List<String>> headers, HttpStatus status) {
+        perform('DELETE', url, headers, null, status)
     }
 
     protected def options(String url, HttpStatus status) {
-        perform('OPTIONS', url, null, status)
+        options(url, null, status)
+    }
+
+    protected def options(String url, Map<String, List<String>> headers, HttpStatus status) {
+        perform('OPTIONS', url, headers, null, status)
     }
 
 }
