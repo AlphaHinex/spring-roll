@@ -7,6 +7,7 @@ versions.groovy               = '2.5.8'
 versions.hibernate            = '5.2.17.Final'
 versions.jackson              = '2.9.9'
 versions.mongo                = '3.11.0'
+versions.mysql2h2             = '0.2.1'
 versions.quartz               = '2.3.1'
 versions.spring               = '5.2.2.RELEASE'
 versions.spring_boot          = '2.2.2.RELEASE'
@@ -136,6 +137,11 @@ libraries.mongodb_driver = "org.mongodb:mongodb-driver:${versions.mongo}"
 
 libraries.mysql_driver = 'org.mariadb.jdbc:mariadb-java-client:1.5.4'
 
+libraries.mysql2h2 = [
+    "com.parmet:mysql2h2-converter:${versions.mysql2h2}",
+    "com.parmet:mysql2h2-parser:${versions.mysql2h2}"
+]
+
 libraries.netty_all = 'io.netty:netty-all'
 
 libraries.okhttp = 'com.squareup.okhttp3:okhttp:3.14.2'
@@ -176,17 +182,18 @@ libraries.spring_beans = "org.springframework:spring-beans:${versions.spring}"
 libraries.spring_context = "org.springframework:spring-context:${versions.spring}"
 libraries.spring_context_support = "org.springframework:spring-context-support:${versions.spring}"
 libraries.spring_core = "org.springframework:spring-core:${versions.spring}"
+libraries.spring_jdbc = "org.springframework:spring-jdbc:${versions.spring}"
+libraries.spring_jms = "org.springframework:spring-jms:${versions.spring}"
 libraries.spring_messaging = "org.springframework:spring-messaging:${versions.spring}"
 libraries.spring_orm = [
-        "org.springframework:spring-orm:${versions.spring}",
-        libraries.aspectjweaver
+    "org.springframework:spring-orm:${versions.spring}",
+    libraries.aspectjweaver
 ]
 libraries.spring_oxm = "org.springframework:spring-oxm:${versions.spring}"
 libraries.spring_test = "org.springframework:spring-test:${versions.spring}"
 libraries.spring_tx = "org.springframework:spring-tx:${versions.spring}"
 libraries.spring_websocket = "org.springframework:spring-websocket:${versions.spring}"
 libraries.spring_webmvc = "org.springframework:spring-webmvc:${versions.spring}"
-libraries.spring_jms = "org.springframework:spring-jms:${versions.spring}"
 
 libraries.spring_data_commons = 'org.springframework.data:spring-data-commons'
 libraries.spring_data_jpa = 'org.springframework.data:spring-data-jpa'

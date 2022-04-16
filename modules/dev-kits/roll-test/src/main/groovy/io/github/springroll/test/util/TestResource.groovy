@@ -1,4 +1,4 @@
-package io.github.springroll.test
+package io.github.springroll.test.util
 
 class TestResource {
 
