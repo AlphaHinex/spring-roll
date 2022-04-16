@@ -50,7 +50,7 @@ class MysqlTranslateToH2Executor {
         Iterator<SqlStatement> it = H2Converter.convertScript(sourceIterator)
         while (it.hasNext()) {
             SqlStatement st = it.next()
-            h2Sql.append(st.toString()).append("")
+            h2Sql.append(st.toString()).append(";")
         }
         file.write(h2Sql.toString(), StandardCharsets.UTF_8.name())
         return file
