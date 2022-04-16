@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.github.springroll.test.mysql2h2.MysqlTranslateToH2Executor

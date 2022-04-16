@@ -4,7 +4,7 @@ import com.alibaba.excel.EasyExcel
 import io.github.springroll.export.excel.handler.DecodeHandler
 import io.github.springroll.export.excel.handler.PaginationHandler
 import io.github.springroll.test.AbstractSpringTest
-import io.github.springroll.test.TestResource
+import io.github.springroll.test.util.TestResource
 import io.github.springroll.utils.JsonUtil
 import io.github.springroll.web.controller.BaseController
 import io.github.springroll.web.model.DataTrunk
