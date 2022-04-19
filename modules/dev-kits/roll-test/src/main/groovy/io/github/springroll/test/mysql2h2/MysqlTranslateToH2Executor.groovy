@@ -31,9 +31,13 @@ class MysqlTranslateToH2Executor {
         File h2Script
         for (Resource resource : resources) {
             h2Script = translateToH2Script(resource.getFile())
-            jdbcTemplate.execute("runscript from '${h2Script.getCanonicalPath()}'")
-
-            h2Script.delete()
+            try {
+                jdbcTemplate.execute("runscript from '${h2Script.getCanonicalPath()}'")
+            } catch (Exception e) {
+                throw new RuntimeException(e)
+            } finally {
+                h2Script.delete()
+            }
         }
     }
 
