@@ -4,6 +4,8 @@ import com.granveaud.mysql2h2converter.SQLParserManager
 import com.granveaud.mysql2h2converter.converter.H2Converter
 import com.granveaud.mysql2h2converter.parser.ParseException
 import com.granveaud.mysql2h2converter.sql.SqlStatement
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.io.Resource
@@ -17,8 +19,12 @@ import java.nio.charset.StandardCharsets
 @ConditionalOnProperty(name = "roll.test.datasource.type", havingValue = "mysql2h2")
 class MysqlTranslateToH2Executor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MysqlTranslateToH2Executor)
+
     @Value('${roll.test.datasource.mysql-scripts:classpath*:sql/**/*.sql}')
     private Resource[] resources
+    @Value('${roll.test.datasource.ignore-errors:true}')
+    private boolean ignoreErrors
 
     private final JdbcTemplate jdbcTemplate
 
@@ -34,7 +40,11 @@ class MysqlTranslateToH2Executor {
             try {
                 jdbcTemplate.execute("runscript from '${h2Script.getCanonicalPath()}'")
             } catch (Exception e) {
-                throw new RuntimeException(e)
+                if (ignoreErrors) {
+                    LOGGER.debug("Ignoring error while executing translated script {}", h2Script, e)
+                } else {
+                    throw e
+                }
             } finally {
                 h2Script.delete()
             }
