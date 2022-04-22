@@ -138,8 +138,8 @@ libraries.mongodb_driver = "org.mongodb:mongodb-driver:${versions.mongo}"
 libraries.mysql_driver = 'org.mariadb.jdbc:mariadb-java-client:1.5.4'
 
 libraries.mysql2h2 = [
-    "com.parmet:mysql2h2-converter:${versions.mysql2h2}",
-    "com.parmet:mysql2h2-parser:${versions.mysql2h2}"
+    "com.github.alphahinex.mysql2h2-converter:mysql2h2-converter:${versions.mysql2h2}",
+    "com.github.alphahinex.mysql2h2-converter:mysql2h2-parser:${versions.mysql2h2}"
 ]
 
 libraries.netty_all = 'io.netty:netty-all'
