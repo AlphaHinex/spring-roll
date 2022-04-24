@@ -106,7 +106,7 @@ libraries.groovy_sql = "org.codehaus.groovy:groovy-sql:${versions.groovy}"
 // libraries.groovy_testng = "org.codehaus.groovy:groovy-testng:${versions.groovy}"
 // libraries.groovy_xml = "org.codehaus.groovy:groovy-xml:${versions.groovy}"
 
-libraries.h2 = 'com.h2database:h2:1.4.197'
+libraries.h2 = 'com.h2database:h2:2.1.212'
 
 libraries.hibernate_ehcache = "org.hibernate:hibernate-ehcache:${versions.hibernate}"
 libraries.hibernate_entitymanager = "org.hibernate:hibernate-entitymanager:${versions.hibernate}"
