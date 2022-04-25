@@ -39,9 +39,10 @@ class MysqlTranslateToH2Executor {
             h2Script = translateToH2Script(resource.getFilename(), resource.getInputStream())
             try {
                 jdbcTemplate.execute("runscript from '${h2Script.getCanonicalPath()}'")
+                LOGGER.trace('Successfully executed script: {}', h2Script.getCanonicalPath())
             } catch (Exception e) {
                 if (ignoreErrors) {
-                    LOGGER.debug('Ignore {} error while executing translated script {}, open trace log to see details.', e.getMessage(), h2Script)
+                    LOGGER.debug('Ignore {} error while executing translated script {}, open trace log to see details.', e.getMessage(), h2Script.getCanonicalPath())
                     LOGGER.trace('Execute script error!', e)
                 } else {
                     throw e
@@ -53,7 +54,8 @@ class MysqlTranslateToH2Executor {
     }
 
     private static File translateToH2Script(String filename, InputStream inputStream) throws IOException, ParseException {
-        filename = filename.replace(filename, filename + "_h2_" + System.currentTimeMillis())
+        String namePart = filename.split("\\.")[0]
+        filename = filename.replace(namePart, namePart + "_h2_" + System.currentTimeMillis())
         File file = new File(System.getProperty("java.io.tmpdir"), filename)
         StringBuilder h2Sql = new StringBuilder()
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
