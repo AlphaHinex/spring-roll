@@ -36,6 +36,7 @@ class MysqlTranslateToH2Executor {
     void executeTranslatedScripts() throws IOException, ParseException {
         File h2Script
         for (Resource resource : resources) {
+            LOGGER.trace("Translating {}", resource.getFilename())
             h2Script = translateToH2Script(resource.getFilename(), resource.getInputStream())
             try {
                 jdbcTemplate.execute("runscript from '${h2Script.getCanonicalPath()}'")
