@@ -36,7 +36,7 @@ class MysqlTranslateToH2Executor {
     void executeTranslatedScripts() throws IOException, ParseException {
         File h2Script
         resources.toList().sort({ r1, r2 ->
-            r1.getFilename() <=> r2.getFilename()
+            r1.getURI().toString() <=> r2.getURI().toString()
         }).each { resource ->
             LOGGER.trace("Translating {}", resource.getFilename())
             h2Script = translateToH2Script(resource.getFilename(), resource.getInputStream())
