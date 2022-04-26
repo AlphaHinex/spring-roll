@@ -2,6 +2,7 @@ apply plugin: 'java-library'
 
 dependencies {
                api libraries.groovy_dateutil,
+                   libraries.h2,
                    libraries.mysql2h2,
                    libraries.spock,
                    libraries.spring_boot_starter_web,
