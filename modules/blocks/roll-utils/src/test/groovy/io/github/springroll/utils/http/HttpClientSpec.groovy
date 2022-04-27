@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 class HttpClientSpec extends Specification {
 
-    def static final TEAMCITY = 'https://cloud.propersoft.cn/teamcities'
+    def static final TEAMCITY = 'https://teamcity.jetbrains.com'
 
     def "Using all http methods"() {
         def url = "$TEAMCITY/login.html"
@@ -20,14 +20,14 @@ class HttpClientSpec extends Specification {
         expect:
         HttpClient.post(url, MediaType.get('application/x-www-form-urlencoded'), data).code() == 200
         HttpClient.post(url, headers, MediaType.get('application/x-www-form-urlencoded'), data).code() == 200
-        HttpClient.put(url, MediaType.get('application/json'), data).code() == 500
-        HttpClient.put(url, MediaType.get('application/json'), data).code() == 500
+        HttpClient.put(url, MediaType.get('application/json'), data).code() == 405
+        HttpClient.put(url, MediaType.get('application/json'), data).code() == 405
         HttpClient.get(url).code() == 200
         HttpClient.get(url, headers).code() == 200
-        HttpClient.delete(url, MediaType.get('application/x-www-form-urlencoded'), data).code() == 500
-        HttpClient.delete(url, headers, MediaType.get('application/x-www-form-urlencoded'), data).code() == 500
-        HttpClient.delete(url).code() == 500
-        HttpClient.delete(url, headers).code() == 500
+        HttpClient.delete(url, MediaType.get('application/x-www-form-urlencoded'), data).code() == 405
+        HttpClient.delete(url, headers, MediaType.get('application/x-www-form-urlencoded'), data).code() == 405
+        HttpClient.delete(url).code() == 405
+        HttpClient.delete(url, headers).code() == 405
     }
 
     def "Could get stream"() {
@@ -61,7 +61,7 @@ class HttpClientSpec extends Specification {
         HttpClient.post("$TEAMCITY/login.html", MediaType.get('application/x-www-form-urlencoded'), '{"user":"123"}', cb)
         HttpClient.post('https://www.google.com', MediaType.get('application/x-www-form-urlencoded'), '{"user":"123"}', 200, cb)
         HttpClient.get('http://localhost:9090/pep', 200, cb)
-        latch.await(2, TimeUnit.SECONDS)
+        latch.await(5, TimeUnit.SECONDS)
     }
 
     @Ignore
