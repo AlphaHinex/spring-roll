@@ -54,7 +54,7 @@ public class ClientUtil {
                                      String url, String method,
                                      Map<String, String> headers, MediaType type,
                                      String data) {
-        return createCall(client, url ,method, headers, type, StringUtil.isNotBlank(data) ? data.getBytes() : null);
+        return createCall(client, url, method, headers, type, StringUtil.isNotBlank(data) ? data.getBytes() : null);
     }
 
     protected static Call createCall(OkHttpClient client,
