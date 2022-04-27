@@ -5,6 +5,7 @@ import okhttp3.*;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class ClientUtil {
@@ -54,7 +55,8 @@ public class ClientUtil {
                                      String url, String method,
                                      Map<String, String> headers, MediaType type,
                                      String data) {
-        return createCall(client, url, method, headers, type, StringUtil.isNotBlank(data) ? data.getBytes() : null);
+        return createCall(client, url, method, headers, type,
+                StringUtil.isNotBlank(data) ? data.getBytes(StandardCharsets.UTF_8) : new byte[0]);
     }
 
     protected static Call createCall(OkHttpClient client,
