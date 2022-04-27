@@ -18,11 +18,14 @@ class HttpClientSpec extends Specification {
 
         expect:
         HttpClient.post(url, MediaType.get('application/x-www-form-urlencoded'), data).code() == 200
+        HttpClient.post(url, MediaType.get('application/x-www-form-urlencoded'), data, 1000).code() == 200
         HttpClient.post(url, headers, MediaType.get('application/x-www-form-urlencoded'), data).code() == 200
         HttpClient.put(url, MediaType.get('application/json'), data).code() == 405
-        HttpClient.put(url, MediaType.get('application/json'), data).code() == 405
+        HttpClient.put(url, headers, MediaType.get('application/json'), data).code() == 405
         HttpClient.get(url).code() == 200
+        HttpClient.get(url, 1000).code() == 200
         HttpClient.get(url, headers).code() == 200
+        HttpClient.get(url, 1000, headers).code() == 200
         HttpClient.delete(url, MediaType.get('application/x-www-form-urlencoded'), data).code() == 405
         HttpClient.delete(url, headers, MediaType.get('application/x-www-form-urlencoded'), data).code() == 405
         HttpClient.delete(url).code() == 405
