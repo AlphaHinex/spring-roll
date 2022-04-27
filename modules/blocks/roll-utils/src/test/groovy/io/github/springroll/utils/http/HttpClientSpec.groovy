@@ -61,7 +61,7 @@ class HttpClientSpec extends Specification {
         HttpClient.post("$TEAMCITY/login.html", MediaType.get('application/x-www-form-urlencoded'), '{"user":"123"}', cb)
         HttpClient.post('https://www.google.com', MediaType.get('application/x-www-form-urlencoded'), '{"user":"123"}', 200, cb)
         HttpClient.get('http://localhost:9090/pep', 200, cb)
-        latch.await(1, TimeUnit.SECONDS)
+        latch.await(2, TimeUnit.SECONDS)
     }
 
     @Ignore
