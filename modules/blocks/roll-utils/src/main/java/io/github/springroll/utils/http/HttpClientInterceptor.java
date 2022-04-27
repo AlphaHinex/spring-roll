@@ -13,7 +13,7 @@ public class HttpClientInterceptor implements Interceptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientInterceptor.class);
 
-    private int retryNum = 1;
+    private transient int retryNum = 1;
 
     /**
      * 最大重试次数

@@ -3,8 +3,6 @@ package io.github.springroll.utils.http;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,8 +12,6 @@ import java.util.concurrent.TimeUnit;
  * HTTP 客户端工具类
  */
 public class HttpClient extends ClientUtil {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpClient.class);
 
     private static OkHttpClient client = new OkHttpClient();
 
