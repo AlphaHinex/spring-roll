@@ -38,7 +38,7 @@ class HttpClientSpec extends Specification {
     }
 
     def "Async request with callback"() {
-        CountDownLatch latch = new CountDownLatch(3)
+        CountDownLatch latch = new CountDownLatch(4)
 
         def cb = new Callback() {
             @Override
@@ -59,6 +59,7 @@ class HttpClientSpec extends Specification {
         expect:
         HttpClient.post("$TEAMCITY/login.html", MediaType.get('application/x-www-form-urlencoded'), '{"user":"123"}', cb)
         HttpClient.post('https://www.google.com', MediaType.get('application/x-www-form-urlencoded'), '{"user":"123"}', 200, cb)
+        HttpClient.get('http://localhost:9090', cb)
         HttpClient.get('http://localhost:9090', 200, cb)
         latch.await(5, TimeUnit.SECONDS)
     }
@@ -67,6 +68,11 @@ class HttpClientSpec extends Specification {
         def url = "http://localhost:9090"
         def data = '{"user":"123"}'
         def headers = ['h1': 'header1', 'h2': 'header2']
+
+        when:
+        HttpClient.get(url, 10)
+        then:
+        thrown(ConnectException)
 
         when:
         def getStart = new Date().getTime()
