@@ -21,9 +21,9 @@ public class HttpClientInterceptor implements Interceptor {
     private int executionCount;
 
     /**
-     * 重试间隔(默认第一次5s间隔,第二次5*2s,第三次5*3s...)
+     * 重试间隔，单位毫秒 (默认第一次5s间隔,第二次5*2s,第三次5*3s...)
      */
-    private long retryInterval;
+    private long retryInterval = 5000;
 
     public int getExecutionCount() {
         return executionCount;

@@ -2,7 +2,6 @@ package io.github.springroll.utils.http
 
 import okhttp3.MediaType
 import okhttp3.Response
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import java.util.concurrent.CountDownLatch
@@ -60,13 +59,12 @@ class HttpClientSpec extends Specification {
         expect:
         HttpClient.post("$TEAMCITY/login.html", MediaType.get('application/x-www-form-urlencoded'), '{"user":"123"}', cb)
         HttpClient.post('https://www.google.com', MediaType.get('application/x-www-form-urlencoded'), '{"user":"123"}', 200, cb)
-        HttpClient.get('http://localhost:9090/pep', 200, cb)
+        HttpClient.get('http://localhost:9090', 200, cb)
         latch.await(5, TimeUnit.SECONDS)
     }
 
-    @Ignore
     def "test connectException"() {
-        def url = "http://localhost:9090/pep"
+        def url = "http://localhost:9090"
         def data = '{"user":"123"}'
         def headers = ['h1': 'header1', 'h2': 'header2']
 
@@ -125,7 +123,6 @@ class HttpClientSpec extends Specification {
         then:
         thrown(ConnectException)
         assert deleteSpendTime < new Date().getTime() - deleteStart
-
     }
 
 }
