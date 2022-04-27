@@ -49,11 +49,6 @@ public class HttpClient extends ClientUtil {
         return perform(client, url, GET, headers, null, null);
     }
 
-    public static Response get(String url, Map<String, String> headers, int executionCount) throws IOException {
-        OkHttpClient client = initClient(executionCount);
-        return perform(client, url, GET, headers, null, null);
-    }
-
     public static Response get(String url, int timeout, Map<String, String> headers) throws IOException {
         OkHttpClient client = new OkHttpClient.Builder().readTimeout(timeout, TimeUnit.MILLISECONDS).build();
         return perform(client, url, GET, headers, null, null);
@@ -81,23 +76,11 @@ public class HttpClient extends ClientUtil {
         return perform(client, url, POST, headers, type, data);
     }
 
-    public static Response post(String url, Map<String, String> headers, MediaType type, String data,
-                                              int executionCount) throws IOException {
-        OkHttpClient client = initClient(executionCount);
-        return perform(client, url, POST, headers, type, data);
-    }
-
     public static Response put(String url, MediaType type, String data) throws IOException {
         return perform(client, url, PUT, null, type, data);
     }
 
     public static Response put(String url, Map<String, String> headers, MediaType type, String data) throws IOException {
-        return perform(client, url, PUT, headers, type, data);
-    }
-
-    public static Response put(String url, Map<String, String> headers, MediaType type, String data,
-                                             int executionCount) throws IOException {
-        OkHttpClient client = initClient(executionCount);
         return perform(client, url, PUT, headers, type, data);
     }
 
@@ -115,20 +98,6 @@ public class HttpClient extends ClientUtil {
 
     public static Response delete(String url, Map<String, String> headers, MediaType type, String data) throws IOException {
         return perform(client, url, DELETE, headers, type, data);
-    }
-
-    public static Response delete(String url, Map<String, String> headers, MediaType type, String data,
-                                                int executionCount) throws IOException {
-        OkHttpClient client = initClient(executionCount);
-        return perform(client, url, DELETE, headers, type, data);
-    }
-
-    private static OkHttpClient initClient(int executionCount) {
-        HttpClientInterceptor httpClientInterceptor = new HttpClientInterceptor();
-        httpClientInterceptor.setExecutionCount(executionCount);
-        return new OkHttpClient.Builder()
-                               .addInterceptor(httpClientInterceptor)
-                               .build();
     }
 
 }

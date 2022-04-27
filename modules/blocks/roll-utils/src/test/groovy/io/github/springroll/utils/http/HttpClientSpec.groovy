@@ -75,60 +75,24 @@ class HttpClientSpec extends Specification {
         thrown(ConnectException)
 
         when:
-        def getStart = new Date().getTime()
         HttpClient.get(url, headers)
         then:
         thrown(ConnectException)
-        def getSpendTime = new Date().getTime() - getStart
 
         when:
-        getStart = new Date().getTime()
-        HttpClient.get(url, headers, 1)
-        then:
-        thrown(ConnectException)
-        assert getSpendTime < new Date().getTime() - getStart
-
-        when:
-        def postStart = new Date().getTime()
         HttpClient.post(url, headers, MediaType.get('application/x-www-form-urlencoded'), data)
         then:
         thrown(ConnectException)
-        def postSpendTime = new Date().getTime() - postStart
 
         when:
-        postStart = new Date().getTime()
-        HttpClient.post(url, headers, MediaType.get('application/x-www-form-urlencoded'), data, 1)
-        then:
-        thrown(ConnectException)
-        assert postSpendTime < new Date().getTime() - postStart
-
-        when:
-        def putStart = new Date().getTime()
         HttpClient.put(url, headers, MediaType.get('application/x-www-form-urlencoded'), data)
         then:
         thrown(ConnectException)
-        def putSpendTime = new Date().getTime() - putStart
 
         when:
-        putStart = new Date().getTime()
-        HttpClient.put(url, headers, MediaType.get('application/x-www-form-urlencoded'), data, 1)
-        then:
-        thrown(ConnectException)
-        assert putSpendTime < new Date().getTime() - putStart
-
-        when:
-        def deleteStart = new Date().getTime()
         HttpClient.delete(url, headers, MediaType.get('application/x-www-form-urlencoded'), data)
         then:
         thrown(ConnectException)
-        def deleteSpendTime = new Date().getTime() - deleteStart
-
-        when:
-        deleteStart = new Date().getTime()
-        HttpClient.delete(url, headers, MediaType.get('application/x-www-form-urlencoded'), data, 1)
-        then:
-        thrown(ConnectException)
-        assert deleteSpendTime < new Date().getTime() - deleteStart
     }
 
 }
