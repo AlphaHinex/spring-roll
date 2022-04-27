@@ -12,6 +12,7 @@ public class ClientUtil {
     protected static final String GET = "GET";
     protected static final String POST = "POST";
     protected static final String DELETE = "DELETE";
+    protected static final String PATCH = "PATCH";
 
     protected static Response perform(OkHttpClient client,
                                                     String url, String method,
@@ -48,7 +49,7 @@ public class ClientUtil {
         });
     }
 
-    private static Call createCall(OkHttpClient client,
+    protected static Call createCall(OkHttpClient client,
                             String url, String method,
                             Map<String, String> headers, MediaType type,
                             String data) {
