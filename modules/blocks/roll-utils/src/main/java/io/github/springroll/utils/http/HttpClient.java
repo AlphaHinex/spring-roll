@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpClient extends ClientUtil {
 
-    private static OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient CLIENT = new OkHttpClient();
 
     /**
      * 私有化工具类的构造函数，避免对工具类的实例化
@@ -28,11 +28,11 @@ public class HttpClient extends ClientUtil {
     }
 
     public static Response get(String url) throws IOException {
-        return perform(client, url, GET, null, null, null);
+        return perform(CLIENT, url, GET, null, null, null);
     }
 
     public static void get(String url, Callback callback) {
-        perform(client, url, GET, null, null, null, callback);
+        perform(CLIENT, url, GET, null, null, null, callback);
     }
 
     public static void get(String url, long connectionTimeout, Callback callback) {
@@ -46,7 +46,7 @@ public class HttpClient extends ClientUtil {
     }
 
     public static Response get(String url, Map<String, String> headers) throws IOException {
-        return perform(client, url, GET, headers, null, null);
+        return perform(CLIENT, url, GET, headers, null, null);
     }
 
     public static Response get(String url, int timeout, Map<String, String> headers) throws IOException {
@@ -55,7 +55,7 @@ public class HttpClient extends ClientUtil {
     }
 
     public static Response post(String url, MediaType type, String data) throws IOException {
-        return perform(client, url, POST, null, type, data);
+        return perform(CLIENT, url, POST, null, type, data);
     }
 
     public static Response post(String url, MediaType type, String data, int timeout) throws IOException {
@@ -64,7 +64,7 @@ public class HttpClient extends ClientUtil {
     }
 
     public static void post(String url, MediaType type, String data, Callback callback) {
-        perform(client, url, POST, null, type, data, callback);
+        perform(CLIENT, url, POST, null, type, data, callback);
     }
 
     public static void post(String url, MediaType type, String data, long connectionTimeout, Callback callback) {
@@ -73,31 +73,40 @@ public class HttpClient extends ClientUtil {
     }
 
     public static Response post(String url, Map<String, String> headers, MediaType type, String data) throws IOException {
-        return perform(client, url, POST, headers, type, data);
+        return perform(CLIENT, url, POST, headers, type, data);
     }
 
     public static Response put(String url, MediaType type, String data) throws IOException {
-        return perform(client, url, PUT, null, type, data);
+        return perform(CLIENT, url, PUT, null, type, data);
     }
 
     public static Response put(String url, Map<String, String> headers, MediaType type, String data) throws IOException {
-        return perform(client, url, PUT, headers, type, data);
+        return perform(CLIENT, url, PUT, headers, type, data);
     }
 
+    public static Response patch(String url, MediaType type, String data) throws IOException {
+        return perform(CLIENT, url, PATCH, null, type, data);
+    }
+
+    public static Response patch(String url, Map<String, String> headers, MediaType type, String data) throws IOException {
+        return perform(CLIENT, url, PATCH, headers, type, data);
+    }
+
+
     public static Response delete(String url) throws IOException {
-        return perform(client, url, DELETE, null, null, null);
+        return perform(CLIENT, url, DELETE, null, null, null);
     }
 
     public static Response delete(String url, Map<String, String> headers) throws IOException {
-        return perform(client, url, DELETE, headers, null, null);
+        return perform(CLIENT, url, DELETE, headers, null, null);
     }
 
     public static Response delete(String url, MediaType type, String data) throws IOException {
-        return perform(client, url, DELETE, null, type, data);
+        return perform(CLIENT, url, DELETE, null, type, data);
     }
 
     public static Response delete(String url, Map<String, String> headers, MediaType type, String data) throws IOException {
-        return perform(client, url, DELETE, headers, type, data);
+        return perform(CLIENT, url, DELETE, headers, type, data);
     }
 
 }
