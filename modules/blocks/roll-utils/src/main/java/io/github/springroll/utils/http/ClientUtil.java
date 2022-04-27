@@ -2,6 +2,7 @@ package io.github.springroll.utils.http;
 
 import io.github.springroll.utils.StringUtil;
 import okhttp3.*;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -50,9 +51,16 @@ public class ClientUtil {
     }
 
     protected static Call createCall(OkHttpClient client,
-                            String url, String method,
-                            Map<String, String> headers, MediaType type,
-                            String data) {
+                                     String url, String method,
+                                     Map<String, String> headers, MediaType type,
+                                     String data) {
+        return createCall(client, url ,method, headers, type, StringUtil.isNotBlank(data) ? data.getBytes() : null);
+    }
+
+    protected static Call createCall(OkHttpClient client,
+                                     String url, String method,
+                                     Map<String, String> headers, MediaType type,
+                                     byte[] data) {
         Request.Builder builder = new Request.Builder();
         builder = builder.url(url);
         if (headers != null) {
@@ -61,8 +69,8 @@ public class ClientUtil {
             }
         }
         RequestBody body = null;
-        if (StringUtil.isNotBlank(data)) {
-            body = RequestBody.create(okhttp3.MediaType.parse(type.toString()), data);
+        if (ArrayUtils.isNotEmpty(data)) {
+            body = RequestBody.create(type, data);
         }
         builder = builder.method(method, body);
         Request request = builder.build();
