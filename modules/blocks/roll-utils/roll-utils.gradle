@@ -8,6 +8,8 @@ dependencies {
         libraries.okhttp,
         libraries.pinyin4j
 
+    implementation libraries.servlet_api
+
     implementation project(':roll-base')
 
     testImplementation project(':roll-test')
