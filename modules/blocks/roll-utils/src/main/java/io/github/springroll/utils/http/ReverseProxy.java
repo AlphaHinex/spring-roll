@@ -19,6 +19,13 @@ import java.util.Map;
 @Slf4j
 public class ReverseProxy extends ClientUtil {
 
+    /*
+     * 静态方法调用私有构造函数，以覆盖对构造函数的测试
+     */
+    static {
+        new ReverseProxy();
+    }
+
     private static final OkHttpClient CLIENT = new OkHttpClient();
 
     public static void proxyPass(HttpServletRequest request, HttpServletResponse response, String proxyPass, String location) throws IOException {
@@ -28,19 +35,20 @@ public class ReverseProxy extends ClientUtil {
     public static void proxyPass(HttpServletRequest request, HttpServletResponse response,
                                  String proxyPass, String location,
                                  Map<String, String> customHeaders) throws IOException {
-        Response res = sendProxyReq(location, proxyPass, request, customHeaders);
+        try (Response res = sendProxyReq(location, proxyPass, request, customHeaders)) {
 
-        // Handle response status
-        response.setStatus(res.code());
+            // Handle response status
+            response.setStatus(res.code());
 
-        // Handle response headers
-        res.headers().toMultimap().forEach((key, value) -> value.forEach(v -> response.addHeader(key, v)));
-        log.debug("Response headers from proxy target: {}", JsonUtil.toJson(res.headers().toMultimap()));
+            // Handle response headers
+            res.headers().toMultimap().forEach((key, value) -> value.forEach(v -> response.addHeader(key, v)));
+            log.debug("Response headers from proxy target: {}", JsonUtil.toJson(res.headers().toMultimap()));
 
-        // Handle response body
-        if (res.body() != null) {
-            response.getOutputStream().write(res.body().bytes());
-            response.flushBuffer();
+            // Handle response body
+            if (res.body() != null) {
+                response.getOutputStream().write(res.body().bytes());
+                response.flushBuffer();
+            }
         }
     }
 
