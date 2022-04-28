@@ -15,10 +15,8 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-/**
- * 将请求转发至代理，并从代理获得响应
- */
 @Slf4j
 public class ReverseProxy extends ClientUtil {
 
@@ -32,18 +30,28 @@ public class ReverseProxy extends ClientUtil {
     private static final OkHttpClient CLIENT = new OkHttpClient();
 
     /**
+     * 将请求转发至代理，并从代理获得响应
      *
-     *
-     * @param  request
-     * @param  response
-     * @param  proxyPass
-     * @param  location
-     * @throws IOException
+     * @param  request     原始请求
+     * @param  response    原始响应
+     * @param  proxyPass   代理地址，类似 Nginx 中的 proxy_pass
+     * @param  location    转发请求时，可将原始请求地址中与 location 值相同的部分抹去
+     * @throws IOException 发生 IO 错误
      */
     public static void proxyPass(HttpServletRequest request, HttpServletResponse response, String proxyPass, String location) throws IOException {
         proxyPass(request, response, proxyPass, location, null);
     }
 
+    /**
+     * 将请求转发至代理，并从代理获得响应，支持添加请求头
+     *
+     * @param  request       原始请求
+     * @param  response      原始响应
+     * @param  proxyPass     代理地址，类似 Nginx 中的 proxy_pass
+     * @param  location      转发请求时，可将原始请求地址中与 location 值相同的部分抹去
+     * @param  customHeaders 需在代理时，向代理发送的自定义请求头，会与原始请求头合并
+     * @throws IOException   发生 IO 错误
+     */
     public static void proxyPass(HttpServletRequest request, HttpServletResponse response,
                                  String proxyPass, String location,
                                  Map<String, String> customHeaders) throws IOException {
@@ -57,8 +65,7 @@ public class ReverseProxy extends ClientUtil {
             log.debug("Response headers from proxy target: {}", JsonUtil.toJson(res.headers().toMultimap()));
 
             // Handle response body, because this response is returned from Call.execute(), body() always returns a non-null value
-            assert res.body() != null;
-            response.getOutputStream().write(res.body().bytes());
+            response.getOutputStream().write(Objects.requireNonNull(res.body()).bytes());
             response.flushBuffer();
         }
     }
@@ -93,7 +100,7 @@ public class ReverseProxy extends ClientUtil {
         if (customHeaders != null && !customHeaders.isEmpty()) {
             headers.putAll(customHeaders);
         }
-        log.debug("Request headers to proxy url: {}", JsonUtil.toJson(headers));
+        log.debug("Request headers to proxy url: {}", JsonUtil.toJsonIgnoreException(headers));
 
         // Handle request content type
         MediaType type = null;
