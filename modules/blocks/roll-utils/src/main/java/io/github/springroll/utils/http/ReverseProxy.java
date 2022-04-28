@@ -16,6 +16,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 将请求转发至代理，并从代理获得响应
+ */
 @Slf4j
 public class ReverseProxy extends ClientUtil {
 
@@ -28,6 +31,15 @@ public class ReverseProxy extends ClientUtil {
 
     private static final OkHttpClient CLIENT = new OkHttpClient();
 
+    /**
+     *
+     *
+     * @param  request
+     * @param  response
+     * @param  proxyPass
+     * @param  location
+     * @throws IOException
+     */
     public static void proxyPass(HttpServletRequest request, HttpServletResponse response, String proxyPass, String location) throws IOException {
         proxyPass(request, response, proxyPass, location, null);
     }
@@ -44,11 +56,10 @@ public class ReverseProxy extends ClientUtil {
             res.headers().toMultimap().forEach((key, value) -> value.forEach(v -> response.addHeader(key, v)));
             log.debug("Response headers from proxy target: {}", JsonUtil.toJson(res.headers().toMultimap()));
 
-            // Handle response body
-            if (res.body() != null) {
-                response.getOutputStream().write(res.body().bytes());
-                response.flushBuffer();
-            }
+            // Handle response body, because this response is returned from Call.execute(), body() always returns a non-null value
+            assert res.body() != null;
+            response.getOutputStream().write(res.body().bytes());
+            response.flushBuffer();
         }
     }
 

@@ -14,30 +14,33 @@ class ReverseProxyTest extends AbstractIntegrationTest {
     @Test
     void checkFunction() {
         MockHttpServletRequest request = new MockHttpServletRequest('POST', '/api/echo')
-        def cusHeaderKey = 'MockUrl'
-        def cusHeaderVal = "${getPrefix()}/test/proxy"
-        request.addHeader(cusHeaderKey, cusHeaderVal)
+        def reqHeader = 'MockUrl'
+        def proxyUrl = "${getPrefix()}/test/proxy"
+        request.addHeader(reqHeader, proxyUrl)
         request.setParameters(['a': '1', 'b': '2'])
         request.setContentType(MediaType.APPLICATION_XML_VALUE)
         def content = '<root></root>'
         request.setContent(content.bytes)
 
         HttpServletResponse response = new MockHttpServletResponse()
-        ReverseProxy.proxyPass(request, response, cusHeaderVal, '/api')
+        ReverseProxy.proxyPass(request, response, proxyUrl, '/api', [customHeader: 'customValue'])
 
         assert response.status == HttpStatus.OK.value()
-        assert response.containsHeader(cusHeaderKey)
-        assert response.getHeader(cusHeaderKey) == cusHeaderVal
+        assert response.containsHeader(reqHeader)
+        assert response.containsHeader('customHeader')
+        assert response.getHeader('customHeader') == 'customValue'
+        assert response.getHeader(reqHeader) == proxyUrl
         assert response.contentAsString == content
     }
 
     @Test
     void forCoverage() {
-        MockHttpServletRequest request = new MockHttpServletRequest('OPTIONS', '/api/options')
+        MockHttpServletRequest request = new MockHttpServletRequest('OPTIONS', '/options')
         def cusHeaderVal = "${getPrefix()}/test/proxy"
 
         HttpServletResponse response = new MockHttpServletResponse()
-        ReverseProxy.proxyPass(request, response, cusHeaderVal, '/api')
+        ReverseProxy.proxyPass(request, response, cusHeaderVal, '', [:])
+        ReverseProxy.proxyPass(request, response, cusHeaderVal, '')
 
         assert response.status == HttpStatus.NO_CONTENT.value()
     }
