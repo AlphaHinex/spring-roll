@@ -71,7 +71,7 @@ public class ReverseProxy extends ClientUtil {
             String name = headerEnum.nextElement();
             headers.put(name, request.getHeader(name));
         }
-        if (!customHeaders.isEmpty()) {
+        if (customHeaders != null && !customHeaders.isEmpty()) {
             headers.putAll(customHeaders);
         }
         log.debug("Request headers to proxy url: {}", JsonUtil.toJson(headers));
