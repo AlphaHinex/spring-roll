@@ -75,7 +75,7 @@ public class ReverseProxy extends ClientUtil {
         StringBuilder url = new StringBuilder(proxyPass);
 
         url.append(request.getRequestURI()
-                .replace(request.getContextPath(), "")
+                .replaceFirst(request.getContextPath(), "")
                 .replace(StringUtils.isBlank(location) ? "" : location, ""));
 
         // Handle request parameters
