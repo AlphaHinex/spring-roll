@@ -45,8 +45,7 @@ class MysqlTranslateToH2Executor {
                 LOGGER.trace('Successfully executed script: {}', h2Script.getCanonicalPath())
             } catch (Exception e) {
                 if (ignoreErrors) {
-                    LOGGER.debug('Ignore {} error while executing translated script {}, open trace log to see details.', e.getMessage(), h2Script.getCanonicalPath())
-                    LOGGER.trace('Execute script error!', e)
+                    LOGGER.debug('Ignore {} error while executing translated script {}', e.getMessage(), h2Script.getCanonicalPath())
                 } else {
                     throw e
                 }
