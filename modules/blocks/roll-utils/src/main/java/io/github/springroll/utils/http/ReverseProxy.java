@@ -30,11 +30,11 @@ public class ReverseProxy extends ClientUtil {
     private static final OkHttpClient CLIENT = new OkHttpClient();
 
     /**
-     * 将请求转发至代理，并从代理获得响应
+     * 将原始请求转发至代理地址，并从代理地址获得响应
      *
      * @param  request     原始请求
      * @param  response    原始响应
-     * @param  proxyPass   代理地址，类似 Nginx 中的 proxy_pass
+     * @param  proxyPass   代理地址，即将原始请求转发至的目标地址，类似 Nginx 中的 proxy_pass
      * @param  location    转发请求时，可将原始请求地址中与 location 值相同的部分抹去
      * @throws IOException 发生 IO 错误
      */
@@ -43,11 +43,12 @@ public class ReverseProxy extends ClientUtil {
     }
 
     /**
-     * 将请求转发至代理，并从代理获得响应，支持添加请求头
+     * 将原始请求转发至代理地址，并从代理地址获得响应
+     * 支持添加请求头
      *
      * @param  request       原始请求
      * @param  response      原始响应
-     * @param  proxyPass     代理地址，类似 Nginx 中的 proxy_pass
+     * @param  proxyPass     代理地址，即将原始请求转发至的目标地址，类似 Nginx 中的 proxy_pass
      * @param  location      转发请求时，可将原始请求地址中与 location 值相同的部分抹去
      * @param  customHeaders 需在代理时，向代理发送的自定义请求头，会与原始请求头合并
      * @throws IOException   发生 IO 错误

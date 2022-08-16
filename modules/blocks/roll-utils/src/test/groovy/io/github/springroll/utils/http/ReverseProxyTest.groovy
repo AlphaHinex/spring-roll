@@ -13,12 +13,14 @@ class ReverseProxyTest extends AbstractIntegrationTest {
 
     @Test
     void checkFunction() {
-        MockHttpServletRequest request = new MockHttpServletRequest('POST', '/api/echo')
+        // redirect /echo/api/echo to ${getPrefix()}/test/proxy/echo
+        MockHttpServletRequest request = new MockHttpServletRequest('POST', '/echo/api/echo')
         def reqHeader = 'MockUrl'
         def proxyUrl = "${getPrefix()}/test/proxy"
         request.addHeader(reqHeader, proxyUrl)
         request.setParameters(['a': '1', 'b': '2'])
         request.setContentType(MediaType.APPLICATION_XML_VALUE)
+        request.setContextPath('/echo')
         def content = '<root></root>'
         request.setContent(content.bytes)
 
