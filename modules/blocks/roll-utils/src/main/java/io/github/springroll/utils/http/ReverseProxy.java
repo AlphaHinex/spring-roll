@@ -79,6 +79,16 @@ public class ReverseProxy extends ClientUtil {
                 .replaceFirst(request.getContextPath(), "")
                 .replace(StringUtils.isBlank(location) ? "" : location, ""));
 
+        // Handle request body first to avoid stream closed before process
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        InputStream is = request.getInputStream();
+        int l = is.read(buffer);
+        while (l > 0) {
+            os.write(buffer, 0, l);
+            l = is.read(buffer);
+        }
+
         // Handle request parameters
         if (!request.getParameterMap().isEmpty()) {
             url.append("?");
@@ -108,16 +118,6 @@ public class ReverseProxy extends ClientUtil {
         String contentType = request.getContentType();
         if (StringUtils.isNotBlank(contentType)) {
             type = MediaType.parse(contentType);
-        }
-
-        // Handle request body
-        byte[] buffer = new byte[1024];
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        InputStream is = request.getInputStream();
-        int l = is.read(buffer);
-        while (l > 0) {
-            os.write(buffer, 0, l);
-            l = is.read(buffer);
         }
 
         // Send proxy request
