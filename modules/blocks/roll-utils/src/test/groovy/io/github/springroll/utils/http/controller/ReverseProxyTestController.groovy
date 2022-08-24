@@ -2,6 +2,7 @@ package io.github.springroll.utils.http.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -22,5 +23,10 @@ class ReverseProxyTestController {
     @RequestMapping(method = RequestMethod.OPTIONS, path = '/options')
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void options() { }
+
+    @PutMapping('/echo')
+    String hasBody(@RequestParam(value = "s2ibinary", required = false) MultipartFile file) {
+        new String(file.getBytes()) == 'test content' ? "TRUE" : "FALSE"
+    }
 
 }

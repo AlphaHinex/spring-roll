@@ -47,4 +47,27 @@ class ReverseProxyTest extends AbstractIntegrationTest {
         assert response.status == HttpStatus.NO_CONTENT.value()
     }
 
+    @Test
+    void proxyMultipart() {
+        // redirect /echo/api/echo to ${getPrefix()}/test/proxy/echo
+        MockHttpServletRequest request = new MockHttpServletRequest()
+        request.setMethod('PUT')
+        request.setRequestURI('/echo/api/echo')
+        request.setContentType('multipart/form-data; boundary=----WebKitFormBoundaryrJ4Vyb6pAOqbCZQK')
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream()
+        os.write('------WebKitFormBoundaryrJ4Vyb6pAOqbCZQK\r\n'.bytes)
+        os.write('Content-Disposition: form-data; name="s2ibinary"; filename="springweb-1.0.txt\r\n'.bytes)
+        os.write('Content-Type: application/octet-stream\r\n\r\n'.bytes)
+        os.write('test content\r\n'.bytes)
+        os.write('------WebKitFormBoundaryrJ4Vyb6pAOqbCZQK--\r\n'.bytes)
+        request.setContent(os.toByteArray())
+
+        HttpServletResponse response = new MockHttpServletResponse()
+        ReverseProxy.proxyPass(request, response, "${getPrefix()}/test/proxy", '/echo/api', null)
+
+        assert response.status == HttpStatus.OK.value()
+        assert response.contentAsString == 'TRUE'
+    }
+
 }
