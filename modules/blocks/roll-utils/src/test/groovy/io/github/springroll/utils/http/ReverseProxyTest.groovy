@@ -59,8 +59,8 @@ class ReverseProxyTest extends AbstractIntegrationTest {
         os.write('------WebKitFormBoundaryrJ4Vyb6pAOqbCZQK\r\n'.bytes)
         os.write('Content-Disposition: form-data; name="s2ibinary"; filename="springweb-1.0.txt\r\n'.bytes)
         os.write('Content-Type: application/octet-stream\r\n\r\n'.bytes)
-        os.write('test content\r\n'.bytes)
-        os.write('------WebKitFormBoundaryrJ4Vyb6pAOqbCZQK--\r\n'.bytes)
+        os.write('test content'.bytes)
+        os.write('\r\n------WebKitFormBoundaryrJ4Vyb6pAOqbCZQK--\r\n'.bytes)
         request.setContent(os.toByteArray())
 
         HttpServletResponse response = new MockHttpServletResponse()

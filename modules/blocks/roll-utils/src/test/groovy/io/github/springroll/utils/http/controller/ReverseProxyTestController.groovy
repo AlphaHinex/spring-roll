@@ -26,7 +26,7 @@ class ReverseProxyTestController {
 
     @PutMapping('/echo')
     String hasBody(@RequestParam(value = "s2ibinary", required = false) MultipartFile file) {
-        new String(file.getBytes()) == 'test content' ? "TRUE" : "FALSE"
+        file.getSize() > 0 ? "TRUE" : "FALSE"
     }
 
 }
