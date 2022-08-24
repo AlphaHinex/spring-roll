@@ -50,9 +50,8 @@ class ReverseProxyTest extends AbstractIntegrationTest {
     @Test
     void proxyMultipart() {
         // redirect /echo/api/echo to ${getPrefix()}/test/proxy/echo
-        MockHttpServletRequest request = new MockHttpServletRequest()
-        request.setMethod('PUT')
-        request.setRequestURI('/echo/api/echo')
+        MockHttpServletRequest request = new MockHttpServletRequest('PUT', '/echo/api/echo')
+
         request.setContentType('multipart/form-data; boundary=----WebKitFormBoundaryrJ4Vyb6pAOqbCZQK')
 
         ByteArrayOutputStream os = new ByteArrayOutputStream()
