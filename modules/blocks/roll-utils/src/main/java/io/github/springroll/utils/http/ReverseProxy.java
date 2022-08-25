@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class ReverseProxy extends ClientUtil {
@@ -27,7 +28,11 @@ public class ReverseProxy extends ClientUtil {
         new ReverseProxy();
     }
 
-    private static final OkHttpClient CLIENT = new OkHttpClient();
+    private static final OkHttpClient CLIENT = new OkHttpClient.Builder()
+            .connectTimeout(0, TimeUnit.SECONDS)
+            .readTimeout(0, TimeUnit.SECONDS)
+            .writeTimeout(0, TimeUnit.SECONDS)
+            .build();
 
     /**
      * 将原始请求转发至代理地址，并从代理地址获得响应
