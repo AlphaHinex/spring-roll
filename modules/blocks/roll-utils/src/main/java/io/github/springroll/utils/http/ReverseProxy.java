@@ -76,7 +76,7 @@ public class ReverseProxy extends ClientUtil {
             BufferedSource source = Objects.requireNonNull(res.body()).source();
             Buffer buffer = new Buffer();
             while (!source.exhausted()) {
-                long len = source.read(buffer, 8192);
+                long len = source.read(buffer, 1024);
                 response.getOutputStream().write(buffer.readByteArray(len));
                 response.flushBuffer();
             }
