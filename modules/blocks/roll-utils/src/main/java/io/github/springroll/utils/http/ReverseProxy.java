@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
+import okio.Buffer;
+import okio.BufferedSource;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,8 +73,13 @@ public class ReverseProxy extends ClientUtil {
             log.debug("Response headers from proxy target: {}", JsonUtil.toJson(res.headers().toMultimap()));
 
             // Handle response body, because this response is returned from Call.execute(), body() always returns a non-null value
-            response.getOutputStream().write(Objects.requireNonNull(res.body()).bytes());
-            response.flushBuffer();
+            BufferedSource source = Objects.requireNonNull(res.body()).source();
+            Buffer buffer = new Buffer();
+            while (!source.exhausted()) {
+                long len = source.read(buffer, 8192);
+                response.getOutputStream().write(buffer.readByteArray(len));
+                response.flushBuffer();
+            }
         }
     }
 
