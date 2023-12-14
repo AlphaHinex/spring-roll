@@ -1,14 +1,16 @@
 apply plugin: 'java-library'
 
 dependencies {
-               api libraries.druid,
-                   libraries.groovy_dateutil,
-                   libraries.h2,
-                   libraries.spock,
-                   libraries.spring_boot_starter_web,
-                   libraries.spring_boot_starter_test,
-                   libraries.spring_jdbc,
-                   libraries.spring_tx
+                   api libraries.druid,
+                       libraries.groovy_dateutil,
+                       libraries.h2,
+                       libraries.spock,
+                       libraries.spring_boot_starter_web,
+                       libraries.spring_boot_starter_test,
+                       libraries.spring_jdbc,
+                       libraries.spring_tx
 
-    implementation libraries.groovy_json
+        implementation libraries.groovy_json
+
+    testImplementation libraries.druid_spring_boot_starter
 }
