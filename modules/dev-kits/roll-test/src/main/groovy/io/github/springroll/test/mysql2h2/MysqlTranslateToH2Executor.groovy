@@ -61,7 +61,7 @@ class MysqlTranslateToH2Executor {
         File file = new File(System.getProperty("java.io.tmpdir"), filename)
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-        String sql = reader.readLines().join("")
+        String sql = reader.readLines().join("\r\n")
         List<SQLStatement> stmts = SQLUtils.parseStatements(sql, DbType.mysql, SQLParserFeature.MySQLSupportStandardComment)
 
         file.write(SQLUtils.toSQLString(stmts, DbType.h2), StandardCharsets.UTF_8.name())

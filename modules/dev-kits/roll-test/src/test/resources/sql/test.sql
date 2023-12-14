@@ -1,3 +1,7 @@
+-- ----------------------------
+-- Table structure for champ_app_mgr_d
+-- ----------------------------
+--DROP TABLE IF EXISTS `champ_app_mgr_d`;
 CREATE TABLE `champ_app_mgr_d`  (
     `RID` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '主键',
     `NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '应用名称',
