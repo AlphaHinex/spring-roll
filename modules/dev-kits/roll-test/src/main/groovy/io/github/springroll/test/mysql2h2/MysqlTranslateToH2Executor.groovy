@@ -1,9 +1,9 @@
 package io.github.springroll.test.mysql2h2
 
-import com.granveaud.mysql2h2converter.SQLParserManager
-import com.granveaud.mysql2h2converter.converter.H2Converter
-import com.granveaud.mysql2h2converter.parser.ParseException
-import com.granveaud.mysql2h2converter.sql.SqlStatement
+import com.alibaba.druid.DbType
+import com.alibaba.druid.sql.SQLUtils
+import com.alibaba.druid.sql.ast.SQLStatement
+import com.alibaba.druid.sql.parser.SQLParserFeature
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -33,7 +33,7 @@ class MysqlTranslateToH2Executor {
     }
 
     @PostConstruct
-    void executeTranslatedScripts() throws IOException, ParseException {
+    void executeTranslatedScripts() {
         File h2Script
         resources.toList().sort({ r1, r2 ->
             r1.getURI().toString() <=> r2.getURI().toString()
@@ -55,20 +55,19 @@ class MysqlTranslateToH2Executor {
         }
     }
 
-    private static File translateToH2Script(String filename, InputStream inputStream) throws IOException, ParseException {
+    private static File translateToH2Script(String filename, InputStream inputStream) {
         String namePart = filename.split("\\.")[0]
         filename = filename.replace(namePart, namePart + "_h2_" + System.currentTimeMillis())
         File file = new File(System.getProperty("java.io.tmpdir"), filename)
         StringBuilder h2Sql = new StringBuilder()
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-        Iterator<SqlStatement> sourceIterator = SQLParserManager.parseScript(reader)
 
-        // conversion and execution
-        Iterator<SqlStatement> it = H2Converter.convertScript(sourceIterator)
-        while (it.hasNext()) {
-            SqlStatement st = it.next()
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+        String sql = reader.readLines().join("")
+        List<SQLStatement> stmts = SQLUtils.parseStatements(sql, DbType.mysql, SQLParserFeature.MySQLSupportStandardComment)
+        for (SQLStatement st : stmts) {
             h2Sql.append(st.toString()).append(";")
         }
+
         file.write(h2Sql.toString(), StandardCharsets.UTF_8.name())
         return file
     }

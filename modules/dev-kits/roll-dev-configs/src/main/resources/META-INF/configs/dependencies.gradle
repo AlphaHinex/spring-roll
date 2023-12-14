@@ -7,7 +7,6 @@ versions.groovy               = '2.5.8'
 versions.hibernate            = '5.2.17.Final'
 versions.jackson              = '2.9.9'
 versions.mongo                = '3.11.0'
-versions.mysql2h2             = '0.2.2'
 versions.quartz               = '2.3.1'
 versions.spring               = '5.2.2.RELEASE'
 versions.spring_boot          = '2.2.2.RELEASE'
@@ -81,6 +80,8 @@ libraries.commons_lang3 = 'org.apache.commons:commons-lang3:3.9'
 
 libraries.druid_spring_boot_starter = 'com.alibaba:druid-spring-boot-starter:1.1.10'
 
+libraries.druid = 'com.alibaba:druid:1.2.20'
+
 libraries.easyexcel = 'com.alibaba:easyexcel:2.1.6'
 
 libraries.el_api="javax.el:el-api:3.0"
@@ -136,11 +137,6 @@ libraries.mail = 'com.sun.mail:javax.mail:1.6.2'
 libraries.mongodb_driver = "org.mongodb:mongodb-driver:${versions.mongo}"
 
 libraries.mysql_driver = 'org.mariadb.jdbc:mariadb-java-client:1.5.4'
-
-libraries.mysql2h2 = [
-    "com.github.alphahinex.mysql2h2-converter:mysql2h2-converter:${versions.mysql2h2}",
-    "com.github.alphahinex.mysql2h2-converter:mysql2h2-parser:${versions.mysql2h2}"
-]
 
 libraries.netty_all = 'io.netty:netty-all'
 
