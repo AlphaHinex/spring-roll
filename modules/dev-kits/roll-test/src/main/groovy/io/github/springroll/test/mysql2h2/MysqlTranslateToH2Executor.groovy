@@ -59,16 +59,12 @@ class MysqlTranslateToH2Executor {
         String namePart = filename.split("\\.")[0]
         filename = filename.replace(namePart, namePart + "_h2_" + System.currentTimeMillis())
         File file = new File(System.getProperty("java.io.tmpdir"), filename)
-        StringBuilder h2Sql = new StringBuilder()
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
         String sql = reader.readLines().join("")
         List<SQLStatement> stmts = SQLUtils.parseStatements(sql, DbType.mysql, SQLParserFeature.MySQLSupportStandardComment)
-        for (SQLStatement st : stmts) {
-            h2Sql.append(st.toString()).append(";")
-        }
 
-        file.write(h2Sql.toString(), StandardCharsets.UTF_8.name())
+        file.write(SQLUtils.toSQLString(stmts, DbType.h2), StandardCharsets.UTF_8.name())
         return file
     }
 

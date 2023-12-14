@@ -1,0 +1,28 @@
+CREATE TABLE champ_app_version_d (
+     RID varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '数据唯一记录号',
+     APP_RID varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'appid',
+     NAME varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '名称',
+     MD5 varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'md5',
+     IMAGE_TAG varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '镜像版本',
+     IMAGE_NAME varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '镜像名称',
+     FILE_DOWN_URL varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '下载地址',
+     BUILD_CONFIG text COLLATE utf8mb4_unicode_ci COMMENT '配置',
+     FILE_PATH varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+     S2IBINARIES_NAME varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+     BUILDER_IMAGE varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '基础降序',
+     RUNTIME_IMAGE varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+     BUILDER_NAME varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+     NAME_SPACE varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+     YAML text COLLATE utf8mb4_unicode_ci COMMENT '应用配置信息',
+     CRTE_TIME datetime DEFAULT NULL COMMENT '数据创建时间',
+     UPDT_TIME datetime DEFAULT NULL COMMENT '数据更新时间',
+     CRTER_ID varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '创建人ID',
+     CRTER_NAME varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '创建人姓名',
+     OPTER_ID varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '经办人ID',
+     OPTER_NAME varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '经办人姓名',
+     OPT_TIME datetime DEFAULT NULL COMMENT '经办时间',
+     OPTINS_NO varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '经办机构编号',
+     CRTE_OPTINS_NO varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '创建机构编号',
+     PRIMARY KEY (RID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='应用版本';
+
