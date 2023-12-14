@@ -2,12 +2,9 @@ package io.github.springroll.test.mysql2h2
 
 import io.github.springroll.test.AbstractSpringTest
 import org.junit.Test
-import org.springframework.test.context.TestPropertySource
+import org.springframework.context.annotation.Profile
 
-@TestPropertySource(properties = [
-    'roll.test.datasource.type=mysql2h2',
-    'roll.test.datasource.ignore-errors=false'
-])
+@Profile('test')
 class MysqlTranslateToH2ExecutorTest extends AbstractSpringTest {
 
     @Test
