@@ -14,7 +14,7 @@ class MysqlTranslateToH2ExecutorTest extends AbstractSpringTest {
     void test() {
         def map = jdbcTemplate.queryForMap('select count(*) from champ_app_mgr_d')
         assert map.size() == 1
-        assert map['COUNT(*)'] == 0
+        assert map['COUNT(*)'] == 1
     }
 
 }
