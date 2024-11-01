@@ -5,6 +5,9 @@
 CREATE TABLE `champ_app_mgr_d`  (
     `RID` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '主键',
     RESU_IMG LONGBLOB null comment '资源图片',
+    `object` enum('thread.message') DEFAULT NULL COMMENT 'thread.messageobject',
+    `ss` enum('progress','incomplete','completed') DEFAULT NULL COMMENT '消息状态',
+    `role` varbinary(64) DEFAULT NULL COMMENT '消息主题角色user或者assistant',
     PRIMARY KEY (`RID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
