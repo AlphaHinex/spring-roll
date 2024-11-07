@@ -39,18 +39,26 @@ class MysqlTranslateToH2Executor {
             r1.getURI().toString() <=> r2.getURI().toString()
         }).each { resource ->
             LOGGER.trace("Translating {}", resource.getFilename())
-            h2Script = translateToH2Script(resource.getFilename(), resource.getInputStream())
             try {
+                h2Script = translateToH2Script(resource.getFilename(), resource.getInputStream())
                 jdbcTemplate.execute("runscript from '${h2Script.getCanonicalPath()}'")
                 LOGGER.trace('Successfully executed script: {}', h2Script.getCanonicalPath())
             } catch (Exception e) {
                 if (ignoreErrors) {
-                    LOGGER.debug('Ignore {} error while executing translated script {}', e.getMessage(), h2Script.getCanonicalPath())
+                    if (h2Script == null) {
+                        LOGGER.debug('Ignore error while translating script {} to h2 version.\r\n' +
+                                'You should write an h2 version script into src/test/resources to make test pass.',
+                                resource.getFilename(), e)
+                    } else {
+                        LOGGER.debug('Ignore {} error while executing translated script {}', e.getMessage(), h2Script.getCanonicalPath())
+                    }
                 } else {
                     throw e
                 }
             } finally {
-                h2Script.delete()
+                if (h2Script != null) {
+                    h2Script.delete()
+                }
             }
         }
     }
